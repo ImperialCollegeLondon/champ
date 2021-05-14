@@ -1,0 +1,8 @@
+[tool.black]
+exclude = '\.venv/|main/migrations/'
+[tool.isort]
+known_third_party = ["django"]
+line_length = 88
+multi_line_output = 3
+include_trailing_comma = true
+skip_glob = "main/migrations/*.py"

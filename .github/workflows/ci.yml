@@ -1,0 +1,27 @@
+on: push
+jobs:
+  qa:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+      - uses: pre-commit/action@v2.0.2
+  testing:
+    runs-on: ubuntu-latest
+  testing:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2.1.4
+        with:
+          python-version: 3.9
+      - name: Install prerequisites
+        run: |
+          python -m pip install -q -U pip
+          python -m pip install -q -r requirements.txt
+      - name: Run tests
+        run: |
+          python manage.py test --no-input
