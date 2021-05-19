@@ -167,3 +167,5 @@ LOGGING = {
     },
     "loggers": {APP_NAME: {"handlers": ["console", "file"], "level": LOGGING_LEVEL}},
 }
+
+JOBS_DIR = Path(os.environ["HOME"]) / "portal_jobs"

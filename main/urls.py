@@ -6,7 +6,6 @@ app_name = "main"
 
 urlpatterns = [
     path("", views.index, name="index"),
-    path("submit", views.submit, name="submit"),
-    path("status/<str:job_id>/", views.status, name="status"),
-    path("delete/<str:job_id>/", views.delete, name="delete"),
+    path("create_job", views.create_job, name="create_job"),
+    path("success/<int:job_pk>/", views.success, name="success"),
 ]

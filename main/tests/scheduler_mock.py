@@ -1,3 +1,5 @@
+import tempfile
+from pathlib import Path
 from unittest.mock import patch
 
 from django.test import TestCase
@@ -56,8 +58,17 @@ class SchedulerTestCase(TestCase):
         self.delete_patcher = patch("main.scheduler.delete", self.scheduler.delete)
         self.delete_patcher.start()
 
+        self.tmp_dir = tempfile.TemporaryDirectory()
+        self.work_dir_patcher = patch(
+            "main.models.settings.JOBS_DIR", Path(self.tmp_dir.name)
+        )
+        self.work_dir_patcher.start()
+
     def tearDown(self):
         super().tearDown()
         self.submit_patcher.stop()
         self.status_patcher.stop()
         self.delete_patcher.stop()
+
+        self.tmp_dir.cleanup()
+        self.work_dir_patcher.stop()
