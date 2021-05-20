@@ -7,9 +7,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="{% static 'main/favicon-32x32.png' %}">
     <link rel="stylesheet" href="{% static 'main/css/semantic.min.css' %}">
+    <style>
+        .ui.inverted.menu {
+            background-color: #33485D;
+        }
+
+        .ui.menu .item img.logo {
+            margin-right: 5em;
+            min-height: 100%;
+            min-width: 100%;
+        }
+
+        .main.container {
+            margin-top: 7em;
+        }
+    </style>
 </head>
 
 <body>
+    <div class="ui fixed inverted menu">
+        <div class="ui container">
+            <a href="{% url 'main:index' %}" class="header item">
+                <img class="logo" alt="logo" src="{% static 'main/logo.png' %}">
+            </a>
+            <a href="{% url 'main:index' %}" class="item">Home</a>
+            <a href="{% url 'main:create_job' %}" class="item">Create Job</a>
+        </div>
+    </div>
+
     <div class="ui main text container">
         {% block content %}{% endblock %}
     </div>
