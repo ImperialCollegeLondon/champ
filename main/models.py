@@ -11,18 +11,28 @@ SCRIPT_CONTENTS = """#!/bin/bash
 
 cd $PBS_O_WORKDIR
 
-echo $(hostname)
-sleep 1m
+module load gaussian/g16-a03
+g16 {com}
 """
 
 
 class JobManager(models.Manager):
-    def create_job(self):
+    def create_job(self, input_files):
         job = self.create(status="Queueing")
+
         job.work_dir.mkdir(parents=True)
+        for inp in input_files.values():
+            with (job.work_dir / inp.name).open("wb") as f:
+                f.write(inp.read())
+
         script_path = job.work_dir / "sub.pbs"
         with script_path.open("w") as f:
-            f.write(SCRIPT_CONTENTS)
+            f.write(
+                SCRIPT_CONTENTS.format(
+                    **{key: inp.name for key, inp in input_files.items()}
+                )
+            )
+
         job_id = scheduler.submit(script_path, job.work_dir)
         job.job_id = job_id
         job.save()

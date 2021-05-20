@@ -169,3 +169,13 @@ LOGGING = {
 }
 
 JOBS_DIR = Path(os.environ["HOME"]) / "portal_jobs"
+
+SOFTWARE = {
+    "gaussian16": {
+        "input_files": {
+            "required": {
+                "com": "Gaussian Input File",
+            }
+        }
+    }
+}

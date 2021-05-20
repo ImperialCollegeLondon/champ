@@ -1,5 +1,7 @@
+from django.conf import settings
 from django.shortcuts import redirect, render
 
+from .forms import SubmissionForm
 from .models import Job
 
 
@@ -9,10 +11,18 @@ def index(request):
 
 def create_job(request):
     if request.method == "POST":
-        job = Job.objects.create_job()
-        return redirect("main:success", job.pk)
+        software = settings.SOFTWARE["gaussian16"]
+        form = SubmissionForm(request.POST, request.FILES)
+        if form.is_valid():
+            input_files = {
+                key: request.FILES[key] for key in software["input_files"]["required"]
+            }
+
+            job = Job.objects.create_job(input_files)
+            return redirect("main:success", job.pk)
     else:
-        return render(request, "main/create_job.html")
+        form = SubmissionForm()
+    return render(request, "main/create_job.html", {"form": form})
 
 
 def success(request, job_pk):
