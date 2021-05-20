@@ -175,7 +175,10 @@ SOFTWARE = {
         "input_files": {
             "required": {
                 "com": "Gaussian Input File",
-            }
+            },
+            "optional": {
+                "fchk": "Formatted Checkpoint File",
+            },
         }
     }
 }

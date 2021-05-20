@@ -32,3 +32,24 @@ class TestViews(SchedulerTestCase):
             self.assertIn(test_input, f.read())
 
         self.assertRedirects(response, f"/success/{job.pk}/")
+
+    def test_create_job_post_optional(self):
+        test_input = "test.com"
+        test_fchk = "test.fchk"
+        with (TEST_DATA_PATH / test_input).open() as f, (
+            TEST_DATA_PATH / test_fchk
+        ).open() as f2:
+            response = self.client.post("/create_job", {"com": f, "fchk": f2})
+
+        self.assertEqual(len(Job.objects.all()), 1)
+        job = Job.objects.get()
+
+        files = list(job.work_dir.glob("*"))
+        self.assertIn(job.work_dir / test_input, files)
+        self.assertIn(job.work_dir / test_fchk, files)
+        with (job.work_dir / "sub.pbs").open() as f:
+            contents = f.read()
+            self.assertIn(test_input, contents)
+            self.assertIn(test_fchk, contents)
+
+        self.assertRedirects(response, f"/success/{job.pk}/")

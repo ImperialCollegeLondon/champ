@@ -1,3 +1,5 @@
+from itertools import chain
+
 from django.conf import settings
 from django.shortcuts import redirect, render
 
@@ -13,9 +15,12 @@ def create_job(request):
     if request.method == "POST":
         software = settings.SOFTWARE["gaussian16"]
         form = SubmissionForm(request.POST, request.FILES)
+        files_spec = software["input_files"]
         if form.is_valid():
             input_files = {
-                key: request.FILES[key] for key in software["input_files"]["required"]
+                key: request.FILES[key]
+                for key in chain(files_spec["required"], files_spec["optional"])
+                if key in request.FILES
             }
 
             job = Job.objects.create_job(input_files)

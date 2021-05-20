@@ -1,4 +1,5 @@
 import shutil
+from itertools import chain
 
 from django.conf import settings
 from django.db import models
@@ -12,6 +13,7 @@ SCRIPT_CONTENTS = """#!/bin/bash
 cd $PBS_O_WORKDIR
 
 module load gaussian/g16-a03
+[[ \"{fchk}\" != "" ]] && unfchk {fchk}
 g16 {com}
 """
 
@@ -19,6 +21,7 @@ g16 {com}
 class JobManager(models.Manager):
     def create_job(self, input_files):
         job = self.create(status="Queueing")
+        software = settings.SOFTWARE["gaussian16"]
 
         job.work_dir.mkdir(parents=True)
         for inp in input_files.values():
@@ -26,12 +29,14 @@ class JobManager(models.Manager):
                 f.write(inp.read())
 
         script_path = job.work_dir / "sub.pbs"
+
+        files_spec = software["input_files"]
+        formatting_kwargs = {
+            key: (input_files[key].name if key in input_files else "")
+            for key in chain(files_spec["required"], files_spec["optional"])
+        }
         with script_path.open("w") as f:
-            f.write(
-                SCRIPT_CONTENTS.format(
-                    **{key: inp.name for key, inp in input_files.items()}
-                )
-            )
+            f.write(SCRIPT_CONTENTS.format(**formatting_kwargs))
 
         job_id = scheduler.submit(script_path, job.work_dir)
         job.job_id = job_id

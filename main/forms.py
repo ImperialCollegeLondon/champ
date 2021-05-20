@@ -8,3 +8,7 @@ class SubmissionForm(forms.Form):
         software = settings.SOFTWARE["gaussian16"]
         for name, desc in software["input_files"]["required"].items():
             self.fields[name] = forms.FileField(label=desc)
+        for name, desc in software["input_files"]["optional"].items():
+            self.fields[name] = forms.FileField(
+                label=desc, required=False, label_suffix="(*)"
+            )
