@@ -57,5 +57,5 @@ class Job(models.Model):
         return settings.JOBS_DIR / f"{self.pk:08d}"
 
     def delete(self):
-        super().delete()
         shutil.rmtree(self.work_dir)
+        super().delete()

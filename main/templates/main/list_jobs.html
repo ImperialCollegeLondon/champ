@@ -9,6 +9,7 @@
       <th>Submission Time</th>
       <th>Status</th>
       <th>Files</th>
+      <th>Delete</th>
     </tr>
   </thead>
   <tbody>
@@ -17,7 +18,8 @@
       <td>{{ job.job_id }}</td>
       <td>{{ job.submission_time }}</td>
       <td>{{ job.status }}</td>
-      <td><a target="_blank" href="{{ SITE_URL }}/pun/sys/dashboard/files/fs{{ job.work_dir }}/">Open Directory</h></td>
+      <td><a target="_blank" href="{{ SITE_URL }}/pun/sys/dashboard/files/fs{{ job.work_dir }}/">Open Directory</a></td>
+      <td><a href="{% url 'main:delete' job.pk %}">Delete</a></td>
     </tr>
     {% endfor %}
   </tbody>

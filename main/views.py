@@ -43,3 +43,9 @@ def list_jobs(request):
             job.status = scheduler.status(job.job_id).capitalize()
             job.save()
     return render(request, "main/list_jobs.html", {"jobs": jobs})
+
+
+def delete(request, job_pk):
+    job = Job.objects.get(pk=job_pk)
+    job.delete()
+    return redirect(request.META.get("HTTP_REFERER", "main:index"))
