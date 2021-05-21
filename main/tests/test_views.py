@@ -55,7 +55,7 @@ class TestViews(SchedulerTestCase):
         self.assertRedirects(response, f"/success/{job.pk}/")
 
     def test_list_jobs(self):
-        job = Job.objects.create_job({})
+        job = Job.objects.create_job("", {})
 
         response = self.client.get("/list_jobs/")
         jobs = response.context["jobs"]

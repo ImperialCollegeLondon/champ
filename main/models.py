@@ -19,8 +19,8 @@ g16 {com}
 
 
 class JobManager(models.Manager):
-    def create_job(self, input_files):
-        job = self.create(status="Queueing")
+    def create_job(self, description, input_files):
+        job = self.create(status="Queueing", description=description)
         software = settings.SOFTWARE["gaussian16"]
 
         job.work_dir.mkdir(parents=True)
@@ -50,6 +50,7 @@ class Job(models.Model):
     status = models.CharField(max_length=1, choices=STATUS_CHOICES)
     job_id = models.CharField(max_length=20, blank=True)
     submission_time = models.DateTimeField(auto_now_add=True)
+    description = models.CharField(max_length=200, blank=True)
     objects = JobManager()
 
     @property

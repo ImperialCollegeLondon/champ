@@ -24,7 +24,7 @@ def create_job(request):
                 if key in request.FILES
             }
 
-            job = Job.objects.create_job(input_files)
+            job = Job.objects.create_job(form.cleaned_data["description"], input_files)
             return redirect("main:success", job.pk)
     else:
         form = SubmissionForm()

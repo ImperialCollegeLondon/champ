@@ -6,6 +6,7 @@
   <thead>
     <tr>
       <th>Job ID</th>
+      <th>Description</th>
       <th>Submission Time</th>
       <th>Status</th>
       <th>Files</th>
@@ -16,6 +17,7 @@
     {% for job in jobs %}
     <tr>
       <td>{{ job.job_id }}</td>
+      <td>{{ job.description }}</td>
       <td>{{ job.submission_time }}</td>
       <td>{{ job.status }}</td>
       <td><a target="_blank" href="{{ SITE_URL }}/pun/sys/dashboard/files/fs{{ job.work_dir }}/">Open Directory</a></td>
