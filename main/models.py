@@ -49,6 +49,7 @@ class Job(models.Model):
 
     status = models.CharField(max_length=1, choices=STATUS_CHOICES)
     job_id = models.CharField(max_length=20, blank=True)
+    submission_time = models.DateTimeField(auto_now_add=True)
     objects = JobManager()
 
     @property
