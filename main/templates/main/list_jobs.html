@@ -1,0 +1,25 @@
+{% extends "main/base.html" %}
+{% block content %}
+{% if not content %}
+
+<table class="ui celled table">
+  <thead>
+    <tr>
+      <th>Job ID</th>
+      <th>Status</th>
+      <th>Files</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for job in jobs %}
+    <tr>
+      <td>{{ job.job_id }}</td>
+      <td>{{ job.status }}</td>
+      <td><a target="_blank" href="{{ SITE_URL }}/pun/sys/dashboard/files/fs{{ job.work_dir }}/">Open Directory</h></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{{ site }}
+{% endif %}
+{% endblock %}

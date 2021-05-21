@@ -129,6 +129,7 @@ BASE_DIR = Path(__file__).resolve(strict=True).parent.parent.parent
 INSTALLED_APPS += ["main.apps.MainConfig"]
 TEMPLATES[0]["OPTIONS"]["context_processors"] += [
     "main.context_processors.app_name",
+    "main.context_processors.site",
 ]
 APP_NAME = "Chemistry HPC Portal"
 
@@ -182,3 +183,5 @@ SOFTWARE = {
         }
     }
 }
+
+SITE_URL = os.getenv("SITE_URL", "")

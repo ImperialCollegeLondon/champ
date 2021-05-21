@@ -3,6 +3,7 @@ from itertools import chain
 from django.conf import settings
 from django.shortcuts import redirect, render
 
+from . import scheduler
 from .forms import SubmissionForm
 from .models import Job
 
@@ -33,3 +34,12 @@ def create_job(request):
 def success(request, job_pk):
     job = Job.objects.get(pk=job_pk)
     return render(request, "main/success.html", {"job_id": job.job_id})
+
+
+def list_jobs(request):
+    jobs = Job.objects.all()[::-1]
+    for job in jobs:
+        if job.status != "Completed":
+            job.status = scheduler.status(job.job_id).capitalize()
+            job.save()
+    return render(request, "main/list_jobs.html", {"jobs": jobs})

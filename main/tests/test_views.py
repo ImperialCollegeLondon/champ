@@ -12,7 +12,7 @@ class TestViews(SchedulerTestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_create_job_get(self):
-        response = self.client.get("/create_job")
+        response = self.client.get("/create_job/")
         self.assertEqual(response.status_code, 200)
 
         form = response.context["form"]
@@ -21,7 +21,7 @@ class TestViews(SchedulerTestCase):
     def test_create_job_post(self):
         test_input = "test.com"
         with (TEST_DATA_PATH / test_input).open() as f:
-            response = self.client.post("/create_job", {"com": f})
+            response = self.client.post("/create_job/", {"com": f})
 
         self.assertEqual(len(Job.objects.all()), 1)
         job = Job.objects.get()
@@ -39,7 +39,7 @@ class TestViews(SchedulerTestCase):
         with (TEST_DATA_PATH / test_input).open() as f, (
             TEST_DATA_PATH / test_fchk
         ).open() as f2:
-            response = self.client.post("/create_job", {"com": f, "fchk": f2})
+            response = self.client.post("/create_job/", {"com": f, "fchk": f2})
 
         self.assertEqual(len(Job.objects.all()), 1)
         job = Job.objects.get()
@@ -53,3 +53,25 @@ class TestViews(SchedulerTestCase):
             self.assertIn(test_fchk, contents)
 
         self.assertRedirects(response, f"/success/{job.pk}/")
+
+    def test_list_jobs(self):
+        job = Job.objects.create_job({})
+
+        response = self.client.get("/list_jobs/")
+        jobs = response.context["jobs"]
+        self.assertEqual(len(jobs), 1)
+        self.assertEqual(jobs[0].status, "Queueing")
+
+        self.scheduler.job_starts(job.job_id)
+
+        response = self.client.get("/list_jobs/")
+        jobs = response.context["jobs"]
+        self.assertEqual(len(jobs), 1)
+        self.assertEqual(jobs[0].status, "Running")
+
+        self.scheduler.job_finishes(job.job_id)
+
+        response = self.client.get("/list_jobs/")
+        jobs = response.context["jobs"]
+        self.assertEqual(len(jobs), 1)
+        self.assertEqual(jobs[0].status, "Completed")

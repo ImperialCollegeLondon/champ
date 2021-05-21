@@ -32,7 +32,7 @@ def run_ruby_script(script_name, cmdline_args, run_dir=None):
         command,
         check=True,
         stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+        stderr=subprocess.PIPE,
         cwd=run_dir,
     )
     return cp.stdout.decode(sys.getfilesystemencoding()).strip()
