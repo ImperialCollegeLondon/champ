@@ -9,8 +9,11 @@ https://docs.djangoproject.com/en/3.2/howto/deployment/wsgi/
 
 import os
 
+import dotenv
 from django.core.wsgi import get_wsgi_application
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "portal.settings")
+
+dotenv.load_dotenv(override=True)
 
 application = get_wsgi_application()
