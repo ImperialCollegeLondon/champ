@@ -1,4 +1,6 @@
+import os
 from itertools import chain
+from urllib.parse import urlunparse
 
 from django.conf import settings
 from django.shortcuts import redirect, render
@@ -42,7 +44,14 @@ def list_jobs(request):
         if job.status != "Completed":
             job.status = scheduler.status(job.job_id).capitalize()
             job.save()
-    return render(request, "main/list_jobs.html", {"jobs": jobs})
+
+    scheme = "https" if request.is_secure() else "http"
+    files_url = urlunparse(
+        [scheme, request.get_host(), os.getenv("OOD_FILES_URL", ""), "", "", ""]
+    )
+    return render(
+        request, "main/list_jobs.html", {"jobs": jobs, "files_url": files_url}
+    )
 
 
 def delete(request, job_pk):

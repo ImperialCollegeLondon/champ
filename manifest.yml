@@ -1,3 +1,4 @@
 name: HPC Chemistry Portal
 description: Run Chemistry jobs via a simple interface
 icon: fa://atom
+category: Jobs

@@ -129,7 +129,6 @@ BASE_DIR = Path(__file__).resolve(strict=True).parent.parent.parent
 INSTALLED_APPS += ["main.apps.MainConfig"]
 TEMPLATES[0]["OPTIONS"]["context_processors"] += [
     "main.context_processors.app_name",
-    "main.context_processors.site",
 ]
 APP_NAME = "Chemistry HPC Portal"
 
@@ -169,7 +168,7 @@ LOGGING = {
     "loggers": {APP_NAME: {"handlers": ["console", "file"], "level": LOGGING_LEVEL}},
 }
 
-JOBS_DIR = Path(os.environ["HOME"]) / "portal_jobs"
+JOBS_DIR = Path(os.getenv("JOBS_DIR", str(BASE_DIR / "portal_jobs")))
 
 SOFTWARE = {
     "gaussian16": {
@@ -183,5 +182,3 @@ SOFTWARE = {
         }
     }
 }
-
-SITE_URL = os.getenv("SITE_URL", "")
