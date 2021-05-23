@@ -75,3 +75,10 @@ class TestViews(SchedulerTestCase):
         jobs = response.context["jobs"]
         self.assertEqual(len(jobs), 1)
         self.assertEqual(jobs[0].status, "Completed")
+
+    def test_delete(self):
+        job = Job.objects.create_job("", {})
+
+        response = self.client.get(f"/delete/{job.pk}/")
+        self.assertEqual(len(Job.objects.all()), 0)
+        self.assertRedirects(response, "/")
