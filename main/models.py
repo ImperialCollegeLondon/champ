@@ -19,8 +19,8 @@ g16 {com}
 
 
 class JobManager(models.Manager):
-    def create_job(self, description, input_files):
-        job = self.create(status="Queueing", description=description)
+    def create_job(self, description, input_files, project):
+        job = self.create(status="Queueing", description=description, project=project)
         software = settings.SOFTWARE["gaussian16"]
 
         job.work_dir.mkdir(parents=True)
@@ -51,6 +51,9 @@ class Job(models.Model):
     job_id = models.CharField(max_length=20, blank=True)
     submission_time = models.DateTimeField(auto_now_add=True)
     description = models.CharField(max_length=200, blank=True)
+    project = models.ForeignKey(
+        "Project", on_delete=models.SET_NULL, null=True, blank=True
+    )
     objects = JobManager()
 
     @property
@@ -60,3 +63,10 @@ class Job(models.Model):
     def delete(self):
         shutil.rmtree(self.work_dir)
         super().delete()
+
+
+class Project(models.Model):
+    name = models.CharField(max_length=50)
+
+    def __str__(self):
+        return f"{self.name}"

@@ -2,7 +2,7 @@ from pathlib import Path
 
 from django.test import TestCase
 
-from ..models import Job
+from ..models import Job, Project
 from .scheduler_mock import SchedulerTestCase
 
 TEST_DATA_PATH = Path(__file__).absolute().parent / "test_data"
@@ -15,8 +15,12 @@ class TestIndexViews(TestCase):
 
 
 class TestCreateJobViews(SchedulerTestCase):
+    def setUp(self):
+        super().setUp()
+        self.project = Project.objects.create(name="test")
+
     def test_create_job_get(self):
-        response = self.client.get("/create_job/")
+        response = self.client.get(f"/create_job/{self.project.pk}/")
         self.assertEqual(response.status_code, 200)
 
         form = response.context["form"]
@@ -25,7 +29,7 @@ class TestCreateJobViews(SchedulerTestCase):
     def test_create_job_post(self):
         test_input = "test.com"
         with (TEST_DATA_PATH / test_input).open() as f:
-            response = self.client.post("/create_job/", {"com": f})
+            response = self.client.post(f"/create_job/{self.project.pk}/", {"com": f})
 
         self.assertEqual(len(Job.objects.all()), 1)
         job = Job.objects.get()
@@ -43,7 +47,9 @@ class TestCreateJobViews(SchedulerTestCase):
         with (TEST_DATA_PATH / test_input).open() as f, (
             TEST_DATA_PATH / test_fchk
         ).open() as f2:
-            response = self.client.post("/create_job/", {"com": f, "fchk": f2})
+            response = self.client.post(
+                f"/create_job/{self.project.pk}/", {"com": f, "fchk": f2}
+            )
 
         self.assertEqual(len(Job.objects.all()), 1)
         job = Job.objects.get()
@@ -61,7 +67,8 @@ class TestCreateJobViews(SchedulerTestCase):
 
 class TestListViews(SchedulerTestCase):
     def test_list_jobs(self):
-        job = Job.objects.create_job("", {})
+        project = Project.objects.create(name="test")
+        job = Job.objects.create_job("", {}, project)
 
         response = self.client.get("/list_jobs/")
         jobs = response.context["jobs"]
@@ -85,8 +92,43 @@ class TestListViews(SchedulerTestCase):
 
 class TestDeleteViews(SchedulerTestCase):
     def test_delete(self):
-        job = Job.objects.create_job("", {})
+        project = Project.objects.create(name="test")
+        job = Job.objects.create_job("", {}, project)
 
         response = self.client.get(f"/delete/{job.pk}/")
         self.assertEqual(len(Job.objects.all()), 0)
         self.assertRedirects(response, "/")
+
+
+class TestJobTypeViews(TestCase):
+    def test_get(self):
+        response = self.client.get("/job_type/")
+        self.assertEqual(response.status_code, 200)
+
+    def test_post(self):
+        project = Project.objects.create(name="test")
+        response = self.client.post("/job_type/", {"project": project.pk})
+        self.assertRedirects(response, f"/create_job/{project.pk}/")
+
+
+class TestProjectViews(TestCase):
+    def test_get(self):
+        response = self.client.get("/projects/")
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_with_project(self):
+        Project.objects.create(name="test")
+        response = self.client.get("/projects/")
+        self.assertEqual(response.status_code, 200)
+
+    def test_post(self):
+        response = self.client.post("/projects/", {"name": "test"})
+        self.assertRedirects(response, "/")
+
+        self.assertEqual(len(Project.objects.all()), 1)
+
+    def test_delete(self):
+        project = Project.objects.create(name="test")
+        response = self.client.get(f"/delete_project/{project.pk}/")
+        self.assertRedirects(response, "/")
+        self.assertEqual(len(Project.objects.all()), 0)

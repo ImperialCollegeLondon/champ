@@ -1,0 +1,29 @@
+{% extends "main/base.html" %}
+{% block content %}
+{% if not content %}
+
+<table class="ui celled table">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Delete</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for project in projects %}
+    <tr>
+      <td>{{ project.name }}</td>
+      <td><a href="{% url 'main:delete_project' project.pk %}">Delete</a></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<form class="ui form" method="post">
+  {% csrf_token %}
+  {{ form }}
+  <input class="ui button" type="submit" value="Add">
+</form>
+
+{% endif %}
+{% endblock %}

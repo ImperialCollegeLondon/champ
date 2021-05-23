@@ -1,0 +1,11 @@
+{% extends "main/base.html" %}
+{% block content %}
+{% if not content %}
+<form class="ui form" method="post">
+  {% csrf_token %}
+  {{ form }}
+  <input class="ui button" type="submit" value="Submit">
+</form>
+
+{% endif %}
+{% endblock %}
