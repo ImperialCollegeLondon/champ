@@ -1,16 +1,20 @@
 from pathlib import Path
 
+from django.test import TestCase
+
 from ..models import Job
 from .scheduler_mock import SchedulerTestCase
 
 TEST_DATA_PATH = Path(__file__).absolute().parent / "test_data"
 
 
-class TestViews(SchedulerTestCase):
+class TestIndexViews(TestCase):
     def test_index(self):
         response = self.client.get("/")
         self.assertEqual(response.status_code, 200)
 
+
+class TestCreateJobViews(SchedulerTestCase):
     def test_create_job_get(self):
         response = self.client.get("/create_job/")
         self.assertEqual(response.status_code, 200)
@@ -54,6 +58,8 @@ class TestViews(SchedulerTestCase):
 
         self.assertRedirects(response, f"/success/{job.pk}/")
 
+
+class TestListViews(SchedulerTestCase):
     def test_list_jobs(self):
         job = Job.objects.create_job("", {})
 
@@ -76,6 +82,8 @@ class TestViews(SchedulerTestCase):
         self.assertEqual(len(jobs), 1)
         self.assertEqual(jobs[0].status, "Completed")
 
+
+class TestDeleteViews(SchedulerTestCase):
     def test_delete(self):
         job = Job.objects.create_job("", {})
 
