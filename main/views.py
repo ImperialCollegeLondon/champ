@@ -11,7 +11,8 @@ from .models import Job, Project
 
 
 def index(request):
-    return render(request, "main/index.html")
+    admin_email = settings.ADMINS[0][1] if settings.ADMINS else ""
+    return render(request, "main/index.html", {"admin_email": admin_email})
 
 
 def create_job(request, project_pk):

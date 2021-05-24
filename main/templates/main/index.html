@@ -4,8 +4,17 @@
 
 {% block content %}
   <div class="ui text container">
-    <div class="row">
-      <h1>{{ APP_NAME }}</h1>
-    </div>
+    <h1>{{ APP_NAME }}</h1>
+    <p>Welcome to the {{ APP_NAME }}. You can use this web portal to
+      run instances of packaged applications.</p>
+
+    <p>Create a new job by selecting <a href="{% url 'main:job_type' %}">
+	Create Job</a> from the top menu. Individual jobs
+      may be associated with a particular <a href="{% url 'main:projects' %}">
+	project</a>. To see all jobs,
+      past and present, select <a href="{% url 'main:list_jobs' %}">
+	List Jobs</a>.</p>
+
+    <p>For information, <a href="mailto:{{ admin_email }}">contact the admin</a>.</p>
   </div>
 {% endblock %}

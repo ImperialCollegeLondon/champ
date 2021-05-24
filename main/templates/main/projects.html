@@ -2,7 +2,12 @@
 {% block content %}
 {% if not content %}
 
-<h2 class="ui header">Existing Projects</h2>
+<h2 class="ui header">Projects</h2>
+
+<p>You may define projects to organise your jobs. A job is assigned a
+  project when it is run; you may reassign it later.</p>
+
+<h3 class="ui header">Existing Projects</h3>
 <table class="ui celled table">
   <thead>
     <tr>
@@ -22,7 +27,7 @@
   </tbody>
 </table>
 
-<h2 class="ui header">Add a New Project</h2>
+<h3 class="ui header">Add a New Project</h3>
 <form class="ui form" method="post">
   {% csrf_token %}
   {% for field in form %}
