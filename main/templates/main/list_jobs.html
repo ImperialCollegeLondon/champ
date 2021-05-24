@@ -11,7 +11,7 @@
       <th>Submission Time</th>
       <th>Status</th>
       <th>Files</th>
-      <th>Delete</th>
+      <th></th>
     </tr>
   </thead>
   <tbody>
@@ -19,7 +19,7 @@
     <tr>
       <td>{{ job.job_id }}</td>
       <td>{{ job.description }}</td>
-      <td>{{ job.project }}</td>
+      <td>{% if job.project != None %}{{ job.project }}{% endif %}</td>
       <td>{{ job.submission_time }}</td>
       <td>{{ job.status }}</td>
       <td><a target="_blank" href="{{ files_url }}/{{ job.work_dir }}/">Open Directory</a></td>

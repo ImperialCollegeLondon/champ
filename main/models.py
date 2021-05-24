@@ -70,3 +70,7 @@ class Project(models.Model):
 
     def __str__(self):
         return f"{self.name}"
+
+    @property
+    def number_of_jobs(self):
+        return len(Job.objects.filter(project=self))

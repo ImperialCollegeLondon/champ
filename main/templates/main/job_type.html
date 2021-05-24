@@ -1,9 +1,24 @@
 {% extends "main/base.html" %}
 {% block content %}
 {% if not content %}
+<h2 class="ui header">Create a New Job</h2>
 <form class="ui form" method="post">
   {% csrf_token %}
-  {{ form }}
+  <table style="width:100%; padding-bottom: 10px;">
+    <tbody>
+      <tr>
+	<td width="70%">
+  <div class="field">
+    <label>{{ form.project.label }}</label>
+    {{ form.project }}
+  </div>
+	</td>
+	<td style="vertical-align:bottom">
+<a href="{% url 'main:projects' %}">or create a new project</a>
+	</td>
+      </tr>
+    </tbody>
+  </table>
   <input class="ui button" type="submit" value="Submit">
 </form>
 

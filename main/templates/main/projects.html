@@ -2,26 +2,35 @@
 {% block content %}
 {% if not content %}
 
+<h2 class="ui header">Existing Projects</h2>
 <table class="ui celled table">
   <thead>
     <tr>
       <th>Name</th>
-      <th>Delete</th>
+      <th>No. Jobs</ht>
+      <th></th>
     </tr>
   </thead>
   <tbody>
     {% for project in projects %}
     <tr>
       <td>{{ project.name }}</td>
-      <td><a href="{% url 'main:delete_project' project.pk %}">Delete</a></td>
+      <td>{{ project.number_of_jobs }}</td>
+      <td><a href="{% url 'main:delete_project' project.pk %}">Delete project</a></td>
     </tr>
     {% endfor %}
   </tbody>
 </table>
 
+<h2 class="ui header">Add a New Project</h2>
 <form class="ui form" method="post">
   {% csrf_token %}
-  {{ form }}
+  {% for field in form %}
+  <div class="field">
+    <label>{{ field.label }}</label>
+    {{ field }}
+  </div>
+  {% endfor %}
   <input class="ui button" type="submit" value="Add">
 </form>
 
