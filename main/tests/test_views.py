@@ -1,6 +1,7 @@
 from pathlib import Path
 
 from django.test import TestCase
+from django.urls import reverse
 
 from ..models import Job, Project
 from .scheduler_mock import SchedulerTestCase
@@ -132,3 +133,21 @@ class TestProjectViews(TestCase):
         response = self.client.get(f"/delete_project/{project.pk}/")
         self.assertRedirects(response, "/")
         self.assertEqual(len(Project.objects.all()), 0)
+
+
+class TestJobView(TestCase):
+    def setUp(self):
+        self.job = Job.objects.create(status="Q")
+        self.url = reverse("main:job", args=[self.job.pk])
+
+    def test_get(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_post(self):
+        """Existing job object is updated, new job not created"""
+        desc = "new_description"
+        response = self.client.post(self.url, {"description": desc})
+        self.assertRedirects(response, "/")
+        job = Job.objects.get()
+        self.assertEqual(job.description, desc)

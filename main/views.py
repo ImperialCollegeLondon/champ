@@ -6,7 +6,7 @@ from django.conf import settings
 from django.shortcuts import get_object_or_404, redirect, render
 
 from . import scheduler
-from .forms import JobTypeForm, ProjectForm, SubmissionForm
+from .forms import JobForm, JobTypeForm, ProjectForm, SubmissionForm
 from .models import Job, Project
 
 
@@ -89,3 +89,13 @@ def projects(request):
 def delete_project(request, project_pk):
     Project.objects.get(pk=project_pk).delete()
     return redirect(request.META.get("HTTP_REFERER", "main:index"))
+
+
+def job(request, job_pk):
+    job = get_object_or_404(Job, pk=job_pk)
+    form = JobForm(request.POST or None, instance=job)
+    if request.method == "POST":
+        if form.is_valid():
+            form.save()
+            return redirect(request.META.get("HTTP_REFERER", "main:index"))
+    return render(request, "main/job.html", {"form": form})

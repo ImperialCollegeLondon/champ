@@ -1,7 +1,7 @@
 from django import forms
 from django.conf import settings
 
-from .models import Project
+from .models import Job, Project
 
 
 class SubmissionForm(forms.Form):
@@ -27,3 +27,9 @@ class ProjectForm(forms.ModelForm):
     class Meta:
         model = Project
         fields = "__all__"
+
+
+class JobForm(forms.ModelForm):
+    class Meta:
+        model = Job
+        fields = ["description", "project"]

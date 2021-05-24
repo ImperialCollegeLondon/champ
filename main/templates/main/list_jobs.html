@@ -17,7 +17,7 @@
   <tbody>
     {% for job in jobs %}
     <tr>
-      <td>{{ job.job_id }}</td>
+      <td><a href="{% url 'main:job' job.pk %}">{{ job.job_id }}</a></td>
       <td>{{ job.description }}</td>
       <td>{% if job.project != None %}{{ job.project }}{% endif %}</td>
       <td>{{ job.submission_time }}</td>

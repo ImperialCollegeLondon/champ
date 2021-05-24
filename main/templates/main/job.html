@@ -1,0 +1,20 @@
+{% extends "main/base.html" %}
+{% block content %}
+{% if not content %}
+
+<a href="{% url 'main:list_jobs' %}">Back to job list</a>
+  
+<h2 class="ui header">Edit Job Information</h2>
+<form class="ui form" method="post">
+  {% csrf_token %}
+  {% for field in form %}
+  <div class="field">
+    <label>{{ field.label }}</label>
+    {{ field }}
+  </div>
+  {% endfor %}
+  <input class="ui button" type="submit" value="Update">
+</form>
+
+{% endif %}
+{% endblock %}
