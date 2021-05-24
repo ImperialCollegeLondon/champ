@@ -22,7 +22,7 @@
       <td>{% if job.project != None %}{{ job.project }}{% endif %}</td>
       <td>{{ job.submission_time }}</td>
       <td>{{ job.status }}</td>
-      <td><a target="_blank" href="{{ files_url }}/{{ job.work_dir }}/">Open Directory</a></td>
+      <td><a target="_blank" href="{{ files_url }}/fs/{{ job.work_dir }}/">Open Directory</a></td>
       <td><a href="{% url 'main:delete' job.pk %}">Delete</a></td>
     </tr>
     {% endfor %}
