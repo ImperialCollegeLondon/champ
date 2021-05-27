@@ -3,6 +3,7 @@ from itertools import chain
 
 from django.conf import settings
 from django.db import models
+from django.urls import reverse
 
 from . import scheduler
 
@@ -63,6 +64,9 @@ class Job(models.Model):
     def delete(self):
         shutil.rmtree(self.work_dir)
         super().delete()
+
+    def get_absolute_url(self):
+        return reverse("main:job", kwargs={"job_pk": self.pk})
 
 
 class Project(models.Model):

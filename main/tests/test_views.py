@@ -72,21 +72,21 @@ class TestListViews(SchedulerTestCase):
         job = Job.objects.create_job("", {}, project)
 
         response = self.client.get("/list_jobs/")
-        jobs = response.context["jobs"]
+        jobs = response.context["table"].data.data
         self.assertEqual(len(jobs), 1)
         self.assertEqual(jobs[0].status, "Queueing")
 
         self.scheduler.job_starts(job.job_id)
 
         response = self.client.get("/list_jobs/")
-        jobs = response.context["jobs"]
+        jobs = response.context["table"].data.data
         self.assertEqual(len(jobs), 1)
         self.assertEqual(jobs[0].status, "Running")
 
         self.scheduler.job_finishes(job.job_id)
 
         response = self.client.get("/list_jobs/")
-        jobs = response.context["jobs"]
+        jobs = response.context["table"].data.data
         self.assertEqual(len(jobs), 1)
         self.assertEqual(jobs[0].status, "Completed")
 

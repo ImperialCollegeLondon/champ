@@ -1,13 +1,15 @@
 import os
 from itertools import chain
-from urllib.parse import urlunparse
 
+import django_tables2 as tables
 from django.conf import settings
 from django.shortcuts import get_object_or_404, redirect, render
 
 from . import scheduler
+from .filters import JobFilter
 from .forms import JobForm, JobTypeForm, ProjectForm, SubmissionForm
 from .models import Job, Project
+from .tables import JobTable
 
 
 def index(request):
@@ -43,18 +45,25 @@ def success(request, job_pk):
 
 
 def list_jobs(request):
-    jobs = Job.objects.all()[::-1]
-    for job in jobs:
+    job_filter = JobFilter(request.GET, queryset=Job.objects.order_by("-pk"))
+    table = JobTable(job_filter.qs)
+    config = tables.RequestConfig(request, paginate={"per_page": 10})
+    config.configure(table)
+
+    for job in table.page.object_list.data:
         if job.status != "Completed":
             job.status = scheduler.status(job.job_id).capitalize()
             job.save()
 
-    scheme = "https" if request.is_secure() else "http"
-    files_url = urlunparse(
-        [scheme, request.get_host(), os.getenv("OOD_FILES_URL", ""), "", "", ""]
-    )
     return render(
-        request, "main/list_jobs.html", {"jobs": jobs, "files_url": files_url}
+        request,
+        "main/list_jobs.html",
+        {
+            "table": table,
+            "base_url": os.getenv("OOD_FILES_URL", "") + "/fs",
+            "filter": job_filter,
+            "options": (10, 25, 50),
+        },
     )
 
 

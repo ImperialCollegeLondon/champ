@@ -18,8 +18,8 @@
             min-width: 100%;
         }
 
-        .main.container {
-            margin-top: 7em;
+        .grid.container {
+            margin-top: 5em;
         }
     </style>
 </head>
@@ -37,8 +37,8 @@
         </div>
     </div>
 
-    <div class="ui main text container">
-        {% block content %}{% endblock %}
+    <div class="ui grid container">
+      {% block content %}{% endblock %}
     </div>
     <script src="{% static 'main/js/jquery.min.js' %}"></script>
     <script src="{% static 'main/js/semantic.min.js' %}"></script>

@@ -1,33 +1,64 @@
 {% extends "main/base.html" %}
+{% load render_table from django_tables2 %}
 {% block content %}
 {% if not content %}
 
-<table class="ui celled table">
-  <thead>
-    <tr>
-      <th>Job ID</th>
-      <th>Description</th>
-      <th>Project</th>
-      <th>Submission Time</th>
-      <th>Status</th>
-      <th>Files</th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for job in jobs %}
-    <tr>
-      <td><a href="{% url 'main:job' job.pk %}">{{ job.job_id }}</a></td>
-      <td>{{ job.description }}</td>
-      <td>{% if job.project != None %}{{ job.project }}{% endif %}</td>
-      <td>{{ job.submission_time }}</td>
-      <td>{{ job.status }}</td>
-      <td><a target="_blank" href="{{ files_url }}/fs/{{ job.work_dir }}/">Open Directory</a></td>
-      <td><a href="{% url 'main:delete' job.pk %}">Delete</a></td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
-{{ site }}
+<style>
+  /* add arrows to end of headers for sorted columns  */
+  .orderable {
+      white-space: nowrap;
+  }
+  .asc.orderable::after {
+      display: inline-block;
+      text-rendering: auto;
+      font-family: "Icons";
+      content: '\f106';
+  }
+  .desc.orderable::after {
+      display: inline-block;
+      text-rendering: auto;
+      font-family: "Icons";
+      content: '\f107';
+  }
+</style>
+
+<div class="row">
+  <div class="ui text container">
+    <h2 class="ui header">Job List</h2>
+    <form class="ui form" method="get">
+      <div class="field">
+	<label>{{ filter.form.description.label }}</label>
+	{{ filter.form.description }}
+      </div>
+      <div class="fields">
+	<div class="field">
+	  <label>{{ filter.form.project.label }}</label>
+	  {{ filter.form.project }}
+	</div>
+	<div class="field">
+	  <label>{{ filter.form.status.label }}</label>
+	  {{ filter.form.status }}
+	</div>
+      </div>
+      <div class="fields">
+	<div class="field">
+	  <label>Results per page</label>
+	  <select name="per_page" id="id_per_page" onchange="this.form.submit()">
+	    {% for value in options %}
+	    <option value={{value}}{% if value|stringformat:"s" == request.GET.per_page %} selected{% endif %}>{{ value }}</option>
+	    {% endfor %}
+	  </select>
+	</div>
+      </div>
+
+      <input value="Filter" class="ui button" type="submit">
+      <a class="ui button" href="{% url 'main:list_jobs' %}">Reset Filter</a>
+
+    </form>
+  </div>
+</div>
+<div class="row">
+  {% render_table table %}
+</div>
 {% endif %}
 {% endblock %}

@@ -2,42 +2,43 @@
 {% block content %}
 {% if not content %}
 
-<h2 class="ui header">Projects</h2>
+<div class="ui text container">
+  <h2 class="ui header">Projects</h2>
 
-<p>You may define projects to organise your jobs. A job is assigned a
-  project when it is run; you may reassign it later.</p>
+  <p>You may define projects to organise your jobs. A job is assigned a
+    project when it is run; you may reassign it later.</p>
 
-<h3 class="ui header">Existing Projects</h3>
-<table class="ui celled table">
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>No. Jobs</ht>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for project in projects %}
-    <tr>
-      <td>{{ project.name }}</td>
-      <td>{{ project.number_of_jobs }}</td>
-      <td><a href="{% url 'main:delete_project' project.pk %}">Delete project</a></td>
-    </tr>
+  <h3 class="ui header">Existing Projects</h3>
+  <table class="ui celled table">
+    <thead>
+      <tr>
+	<th>Name</th>
+	<th>No. Jobs</th>
+	<th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for project in projects %}
+      <tr>
+	<td>{{ project.name }}</td>
+	<td>{{ project.number_of_jobs }}</td>
+	<td><a href="{% url 'main:delete_project' project.pk %}">Delete project</a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <h3 class="ui header">Add a New Project</h3>
+  <form class="ui form" method="post">
+    {% csrf_token %}
+    {% for field in form %}
+    <div class="field">
+      <label>{{ field.label }}</label>
+      {{ field }}
+    </div>
     {% endfor %}
-  </tbody>
-</table>
-
-<h3 class="ui header">Add a New Project</h3>
-<form class="ui form" method="post">
-  {% csrf_token %}
-  {% for field in form %}
-  <div class="field">
-    <label>{{ field.label }}</label>
-    {{ field }}
-  </div>
-  {% endfor %}
-  <input class="ui button" type="submit" value="Add">
-</form>
-
+    <input class="ui button" type="submit" value="Add">
+  </form>
+</div>
 {% endif %}
 {% endblock %}

@@ -1,16 +1,17 @@
 {% extends "main/base.html" %}
 {% block content %}
 {% if not content %}
-<form class="ui form" method="post" enctype="multipart/form-data">
-  {% csrf_token %}
-  {% for field in form %}
-  <div class="field">
-    <label>{{ field.label }}</label>
-    {{ field }}
-  </div>
-  {% endfor %}
-  <input class="ui button" type="submit" value="Submit">
-</form>
-
+<div class="ui text container">
+  <form class="ui form" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {% for field in form %}
+    <div class="field">
+      <label>{{ field.label }}</label>
+      {{ field }}
+    </div>
+    {% endfor %}
+    <input class="ui button" type="submit" value="Submit">
+  </form>
+</div>
 {% endif %}
 {% endblock %}

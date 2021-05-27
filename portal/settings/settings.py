@@ -126,7 +126,7 @@ STATIC_URL = "/public/portal/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 BASE_DIR = Path(__file__).resolve(strict=True).parent.parent.parent
-INSTALLED_APPS += ["main.apps.MainConfig"]
+INSTALLED_APPS += ["main.apps.MainConfig", "django_tables2", "django_filters"]
 TEMPLATES[0]["OPTIONS"]["context_processors"] += [
     "main.context_processors.app_name",
 ]
