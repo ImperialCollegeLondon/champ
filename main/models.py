@@ -39,10 +39,14 @@ class JobManager(models.Manager):
         with script_path.open("w") as f:
             f.write(SCRIPT_CONTENTS.format(**formatting_kwargs))
 
-        job_id = scheduler.submit(script_path, job.work_dir)
-        job.job_id = job_id
-        job.save()
-        return job
+        try:
+            job_id = scheduler.submit(script_path, job.work_dir)
+            job.job_id = job_id
+            job.save()
+            return job
+        except scheduler.SchedulerError:
+            job.delete()
+            raise
 
 
 class Job(models.Model):

@@ -1,10 +1,11 @@
 from pathlib import Path
+from unittest.mock import patch
 
 from django.test import TestCase
 from django.urls import reverse
 
 from ..models import Job, Project
-from .scheduler_mock import SchedulerTestCase
+from .scheduler_mock import SchedulerTestCase, raise_scheduler_error
 
 TEST_DATA_PATH = Path(__file__).absolute().parent / "test_data"
 
@@ -64,6 +65,15 @@ class TestCreateJobViews(SchedulerTestCase):
             self.assertIn(test_fchk, contents)
 
         self.assertRedirects(response, f"/success/{job.pk}/")
+
+    @patch("main.scheduler.submit", raise_scheduler_error)
+    def test_create_job_failure(self):
+        """Failure during job submission is caught"""
+        test_input = "test.com"
+        with (TEST_DATA_PATH / test_input).open() as f:
+            response = self.client.post(f"/create_job/{self.project.pk}/", {"com": f})
+        self.assertRedirects(response, "/failed/")
+        self.assertEqual(len(Job.objects.all()), 0)
 
 
 class TestListViews(SchedulerTestCase):

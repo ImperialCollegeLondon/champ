@@ -4,6 +4,8 @@ from unittest.mock import patch
 
 from django.test import TestCase
 
+from ..scheduler import SchedulerError
+
 
 class Scheduler:
     """A testing replacement for `scheduler.py` that mocks an interface to
@@ -72,3 +74,10 @@ class SchedulerTestCase(TestCase):
 
         self.tmp_dir.cleanup()
         self.work_dir_patcher.stop()
+
+
+def raise_scheduler_error(job_id, work_dir):
+    """Raises a scheduler.SchedulerError to simulate failure of job
+    submision.
+    """
+    raise SchedulerError()

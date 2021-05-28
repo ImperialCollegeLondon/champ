@@ -29,11 +29,13 @@ def create_job(request, project_pk):
                 for key in chain(files_spec["required"], files_spec["optional"])
                 if key in request.FILES
             }
-
-            job = Job.objects.create_job(
-                form.cleaned_data["description"], input_files, project
-            )
-            return redirect("main:success", job.pk)
+            try:
+                job = Job.objects.create_job(
+                    form.cleaned_data["description"], input_files, project
+                )
+                return redirect("main:success", job.pk)
+            except scheduler.SchedulerError:
+                return redirect("main:failed")
     else:
         form = SubmissionForm()
     return render(request, "main/create_job.html", {"form": form})
@@ -44,6 +46,10 @@ def success(request, job_pk):
     return render(request, "main/success.html", {"job_id": job.job_id})
 
 
+def failed(request):
+    return render(request, "main/failed.html")
+
+
 def list_jobs(request):
     job_filter = JobFilter(request.GET, queryset=Job.objects.order_by("-pk"))
     table = JobTable(job_filter.qs)
@@ -52,7 +58,12 @@ def list_jobs(request):
 
     for job in table.page.object_list.data:
         if job.status != "Completed":
-            job.status = scheduler.status(job.job_id).capitalize()
+            try:
+                job.status = scheduler.status(job.job_id).capitalize()
+            except scheduler.SchedulerError:
+                # if something goes wrong with getting status info for one
+                # job, assume a problem and don't try the rest
+                break
             job.save()
 
     return render(
