@@ -17,7 +17,7 @@ def index(request):
     return render(request, "main/index.html", {"admin_email": admin_email})
 
 
-def create_job(request, project_pk):
+def create_job(request, project_pk, resource_index):
     project = get_object_or_404(Project, pk=project_pk)
     if request.method == "POST":
         software = settings.SOFTWARE["gaussian16"]
@@ -31,7 +31,10 @@ def create_job(request, project_pk):
             }
             try:
                 job = Job.objects.create_job(
-                    form.cleaned_data["description"], input_files, project
+                    form.cleaned_data["description"],
+                    input_files,
+                    project,
+                    resource_index,
                 )
                 return redirect("main:success", job.pk)
             except scheduler.SchedulerError:
@@ -89,7 +92,9 @@ def job_type(request):
         form = JobTypeForm(request.POST)
         if form.is_valid():
             project = form.cleaned_data["project"]
-            return redirect("main:create_job", project.pk)
+            return redirect(
+                "main:create_job", project.pk, form.cleaned_data["resources"]
+            )
     else:
         form = JobTypeForm()
     return render(request, "main/job_type.html", {"form": form})

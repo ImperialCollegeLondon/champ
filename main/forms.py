@@ -2,6 +2,7 @@ from django import forms
 from django.conf import settings
 
 from .models import Job, Project
+from .resources import RESOURCE_CHOICES
 
 
 class SubmissionForm(forms.Form):
@@ -20,6 +21,11 @@ class SubmissionForm(forms.Form):
 class JobTypeForm(forms.Form):
     project = forms.ModelChoiceField(
         Project.objects.all(), label="Project", label_suffix=" (*)"
+    )
+    resources = forms.ChoiceField(
+        label="Job Resources",
+        choices=RESOURCE_CHOICES,
+        label_suffix=" (*)",
     )
 
 

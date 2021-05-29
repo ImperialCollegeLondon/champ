@@ -5,6 +5,8 @@ from django.test import TestCase
 from django.urls import reverse
 
 from ..models import Job, Project
+from ..resources import RESOURCES
+from . import create_dummy_job
 from .scheduler_mock import SchedulerTestCase, raise_scheduler_error
 
 TEST_DATA_PATH = Path(__file__).absolute().parent / "test_data"
@@ -20,9 +22,12 @@ class TestCreateJobViews(SchedulerTestCase):
     def setUp(self):
         super().setUp()
         self.project = Project.objects.create(name="test")
+        self.resources_index = 0
 
     def test_create_job_get(self):
-        response = self.client.get(f"/create_job/{self.project.pk}/")
+        response = self.client.get(
+            f"/create_job/{self.project.pk}/{self.resources_index}/"
+        )
         self.assertEqual(response.status_code, 200)
 
         form = response.context["form"]
@@ -31,10 +36,14 @@ class TestCreateJobViews(SchedulerTestCase):
     def test_create_job_post(self):
         test_input = "test.com"
         with (TEST_DATA_PATH / test_input).open() as f:
-            response = self.client.post(f"/create_job/{self.project.pk}/", {"com": f})
+            response = self.client.post(
+                f"/create_job/{self.project.pk}/{self.resources_index}/", {"com": f}
+            )
 
         self.assertEqual(len(Job.objects.all()), 1)
         job = Job.objects.get()
+
+        self.assertEqual(job.resources, RESOURCES[self.resources_index]["description"])
 
         files = list(job.work_dir.glob("*"))
         self.assertIn(job.work_dir / test_input, files)
@@ -50,7 +59,8 @@ class TestCreateJobViews(SchedulerTestCase):
             TEST_DATA_PATH / test_fchk
         ).open() as f2:
             response = self.client.post(
-                f"/create_job/{self.project.pk}/", {"com": f, "fchk": f2}
+                f"/create_job/{self.project.pk}/{self.resources_index}/",
+                {"com": f, "fchk": f2},
             )
 
         self.assertEqual(len(Job.objects.all()), 1)
@@ -71,7 +81,9 @@ class TestCreateJobViews(SchedulerTestCase):
         """Failure during job submission is caught"""
         test_input = "test.com"
         with (TEST_DATA_PATH / test_input).open() as f:
-            response = self.client.post(f"/create_job/{self.project.pk}/", {"com": f})
+            response = self.client.post(
+                f"/create_job/{self.project.pk}/{self.resources_index}/", {"com": f}
+            )
         self.assertRedirects(response, "/failed/")
         self.assertEqual(len(Job.objects.all()), 0)
 
@@ -79,7 +91,7 @@ class TestCreateJobViews(SchedulerTestCase):
 class TestListViews(SchedulerTestCase):
     def test_list_jobs(self):
         project = Project.objects.create(name="test")
-        job = Job.objects.create_job("", {}, project)
+        job = create_dummy_job(project)
 
         response = self.client.get("/list_jobs/")
         jobs = response.context["table"].data.data
@@ -104,7 +116,7 @@ class TestListViews(SchedulerTestCase):
 class TestDeleteViews(SchedulerTestCase):
     def test_delete(self):
         project = Project.objects.create(name="test")
-        job = Job.objects.create_job("", {}, project)
+        job = create_dummy_job(project)
 
         response = self.client.get(f"/delete/{job.pk}/")
         self.assertEqual(len(Job.objects.all()), 0)
@@ -117,9 +129,12 @@ class TestJobTypeViews(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_post(self):
+        resources = 0
         project = Project.objects.create(name="test")
-        response = self.client.post("/job_type/", {"project": project.pk})
-        self.assertRedirects(response, f"/create_job/{project.pk}/")
+        response = self.client.post(
+            "/job_type/", {"project": project.pk, "resources": 0}
+        )
+        self.assertRedirects(response, f"/create_job/{project.pk}/{resources}/")
 
 
 class TestProjectViews(TestCase):

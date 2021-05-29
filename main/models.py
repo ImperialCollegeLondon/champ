@@ -6,10 +6,10 @@ from django.db import models
 from django.urls import reverse
 
 from . import scheduler
+from .resources import RESOURCES
 
 SCRIPT_CONTENTS = """#!/bin/bash
-#PBS -l select=1:ncpus=1:mem=4gb
-#PBS -l walltime=00:30:00
+{resources}
 
 cd $PBS_O_WORKDIR
 
@@ -20,8 +20,14 @@ g16 {com}
 
 
 class JobManager(models.Manager):
-    def create_job(self, description, input_files, project):
-        job = self.create(status="Queueing", description=description, project=project)
+    def create_job(self, description, input_files, project, resource_index):
+        resources = RESOURCES[resource_index]
+        job = self.create(
+            status="Queueing",
+            description=description,
+            project=project,
+            resources=resources["description"],
+        )
         software = settings.SOFTWARE["gaussian16"]
 
         job.work_dir.mkdir(parents=True)
@@ -36,6 +42,7 @@ class JobManager(models.Manager):
             key: (input_files[key].name if key in input_files else "")
             for key in chain(files_spec["required"], files_spec["optional"])
         }
+        formatting_kwargs.update({"resources": resources["script"]})
         with script_path.open("w") as f:
             f.write(SCRIPT_CONTENTS.format(**formatting_kwargs))
 
@@ -59,6 +66,7 @@ class Job(models.Model):
     project = models.ForeignKey(
         "Project", on_delete=models.SET_NULL, null=True, blank=True
     )
+    resources = models.CharField(max_length=100)
     objects = JobManager()
 
     @property

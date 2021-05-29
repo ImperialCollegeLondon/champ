@@ -7,7 +7,14 @@ class JobTable(tables.Table):
     class Meta:
         model = Job
         template_name = "django_tables2/semantic.html"
-        fields = ("pk", "description", "status", "submission_time", "project")
+        fields = (
+            "pk",
+            "description",
+            "resources",
+            "status",
+            "submission_time",
+            "project",
+        )
 
     work_dir = tables.TemplateColumn(
         "<a href={{ base_url }}/{{ value }}>Open directory</a>",
