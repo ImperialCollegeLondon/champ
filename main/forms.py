@@ -1,14 +1,13 @@
 from django import forms
-from django.conf import settings
 
 from .models import Job, Project
 from .resources import RESOURCE_CHOICES
+from .software import SOFTWARE_CHOICES
 
 
 class SubmissionForm(forms.Form):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, software, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        software = settings.SOFTWARE["gaussian16"]
         self.fields["description"] = forms.CharField(
             max_length=200, label="Description", required=False
         )
@@ -25,6 +24,11 @@ class JobTypeForm(forms.Form):
     resources = forms.ChoiceField(
         label="Job Resources",
         choices=RESOURCE_CHOICES,
+        label_suffix=" (*)",
+    )
+    software = forms.ChoiceField(
+        label="Software",
+        choices=SOFTWARE_CHOICES,
         label_suffix=" (*)",
     )
 

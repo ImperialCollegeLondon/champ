@@ -20,15 +20,18 @@ g16 {com}
 
 
 class JobManager(models.Manager):
-    def create_job(self, description, input_files, project, resource_index):
+    def create_job(
+        self, description, input_files, project, resource_index, software_index
+    ):
         resources = RESOURCES[resource_index]
+        software = settings.SOFTWARE[software_index]
         job = self.create(
             status="Queueing",
             description=description,
             project=project,
             resources=resources["description"],
+            software=software["name"],
         )
-        software = settings.SOFTWARE["gaussian16"]
 
         job.work_dir.mkdir(parents=True)
         for inp in input_files.values():
@@ -67,6 +70,7 @@ class Job(models.Model):
         "Project", on_delete=models.SET_NULL, null=True, blank=True
     )
     resources = models.CharField(max_length=100)
+    software = models.CharField(max_length=50)
     objects = JobManager()
 
     @property

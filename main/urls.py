@@ -7,7 +7,7 @@ app_name = "main"
 urlpatterns = [
     path("", views.index, name="index"),
     path(
-        "create_job/<int:project_pk>/<int:resource_index>/",
+        "create_job/<int:project_pk>/<int:resource_index>/<int:software_index>/",
         views.create_job,
         name="create_job",
     ),

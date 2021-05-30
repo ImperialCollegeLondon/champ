@@ -9,6 +9,7 @@ from . import scheduler
 from .filters import JobFilter
 from .forms import JobForm, JobTypeForm, ProjectForm, SubmissionForm
 from .models import Job, Project
+from .software import SOFTWARE
 from .tables import JobTable
 
 
@@ -17,11 +18,11 @@ def index(request):
     return render(request, "main/index.html", {"admin_email": admin_email})
 
 
-def create_job(request, project_pk, resource_index):
+def create_job(request, project_pk, resource_index, software_index):
     project = get_object_or_404(Project, pk=project_pk)
+    software = SOFTWARE[software_index]
     if request.method == "POST":
-        software = settings.SOFTWARE["gaussian16"]
-        form = SubmissionForm(request.POST, request.FILES)
+        form = SubmissionForm(software, request.POST, request.FILES)
         files_spec = software["input_files"]
         if form.is_valid():
             input_files = {
@@ -35,12 +36,13 @@ def create_job(request, project_pk, resource_index):
                     input_files,
                     project,
                     resource_index,
+                    software_index,
                 )
                 return redirect("main:success", job.pk)
             except scheduler.SchedulerError:
                 return redirect("main:failed")
     else:
-        form = SubmissionForm()
+        form = SubmissionForm(software)
     return render(request, "main/create_job.html", {"form": form})
 
 
@@ -93,7 +95,10 @@ def job_type(request):
         if form.is_valid():
             project = form.cleaned_data["project"]
             return redirect(
-                "main:create_job", project.pk, form.cleaned_data["resources"]
+                "main:create_job",
+                project.pk,
+                form.cleaned_data["resources"],
+                form.cleaned_data["software"],
             )
     else:
         form = JobTypeForm()

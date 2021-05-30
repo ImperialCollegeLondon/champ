@@ -9,6 +9,7 @@ class JobTable(tables.Table):
         template_name = "django_tables2/semantic.html"
         fields = (
             "pk",
+            "software",
             "description",
             "resources",
             "status",

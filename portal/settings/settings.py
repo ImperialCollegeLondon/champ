@@ -205,8 +205,9 @@ RESOURCES = [
     },
 ]
 
-SOFTWARE = {
-    "gaussian16": {
+SOFTWARE = [
+    {
+        "name": "Gaussian 16",
         "input_files": {
             "required": {
                 "com": "Gaussian Input File",
@@ -214,6 +215,6 @@ SOFTWARE = {
             "optional": {
                 "fchk": "Formatted Checkpoint File",
             },
-        }
+        },
     }
-}
+]
