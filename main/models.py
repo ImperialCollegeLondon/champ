@@ -8,14 +8,12 @@ from django.urls import reverse
 from . import scheduler
 from .resources import RESOURCES
 
-SCRIPT_CONTENTS = """#!/bin/bash
+SCRIPT_TEMPLATE = """#!/bin/bash
 {resources}
 
 cd $PBS_O_WORKDIR
 
-module load gaussian/g16-a03
-[[ \"{fchk}\" != "" ]] && unfchk {fchk}
-g16 {com}
+{commands}
 """
 
 
@@ -45,9 +43,14 @@ class JobManager(models.Manager):
             key: (input_files[key].name if key in input_files else "")
             for key in chain(files_spec["required"], files_spec["optional"])
         }
-        formatting_kwargs.update({"resources": resources["script"]})
+
+        commands = software["commands"].format(**formatting_kwargs)
         with script_path.open("w") as f:
-            f.write(SCRIPT_CONTENTS.format(**formatting_kwargs))
+            f.write(
+                SCRIPT_TEMPLATE.format(
+                    commands=commands, resources=resources["script_lines"]
+                )
+            )
 
         try:
             job_id = scheduler.submit(script_path, job.work_dir)
