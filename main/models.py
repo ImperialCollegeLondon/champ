@@ -7,14 +7,7 @@ from django.urls import reverse
 
 from . import scheduler
 from .resources import RESOURCES
-
-SCRIPT_TEMPLATE = """#!/bin/bash
-{resources}
-
-cd $PBS_O_WORKDIR
-
-{commands}
-"""
+from .software import SOFTWARE
 
 
 class JobManager(models.Manager):
@@ -22,7 +15,7 @@ class JobManager(models.Manager):
         self, description, input_files, project, resource_index, software_index
     ):
         resources = RESOURCES[resource_index]
-        software = settings.SOFTWARE[software_index]
+        software = SOFTWARE[software_index]
         job = self.create(
             status="Queueing",
             description=description,
@@ -47,7 +40,7 @@ class JobManager(models.Manager):
         commands = software["commands"].format(**formatting_kwargs)
         with script_path.open("w") as f:
             f.write(
-                SCRIPT_TEMPLATE.format(
+                settings.PORTAL_CONFIG["script_template"].format(
                     commands=commands, resources=resources["script_lines"]
                 )
             )

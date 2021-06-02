@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 import os
 from pathlib import Path
 
+import yaml
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -170,60 +172,5 @@ LOGGING = {
 
 JOBS_DIR = Path(os.getenv("JOBS_DIR", str(BASE_DIR / "portal_jobs")))
 
-RESOURCES = [
-    {
-        "description": "1 cpus, 4gb memory, 30 minutes (Debug)",
-        "script_lines": "#PBS -l select=1:ncpus=1:mem=4gb,walltime=00:30:00\nexport MEMORY_GB=4",  # noqa: E501
-    },
-    {
-        "description": "1 cpus, 4gb memory, 72 hours",
-        "script_lines": "#PBS -l select=1:ncpus=1:mem=4gb,walltime=72:00:00\nexport MEMORY_GB=4",  # noqa: E501
-    },
-    {
-        "description": "4 cpus, 16gb memory, 72 hours",
-        "script_lines": "#PBS -l select=1:ncpus=4:mem=16gb,walltime=72:00:00\nexport MEMORY_GB=16",  # noqa: E501
-    },
-    {
-        "description": "8 cpus, 32gb memory, 72 hours",
-        "script_lines": "#PBS -l select=1:ncpus=8:mem=32gb,walltime=72:00:00\nexport MEMORY_GB=32",  # noqa: E501
-    },
-    {
-        "description": "8 cpus, 96gb memory, 72 hours",
-        "script_lines": "#PBS -l select=1:ncpus=8:mem=96gb,walltime=72:00:00\nexport MEMORY_GB=96",  # noqa: E501
-    },
-    {
-        "description": "16 cpus, 48gb memory, 72 hours",
-        "script_lines": "#PBS -l select=1:ncpus=16:mem=48gb,walltime=72:00:00\nexport MEMORY_GB=48",  # noqa: E501
-    },
-    {
-        "description": "32 cpus, 62gb memory, 72 hours",
-        "script_lines": "#PBS -l select=1:ncpus=32:mem=62gb,walltime=72:00:00\nexport MEMORY_GB=62",  # noqa: E501
-    },
-    {
-        "description": "32 cpus, 124gb memory, 72 hours",
-        "script_lines": "#PBS -l select=1:ncpus=32:mem=124gb,walltime=72:00:00\nexport MEMORY_GB=124",  # noqa: E501
-    },
-]
-
-SOFTWARE = [
-    {
-        "name": "Gaussian 16",
-        "input_files": {
-            "required": {
-                "com": "Gaussian Input File",
-            },
-            "optional": {
-                "fchk": "Formatted Checkpoint File",
-            },
-        },
-        "commands": """export GAUSS_SCRDIR=$EPHEMERAL/$PBS_JOBID/
-mkdir -p $GAUSS_SCRDIR
-
-module load gaussian/g16-c01-avx
-[[ \"{fchk}\" != "" ]] && unfchk {fchk}
-chk_name=$(/apps/ood/portal_scripts/prep_gaussian.sh {com} {fchk})
-g16 {com}
-formchk $chk_name
-""",
-    }
-]
+with open(os.getenv("PORTAL_CONFIG_PATH", "portal_config.yaml")) as f:
+    PORTAL_CONFIG = yaml.safe_load(f)

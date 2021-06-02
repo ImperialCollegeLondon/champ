@@ -1,0 +1,20 @@
+resources:
+  - description: "test_description"
+    script_lines: 
+software:
+  - name: "test"
+    input_files:
+      required:
+        file1: "test_file1"
+      optional:
+        file2: "test_file2"
+    commands: |
+      {file1}
+      {file2}
+script_template: |
+  #!/bin/bash
+  {resources}
+  
+  cd $PBS_O_WORKDIR
+  
+  {commands}

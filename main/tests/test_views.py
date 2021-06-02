@@ -32,12 +32,12 @@ class TestCreateJobViews(SchedulerTestCase):
         self.assertEqual(response.status_code, 200)
 
         form = response.context["form"]
-        self.assertIn("com", form.fields)
+        self.assertIn("file1", form.fields)
 
     def test_create_job_post(self):
         test_input = "test.com"
         with (TEST_DATA_PATH / test_input).open() as f:
-            response = self.client.post(self.url, {"com": f})
+            response = self.client.post(self.url, {"file1": f})
 
         self.assertEqual(len(Job.objects.all()), 1)
         job = Job.objects.get()
@@ -60,7 +60,7 @@ class TestCreateJobViews(SchedulerTestCase):
         ).open() as f2:
             response = self.client.post(
                 self.url,
-                {"com": f, "fchk": f2},
+                {"file1": f, "file2": f2},
             )
 
         self.assertEqual(len(Job.objects.all()), 1)
@@ -81,7 +81,7 @@ class TestCreateJobViews(SchedulerTestCase):
         """Failure during job submission is caught"""
         test_input = "test.com"
         with (TEST_DATA_PATH / test_input).open() as f:
-            response = self.client.post(self.url, {"com": f})
+            response = self.client.post(self.url, {"file1": f})
         self.assertRedirects(response, "/failed/")
         self.assertEqual(len(Job.objects.all()), 0)
 

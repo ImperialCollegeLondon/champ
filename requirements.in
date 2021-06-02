@@ -2,4 +2,5 @@ django
 django-filter
 django-tables2
 python-dotenv
+pyyaml
 whitenoise
