@@ -11,6 +11,7 @@ software:
     commands: |
       {file1}
       {file2}
+    help_text:
 script_template: |
   #!/bin/bash
   {resources}

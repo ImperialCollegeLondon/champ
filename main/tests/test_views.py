@@ -182,3 +182,9 @@ class TestJobView(TestCase):
         self.assertRedirects(response, "/")
         job = Job.objects.get()
         self.assertEqual(job.description, desc)
+
+
+class TestHelpView(TestCase):
+    def test_get(self):
+        response = self.client.get("/software_help/0/")
+        self.assertEqual(response.status_code, 200)

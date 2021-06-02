@@ -4,6 +4,7 @@ from itertools import chain
 import django_tables2 as tables
 from django.conf import settings
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 
 from . import scheduler
 from .filters import JobFilter
@@ -43,7 +44,16 @@ def create_job(request, project_pk, resource_index, software_index):
                 return redirect("main:failed")
     else:
         form = SubmissionForm(software)
-    return render(request, "main/create_job.html", {"form": form})
+    return render(
+        request,
+        "main/create_job.html",
+        {
+            "form": form,
+            "software_help_url": reverse(
+                "main:software_help", kwargs={"software_index": software_index}
+            ),
+        },
+    )
 
 
 def success(request, job_pk):
@@ -130,3 +140,10 @@ def job(request, job_pk):
             form.save()
             return redirect(request.META.get("HTTP_REFERER", "main:index"))
     return render(request, "main/job.html", {"form": form})
+
+
+def software_help(request, software_index):
+    software = SOFTWARE[software_index]
+    return render(
+        request, "main/software_help.html", {"help_text": software["help_text"]}
+    )

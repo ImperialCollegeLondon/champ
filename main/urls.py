@@ -21,4 +21,7 @@ urlpatterns = [
         "delete_project/<int:project_pk>/", views.delete_project, name="delete_project"
     ),
     path("job/<int:job_pk>/", views.job, name="job"),
+    path(
+        "software_help/<int:software_index>/", views.software_help, name="software_help"
+    ),
 ]
