@@ -19,7 +19,7 @@ class SubmissionForm(forms.Form):
 
 class JobTypeForm(forms.Form):
     project = forms.ModelChoiceField(
-        Project.objects.all(), label="Project", label_suffix=" (*)"
+        Project.objects.all(), label="Project", label_suffix=" (*)", empty_label=None
     )
     resources = forms.ChoiceField(
         label="Job Resources",
