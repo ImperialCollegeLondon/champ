@@ -131,6 +131,7 @@ BASE_DIR = Path(__file__).resolve(strict=True).parent.parent.parent
 INSTALLED_APPS += ["main.apps.MainConfig", "django_tables2", "django_filters"]
 TEMPLATES[0]["OPTIONS"]["context_processors"] += [
     "main.context_processors.app_name",
+    "main.context_processors.app_version",
 ]
 APP_NAME = "Chemistry HPC Portal"
 
@@ -174,3 +175,5 @@ JOBS_DIR = Path(os.getenv("JOBS_DIR", str(BASE_DIR / "portal_jobs")))
 
 with open(os.getenv("PORTAL_CONFIG_PATH", "portal_config.yaml")) as f:
     PORTAL_CONFIG = yaml.safe_load(f)
+
+VERSION = "0.1.0-alpha"
