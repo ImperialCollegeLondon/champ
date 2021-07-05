@@ -90,3 +90,12 @@ class Project(models.Model):
     @property
     def number_of_jobs(self):
         return len(Job.objects.filter(project=self))
+
+
+class CustomConfig(models.Model):
+    label = models.CharField(max_length=50)
+    script_lines = models.TextField(
+        max_length=1000,
+        verbose_name="Script Lines",
+        help_text="Lines placed here are used as scheduler directives for new jobs.",
+    )

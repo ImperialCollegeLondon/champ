@@ -8,10 +8,10 @@ from django.urls import reverse
 
 from . import scheduler
 from .filters import JobFilter
-from .forms import JobForm, JobTypeForm, ProjectForm, SubmissionForm
-from .models import Job, Project
+from .forms import CustomConfigForm, JobForm, JobTypeForm, ProjectForm, SubmissionForm
+from .models import CustomConfig, Job, Project
 from .software import SOFTWARE
-from .tables import JobTable
+from .tables import CustomConfigTable, JobTable
 
 
 def index(request):
@@ -147,3 +147,35 @@ def software_help(request, software_index):
     return render(
         request, "main/software_help.html", {"help_text": software["help_text"]}
     )
+
+
+def profile(request):
+    table = CustomConfigTable(CustomConfig.objects.all())
+    return render(
+        request,
+        "main/profile.html",
+        {"table": table},
+    )
+
+
+def custom_config(request, config_pk=None):
+    if config_pk is None:
+        config = CustomConfig()
+    else:
+        config = CustomConfig.objects.get(pk=config_pk)
+    if request.method == "POST":
+        form = CustomConfigForm(request.POST, instance=config)
+        if form.is_valid():
+            form.save()
+            return redirect("main:profile")
+    else:
+        form = CustomConfigForm(instance=config)
+    return render(
+        request, "main/custom_config.html", {"form": form, "create": config_pk is None}
+    )
+
+
+def custom_config_delete(request, config_pk):
+    config = CustomConfig.objects.get(pk=config_pk)
+    config.delete()
+    return redirect(request.META.get("HTTP_REFERER", "main:index"))

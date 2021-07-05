@@ -24,4 +24,12 @@ urlpatterns = [
     path(
         "software_help/<int:software_index>/", views.software_help, name="software_help"
     ),
+    path("profile/", views.profile, name="profile"),
+    path("custom_config/", views.custom_config, name="custom_config"),
+    path("custom_config/<int:config_pk>/", views.custom_config, name="custom_config"),
+    path(
+        "custom_config/delete/<int:config_pk>/",
+        views.custom_config_delete,
+        name="custom_config_delete",
+    ),
 ]

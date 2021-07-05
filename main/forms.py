@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import Job, Project
+from .models import CustomConfig, Job, Project
 from .resources import RESOURCE_CHOICES
 from .software import SOFTWARE_CHOICES
 
@@ -43,3 +43,9 @@ class JobForm(forms.ModelForm):
     class Meta:
         model = Job
         fields = ["description", "project"]
+
+
+class CustomConfigForm(forms.ModelForm):
+    class Meta:
+        model = CustomConfig
+        fields = "__all__"

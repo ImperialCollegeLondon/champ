@@ -1,0 +1,13 @@
+{% extends "main/base.html" %}
+{% load render_table from django_tables2 %}
+{% block content %}
+{% if not content %}
+
+<div class="ui text container">
+  <h2 class="ui header">Profile</h2>
+  <h3 class="ui header">Custom Configurations</h3>
+  {% render_table table %}
+  <p><a href="{% url 'main:custom_config' %}">Or create a new custom configuration</a></p>
+</div>
+{% endif %}
+{% endblock %}
