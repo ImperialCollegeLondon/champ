@@ -13,7 +13,13 @@ from .validators import validate_config_lines
 
 class JobManager(models.Manager):
     def create_job(
-        self, description, input_files, project, resource_index, software_index
+        self,
+        description,
+        input_files,
+        project,
+        resource_index,
+        software_index,
+        custom_config=None,
     ):
         resources = RESOURCES[resource_index]
         software = SOFTWARE[software_index]
@@ -37,12 +43,17 @@ class JobManager(models.Manager):
             key: (input_files[key].name if key in input_files else "")
             for key in chain(files_spec["required"], files_spec["optional"])
         }
-
         commands = software["commands"].format(**formatting_kwargs)
+
+        config_lines = (
+            custom_config.script_lines.strip() + "\n" if custom_config else ""
+        )
         with script_path.open("w") as f:
             f.write(
                 settings.PORTAL_CONFIG["script_template"].format(
-                    commands=commands, resources=resources["script_lines"]
+                    commands=commands,
+                    resources=resources["script_lines"],
+                    custom_config=config_lines,
                 )
             )
 
@@ -101,3 +112,6 @@ class CustomConfig(models.Model):
         help_text="Lines placed here are used as scheduler directives for new jobs.",
         validators=[validate_config_lines],
     )
+
+    def __str__(self):
+        return f"{self.label}"

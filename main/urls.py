@@ -11,6 +11,11 @@ urlpatterns = [
         views.create_job,
         name="create_job",
     ),
+    path(
+        "create_job/<int:project_pk>/<int:resource_index>/<int:software_index>/<int:config_pk>/",  # noqa: E501
+        views.create_job,
+        name="create_job",
+    ),
     path("success/<int:job_pk>/", views.success, name="success"),
     path("failed/", views.failed, name="failed"),
     path("list_jobs/", views.list_jobs, name="list_jobs"),

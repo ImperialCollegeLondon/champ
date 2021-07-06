@@ -19,9 +19,12 @@ def index(request):
     return render(request, "main/index.html", {"admin_email": admin_email})
 
 
-def create_job(request, project_pk, resource_index, software_index):
+def create_job(request, project_pk, resource_index, software_index, config_pk=None):
     project = get_object_or_404(Project, pk=project_pk)
     software = SOFTWARE[software_index]
+    custom_config = (
+        None if config_pk is None else get_object_or_404(CustomConfig, pk=config_pk)
+    )
     if request.method == "POST":
         form = SubmissionForm(software, request.POST, request.FILES)
         files_spec = software["input_files"]
@@ -38,6 +41,7 @@ def create_job(request, project_pk, resource_index, software_index):
                     project,
                     resource_index,
                     software_index,
+                    custom_config,
                 )
                 return redirect("main:success", job.pk)
             except scheduler.SchedulerError:
@@ -104,12 +108,11 @@ def job_type(request):
         form = JobTypeForm(request.POST)
         if form.is_valid():
             project = form.cleaned_data["project"]
-            return redirect(
-                "main:create_job",
-                project.pk,
-                form.cleaned_data["resources"],
-                form.cleaned_data["software"],
-            )
+            args = [form.cleaned_data["resources"], form.cleaned_data["software"]]
+            custom_config = form.cleaned_data["custom_config"]
+            if custom_config:
+                args.append(custom_config.pk)
+            return redirect("main:create_job", project.pk, *args)
     else:
         form = JobTypeForm()
     return render(request, "main/job_type.html", {"form": form})
@@ -162,7 +165,7 @@ def custom_config(request, config_pk=None):
     if config_pk is None:
         config = CustomConfig()
     else:
-        config = CustomConfig.objects.get(pk=config_pk)
+        config = get_object_or_404(CustomConfig, pk=config_pk)
     if request.method == "POST":
         form = CustomConfigForm(request.POST, instance=config)
         if form.is_valid():

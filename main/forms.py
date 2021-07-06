@@ -31,6 +31,12 @@ class JobTypeForm(forms.Form):
         choices=SOFTWARE_CHOICES,
         label_suffix=" (*)",
     )
+    custom_config = forms.ModelChoiceField(
+        CustomConfig.objects.all(),
+        label="Custom Configuration",
+        to_field_name="label",
+        required=False,
+    )
 
 
 class ProjectForm(forms.ModelForm):

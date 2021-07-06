@@ -2,12 +2,23 @@
 {% load render_table from django_tables2 %}
 {% block content %}
 {% if not content %}
-
-<div class="ui text container">
-  <h2 class="ui header">Profile</h2>
-  <h3 class="ui header">Custom Configurations</h3>
-  {% render_table table %}
-  <p><a href="{% url 'main:custom_config' %}">Or create a new custom configuration</a></p>
+<div class="row">
+  <div class="ui text container">
+    <h2 class="ui header">Profile</h2>
+    <h3 class="ui header">Custom Job Script Configurations</h3>
+  </div>
+</div>
+  {% if table.rows|length != 0 %}
+<div class="row">
+  <div class="ui text container">
+    {% render_table table %}
+  </div>
+</div>
+  {% endif %}
+<div class="row">
+  <div class="ui text container">
+    <a class="ui button" href="{% url 'main:custom_config' %}">Create a new custom configuration</a>
+  </div>
 </div>
 {% endif %}
 {% endblock %}
