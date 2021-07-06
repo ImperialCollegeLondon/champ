@@ -1,7 +1,9 @@
 from pathlib import Path
 from unittest.mock import patch
 
-from ..models import Job, Project
+from django.core.exceptions import ValidationError
+
+from ..models import CustomConfig, Job, Project
 from ..scheduler import SchedulerError
 from . import create_dummy_job
 from .scheduler_mock import SchedulerTestCase, raise_scheduler_error
@@ -32,3 +34,18 @@ class Test(SchedulerTestCase):
         self.assertEqual(len(Job.objects.all()), 0)
         # work directory should be tidied up
         self.assertEqual(len(list(Path(self.tmp_dir.name).glob("*"))), 0)
+
+    def test_custom_config_validation(self):
+        with self.assertRaises(ValidationError):
+            CustomConfig(label="test", script_lines="").full_clean()
+        with self.assertRaises(ValidationError):
+            CustomConfig(label="test", script_lines="#PBS").full_clean()
+        CustomConfig(label="test", script_lines="#PBS -N job_name").full_clean()
+        CustomConfig(
+            label="test", script_lines="#PBS -N job_name\n#PBS -N job_name"
+        ).full_clean()
+        with self.assertRaises(ValidationError):
+            CustomConfig(
+                label="test", script_lines="#PBS -N job_name\n\n#PBS -N job_name"
+            ).full_clean()
+        CustomConfig(label="test", script_lines="#PBS -N job_name\n\n").full_clean()

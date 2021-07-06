@@ -14,8 +14,9 @@ software:
     help_text:
 script_template: |
   #!/bin/bash
-  {resources}
+  {custom_config}{resources}
   
   cd $PBS_O_WORKDIR
   
   {commands}
+custom_config_line_regex: "#PBS .*"
