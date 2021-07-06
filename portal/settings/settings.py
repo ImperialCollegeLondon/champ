@@ -134,7 +134,7 @@ TEMPLATES[0]["OPTIONS"]["context_processors"] += [
     "main.context_processors.app_name",
     "main.context_processors.app_version",
 ]
-APP_NAME = "Chemistry HPC Portal"
+APP_NAME = "HPC Portal"
 
 DATABASES["default"]["NAME"] = BASE_DIR / "db" / "db.sqlite3"
 
