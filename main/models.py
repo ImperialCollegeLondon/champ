@@ -8,6 +8,7 @@ from django.urls import reverse
 from . import scheduler
 from .resources import RESOURCES
 from .software import SOFTWARE
+from .validators import validate_config_lines
 
 
 class JobManager(models.Manager):
@@ -98,4 +99,5 @@ class CustomConfig(models.Model):
         max_length=1000,
         verbose_name="Script Lines",
         help_text="Lines placed here are used as scheduler directives for new jobs.",
+        validators=[validate_config_lines],
     )

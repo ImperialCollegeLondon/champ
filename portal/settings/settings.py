@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 import os
+import re
 from pathlib import Path
 
 import yaml
@@ -177,3 +178,5 @@ with open(os.getenv("PORTAL_CONFIG_PATH", "portal_config.yaml")) as f:
     PORTAL_CONFIG = yaml.safe_load(f)
 
 VERSION = "0.1.0-alpha"
+
+CONFIG_LINE_REGEX = re.compile(PORTAL_CONFIG["custom_config_line_regex"])

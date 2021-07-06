@@ -11,6 +11,7 @@
       <label>{{ field.label }}</label>
       {{ field }}
       <p>{{ field.help_text }}</p>
+      {{ field.errors }}
     </div>
     {% endfor %}
     <input class="ui button" type="submit" value="{% if create %}Create{% else %}Update{% endif %}">
