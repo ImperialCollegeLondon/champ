@@ -1,5 +1,6 @@
 import shutil
 from itertools import chain
+from pathlib import Path
 
 from django.conf import settings
 from django.db import models
@@ -33,7 +34,7 @@ class JobManager(models.Manager):
 
         job.work_dir.mkdir(parents=True)
         for inp in input_files.values():
-            with (job.work_dir / inp.name).open("wb") as f:
+            with (job.work_dir / Path(inp.name).name).open("wb") as f:
                 f.write(inp.read())
 
         script_path = job.work_dir / "sub.pbs"

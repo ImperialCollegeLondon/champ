@@ -37,4 +37,5 @@ urlpatterns = [
         views.custom_config_delete,
         name="custom_config_delete",
     ),
+    path("download/<int:job_pk>/", views.download, name="download"),
 ]

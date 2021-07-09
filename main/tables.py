@@ -18,7 +18,9 @@ class JobTable(tables.Table):
         )
 
     work_dir = tables.TemplateColumn(
-        "<a href={{ base_url }}/{{ value }}>Open directory</a>",
+        '<a href="{{ base_url }}/{{ value }}">Open directory</a><br>'
+        "<a href=\"{% url 'main:download' record.pk %}\" data-tooltip"
+        '="Site will be unresponsive until download completes.">Download</a>',
         orderable=False,
         verbose_name="",
     )

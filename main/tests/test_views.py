@@ -1,3 +1,5 @@
+import zipfile
+from io import BytesIO
 from pathlib import Path
 from unittest.mock import patch
 
@@ -268,3 +270,39 @@ class TestProfileView(TestCase):
 
         table = response.context["table"]
         self.assertEqual(table.data.data.get(), config)
+
+
+class TestDownloadView(SchedulerTestCase):
+    def setUp(self):
+        super().setUp()
+        self.test_input = "test.com"
+        project = Project.objects.create(name="test")
+
+        with (TEST_DATA_PATH / self.test_input).open("rb") as f:
+            self.job = Job.objects.create_job("", {"file1": f}, project, 0, 0)
+
+    def test_archive(self):
+        """Downloaded zip archive should contain files in job.work_dir"""
+        self.job.status = "Completed"
+        self.job.save()
+
+        response = self.client.get(f"/download/{self.job.pk}/")
+        streamed_bytes = BytesIO(b"".join(response.streaming_content))
+        zf = zipfile.ZipFile(streamed_bytes)
+        dir_name = self.job.work_dir.name
+        self.assertEqual(
+            sorted(zf.namelist()), [f"{dir_name}/sub.pbs", f"{dir_name}/test.com"]
+        )
+        with zf.open(dir_name + "/" + self.test_input) as f:
+            with (TEST_DATA_PATH / self.test_input).open("rb") as f2:
+                self.assertEqual(f.read(), f2.read())
+
+    def test_not_complete(self):
+        """Uncompleted jobs should not be downloadable"""
+        response = self.client.get(f"/download/{self.job.pk}/")
+        self.assertEqual(response.status_code, 404)
+
+    def test_invalid_job(self):
+        """Trying to download unknown job should give 404"""
+        response = self.client.get(f"/download/{self.job.pk + 1}/")
+        self.assertEqual(response.status_code, 404)

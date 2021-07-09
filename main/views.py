@@ -3,6 +3,7 @@ from itertools import chain
 
 import django_tables2 as tables
 from django.conf import settings
+from django.http import Http404, StreamingHttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 
@@ -12,6 +13,7 @@ from .forms import CustomConfigForm, JobForm, JobTypeForm, ProjectForm, Submissi
 from .models import CustomConfig, Job, Project
 from .software import SOFTWARE
 from .tables import CustomConfigTable, JobTable
+from .zip_stream import zipfile_generator
 
 
 def index(request):
@@ -182,3 +184,15 @@ def custom_config_delete(request, config_pk):
     config = CustomConfig.objects.get(pk=config_pk)
     config.delete()
     return redirect(request.META.get("HTTP_REFERER", "main:index"))
+
+
+def download(request, job_pk):
+    job = get_object_or_404(Job, pk=job_pk)
+    if job.status != "Completed":
+        raise Http404("Job not completed")
+    dir_name = job.work_dir.name
+    return StreamingHttpResponse(
+        zipfile_generator(dir_name, job.work_dir.glob("*")),
+        content_type="application/zip",
+        headers={"Content-Disposition": f'attachment; filename="{dir_name}.zip"'},
+    )
