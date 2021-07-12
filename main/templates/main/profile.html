@@ -5,6 +5,17 @@
 <div class="row">
   <div class="ui text container">
     <h2 class="ui header">Profile</h2>
+    <form class="ui form" method="post">
+      {% csrf_token %}
+      {% for field in form %}
+      <div class="field">
+	<label>{{ field.label }}</label>
+	{{ field }}
+	{{ field.errors }}
+      </div>
+      {% endfor %}
+      <input class="ui button" type="submit" value="Update"><a href="{% url 'main:delete_profile' %}"><div class="ui button">Delete all info</div></a>
+    </form>
     <h3 class="ui header">Custom Job Script Configurations</h3>
   </div>
 </div>

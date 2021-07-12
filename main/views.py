@@ -10,8 +10,15 @@ from django.urls import reverse
 
 from . import scheduler
 from .filters import JobFilter
-from .forms import CustomConfigForm, JobForm, JobTypeForm, ProjectForm, SubmissionForm
-from .models import CustomConfig, Job, Project
+from .forms import (
+    CustomConfigForm,
+    JobForm,
+    JobTypeForm,
+    ProfileForm,
+    ProjectForm,
+    SubmissionForm,
+)
+from .models import CustomConfig, Job, Profile, Project
 from .software import SOFTWARE
 from .tables import CustomConfigTable, JobTable
 from .zip_stream import zipfile_generator
@@ -162,12 +169,27 @@ def software_help(request, software_index):
 
 
 def profile(request):
+    profile, _ = Profile.objects.get_or_create()
+    form = ProfileForm(request.POST or None, instance=profile)
+    if request.method == "POST":
+        if form.is_valid():
+            form.save()
+            return redirect(request.META.get("HTTP_REFERER", "main:index"))
     table = CustomConfigTable(CustomConfig.objects.all())
     return render(
         request,
         "main/profile.html",
-        {"table": table},
+        {"form": form, "table": table},
     )
+
+
+def delete_profile(request):
+    try:
+        profile = Profile.objects.get()
+        profile.delete()
+    except Profile.DoesNotExist:
+        pass
+    return redirect(request.META.get("HTTP_REFERER", "main:index"))
 
 
 def custom_config(request, config_pk=None):

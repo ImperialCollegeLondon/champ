@@ -10,7 +10,7 @@ from django.urls import reverse
 from . import scheduler
 from .resources import RESOURCES
 from .software import SOFTWARE
-from .validators import validate_config_lines
+from .validators import validate_config_lines, validate_orcid_id
 
 ROUNDING_INTERVAL = timedelta(seconds=15)
 
@@ -142,3 +142,9 @@ class CustomConfig(models.Model):
 
     def __str__(self):
         return f"{self.label}"
+
+
+class Profile(models.Model):
+    orcid_id = models.CharField(
+        max_length=19, validators=[validate_orcid_id], verbose_name="ORCID iD"
+    )

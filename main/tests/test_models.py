@@ -4,7 +4,7 @@ from unittest.mock import patch
 
 from django.core.exceptions import ValidationError
 
-from ..models import ROUNDING_INTERVAL, CustomConfig, Job, Project
+from ..models import ROUNDING_INTERVAL, CustomConfig, Job, Profile, Project
 from ..scheduler import SchedulerError
 from . import create_dummy_job
 from .scheduler_mock import SchedulerTestCase, raise_scheduler_error
@@ -126,3 +126,24 @@ class Test(SchedulerTestCase):
 
         job.walltime = 1.55 * ROUNDING_INTERVAL
         self.assertEqual(job.walltime, 2 * ROUNDING_INTERVAL)
+
+    def test_profile_orcid_id(self):
+        """Validation should catch incorrectly formatted ids"""
+        Profile(orcid_id="0000-0000-0000-0000").full_clean()
+        Profile(orcid_id="0000-0000-0000-000X").full_clean()
+
+        # incorrect character at end
+        with self.assertRaises(ValidationError):
+            Profile(orcid_id="0000-0000-0000-000A").full_clean()
+
+        # too short
+        with self.assertRaises(ValidationError):
+            Profile(orcid_id="0000-0000-0000-000").full_clean()
+
+        # too long
+        with self.assertRaises(ValidationError):
+            Profile(orcid_id="0000-0000-0000-00000").full_clean()
+
+        # letter not at end
+        with self.assertRaises(ValidationError):
+            Profile(orcid_id="0000-000X-0000-00000").full_clean()

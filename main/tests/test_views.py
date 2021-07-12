@@ -7,7 +7,7 @@ from unittest.mock import patch
 from django.test import TestCase
 from django.urls import reverse
 
-from ..models import ROUNDING_INTERVAL, CustomConfig, Job, Project
+from ..models import ROUNDING_INTERVAL, CustomConfig, Job, Profile, Project
 from ..resources import RESOURCES
 from ..software import SOFTWARE
 from . import create_dummy_job
@@ -273,6 +273,25 @@ class TestProfileView(TestCase):
         response = self.client.get("/profile/")
         self.assertEqual(response.status_code, 200)
 
+    def test_single_instance(self):
+        """Multiple requests to view should only create 1 Profile instance"""
+        self.assertEqual(Profile.objects.count(), 0)
+        response = self.client.get("/profile/")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Profile.objects.count(), 1)
+
+        response = self.client.get("/profile/")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Profile.objects.count(), 1)
+
+    def test_existing(self):
+        """Data from existing Profile instance should be used as initial data"""
+        orcid_id = "0000-0000-0000-0000"
+        Profile.objects.create(orcid_id=orcid_id)
+        response = self.client.get("/profile/")
+        initial_data = response.context["form"].initial
+        self.assertEqual(initial_data["orcid_id"], orcid_id)
+
     def test_get_with_custom_config(self):
         """Existing CustomConfig's should be included in the response"""
         config = CustomConfig.objects.create(label="foo", script_lines="#PBS -N name")
@@ -281,6 +300,41 @@ class TestProfileView(TestCase):
 
         table = response.context["table"]
         self.assertEqual(table.data.data.get(), config)
+
+    def test_post_create(self):
+        orcid_id = "0000-0000-0000-0000"
+        response = self.client.post("/profile/", {"orcid_id": orcid_id})
+        self.assertRedirects(response, "/")
+
+        profile = Profile.objects.get()
+        self.assertEqual(profile.orcid_id, orcid_id)
+
+    def test_post_update(self):
+        orcid_id1 = "0000-0000-0000-0000"
+        orcid_id2 = "0000-0000-0000-000X"
+        Profile.objects.create(orcid_id=orcid_id1)
+        response = self.client.post("/profile/", {"orcid_id": orcid_id2})
+        self.assertRedirects(response, "/")
+
+        profile = Profile.objects.get()
+        self.assertEqual(profile.orcid_id, orcid_id2)
+
+
+class TestProfileDelete(SchedulerTestCase):
+    def test_existing(self):
+        """Existing profile should be deleted"""
+        Profile.objects.create()
+        self.assertEqual(Profile.objects.count(), 1)
+        response = self.client.get("/delete_profile/")
+        self.assertRedirects(response, "/")
+        self.assertEqual(Profile.objects.count(), 0)
+
+    def test_no_existing(self):
+        """Calling with no existing profile should not cause error"""
+        self.assertEqual(Profile.objects.count(), 0)
+        response = self.client.get("/delete_profile/")
+        self.assertRedirects(response, "/")
+        self.assertEqual(Profile.objects.count(), 0)
 
 
 class TestDownloadView(SchedulerTestCase):
