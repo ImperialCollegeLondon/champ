@@ -18,11 +18,13 @@ class JobTable(tables.Table):
         )
 
     work_dir = tables.TemplateColumn(
-        '<a href="{{ base_url }}/{{ value }}">Open directory</a><br>'
-        "<a href=\"{% url 'main:download' record.pk %}\" data-tooltip"
-        '="Site will be unresponsive until download completes.">Download</a>',
+        '<a href="{{ base_url }}/{{ value }}">Open</a>'
+        '{% if record.status == "Completed"%}'
+        "<br><a href=\"{% url 'main:download' record.pk %}\" data-tooltip"
+        '="Site will be unresponsive until download completes.">Download</a>'
+        "{% endif %}",
         orderable=False,
-        verbose_name="",
+        verbose_name="Directory",
     )
     pk = tables.Column(linkify=True, verbose_name="Job Number")
 
