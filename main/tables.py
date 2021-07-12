@@ -13,6 +13,7 @@ class JobTable(tables.Table):
             "description",
             "resources",
             "status",
+            "walltime",
             "submission_time",
             "project",
         )
@@ -26,6 +27,7 @@ class JobTable(tables.Table):
         orderable=False,
         verbose_name="Directory",
     )
+    walltime = tables.Column(verbose_name="Runtime")
     pk = tables.Column(linkify=True, verbose_name="Job Number")
 
     def render_pk(self, value):

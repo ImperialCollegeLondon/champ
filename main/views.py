@@ -1,4 +1,5 @@
 import os
+from datetime import timedelta
 from itertools import chain
 
 import django_tables2 as tables
@@ -85,6 +86,12 @@ def list_jobs(request):
                 # if something goes wrong with getting status info for one
                 # job, assume a problem and don't try the rest
                 break
+            if job.status == "Completed":
+                try:
+                    with (job.work_dir / "WALLTIME").open() as f:
+                        job.walltime = timedelta(seconds=int(f.read()))
+                except (IOError, ValueError):
+                    pass
             job.save()
 
     return render(

@@ -1,4 +1,5 @@
 import zipfile
+from datetime import timedelta
 from io import BytesIO
 from pathlib import Path
 from unittest.mock import patch
@@ -6,7 +7,7 @@ from unittest.mock import patch
 from django.test import TestCase
 from django.urls import reverse
 
-from ..models import CustomConfig, Job, Project
+from ..models import ROUNDING_INTERVAL, CustomConfig, Job, Project
 from ..resources import RESOURCES
 from ..software import SOFTWARE
 from . import create_dummy_job
@@ -105,6 +106,7 @@ class TestCreateJobViews(SchedulerTestCase):
 
 class TestListViews(SchedulerTestCase):
     def test_list_jobs(self):
+        seconds = 1000
         project = Project.objects.create(name="test")
         job = create_dummy_job(project)
 
@@ -112,13 +114,18 @@ class TestListViews(SchedulerTestCase):
         jobs = response.context["table"].data.data
         self.assertEqual(len(jobs), 1)
         self.assertEqual(jobs[0].status, "Queueing")
+        self.assertEqual(jobs[0].walltime, "N/A")
 
+        # simulate job running and creating WALLTIME file
         self.scheduler.job_starts(job.job_id)
+        with open(job.work_dir / "WALLTIME", "w") as f:
+            f.write(f"{seconds}")
 
         response = self.client.get("/list_jobs/")
         jobs = response.context["table"].data.data
         self.assertEqual(len(jobs), 1)
         self.assertEqual(jobs[0].status, "Running")
+        self.assertEqual(jobs[0].walltime, timedelta(seconds=seconds))
 
         self.scheduler.job_finishes(job.job_id)
 
@@ -126,6 +133,10 @@ class TestListViews(SchedulerTestCase):
         jobs = response.context["table"].data.data
         self.assertEqual(len(jobs), 1)
         self.assertEqual(jobs[0].status, "Completed")
+        self.assertEqual(
+            jobs[0].walltime,
+            round(timedelta(seconds=seconds) / ROUNDING_INTERVAL) * ROUNDING_INTERVAL,
+        )
 
 
 class TestDeleteViews(SchedulerTestCase):

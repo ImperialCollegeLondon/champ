@@ -1,9 +1,10 @@
+from datetime import timedelta
 from pathlib import Path
 from unittest.mock import patch
 
 from django.core.exceptions import ValidationError
 
-from ..models import CustomConfig, Job, Project
+from ..models import ROUNDING_INTERVAL, CustomConfig, Job, Project
 from ..scheduler import SchedulerError
 from . import create_dummy_job
 from .scheduler_mock import SchedulerTestCase, raise_scheduler_error
@@ -49,3 +50,79 @@ class Test(SchedulerTestCase):
                 label="test", script_lines="#PBS -N job_name\n\n#PBS -N job_name"
             ).full_clean()
         CustomConfig(label="test", script_lines="#PBS -N job_name\n\n").full_clean()
+
+    def test_walltime_queueing(self):
+        """Queueing jobs always give walltime as 'N/A'"""
+        seconds = 6000
+        job = Job.objects.create(
+            status="Queueing",
+            resources="",
+            software="",
+        )
+
+        self.assertEqual(job.walltime, "N/A")
+
+        job.work_dir.mkdir()
+        with open(job.work_dir / "WALLTIME", "w") as f:
+            f.write(f"{seconds}")
+
+        self.assertEqual(job.walltime, "N/A")
+
+    def test_walltime_running(self):
+        """Running jobs return walltime from file"""
+        seconds = 6000
+        job = Job.objects.create(
+            status="Running",
+            resources="",
+            software="",
+        )
+
+        self.assertEqual(job.walltime, "Unknown")
+
+        job.work_dir.mkdir()
+        with open(job.work_dir / "WALLTIME", "w") as f:
+            f.write(f"{seconds}")
+
+        self.assertEqual(job.walltime, timedelta(seconds=seconds))
+        self.assertIs(job._walltime, None)
+
+    def test_walltime_completed(self):
+        """Completed jobs return walltime from model field else 'Unknown'"""
+        seconds = 6000
+        job = Job.objects.create(
+            status="Completed",
+            resources="",
+            software="",
+        )
+        self.assertEqual(job.walltime, "Unknown")
+
+        # even if a WALLTIME file is on disk it won't be read
+        job.work_dir.mkdir()
+        with open(job.work_dir / "WALLTIME", "w") as f:
+            f.write(f"{seconds}")
+
+        self.assertEqual(job.walltime, "Unknown")
+
+        job._walltime = timedelta(seconds=seconds)
+        job.save()
+        self.assertEqual(job.walltime, timedelta(seconds=seconds))
+
+    def test_walltime_assignment(self):
+        """Value assigned to walltime is rounded according to ROUNDING_INTERVAL"""
+        job = Job.objects.create(
+            status="Completed",
+            resources="",
+            software="",
+        )
+
+        job.walltime = ROUNDING_INTERVAL
+        self.assertEqual(job.walltime, ROUNDING_INTERVAL)
+
+        job.walltime = ROUNDING_INTERVAL + timedelta(seconds=1)
+        self.assertEqual(job.walltime, ROUNDING_INTERVAL)
+
+        job.walltime = ROUNDING_INTERVAL - timedelta(seconds=1)
+        self.assertEqual(job.walltime, ROUNDING_INTERVAL)
+
+        job.walltime = 1.55 * ROUNDING_INTERVAL
+        self.assertEqual(job.walltime, 2 * ROUNDING_INTERVAL)

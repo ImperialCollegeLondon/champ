@@ -1,4 +1,5 @@
 import shutil
+from datetime import timedelta
 from itertools import chain
 from pathlib import Path
 
@@ -10,6 +11,8 @@ from . import scheduler
 from .resources import RESOURCES
 from .software import SOFTWARE
 from .validators import validate_config_lines
+
+ROUNDING_INTERVAL = timedelta(seconds=15)
 
 
 class JobManager(models.Manager):
@@ -80,6 +83,7 @@ class Job(models.Model):
     )
     resources = models.CharField(max_length=100)
     software = models.CharField(max_length=50)
+    _walltime = models.DurationField(blank=True, null=True)
     objects = JobManager()
 
     @property
@@ -92,6 +96,28 @@ class Job(models.Model):
 
     def get_absolute_url(self):
         return reverse("main:job", kwargs={"job_pk": self.pk})
+
+    @property
+    def walltime(self):
+        if self.status == "Completed":
+            return "Unknown" if self._walltime is None else self._walltime
+        elif self.status == "Queueing":
+            return "N/A"
+        else:
+            # if job is not complete get the most up-to-date walltime from disk
+            try:
+                with (self.work_dir / "WALLTIME").open() as f:
+                    return timedelta(seconds=int(f.read()))
+            except (IOError, ValueError):
+                return "Unknown"
+
+    @walltime.setter
+    def walltime(self, value):
+        # round value to nearest minute
+
+        # this helps to ensure that jobs which hit their full walltime
+        # should have the correct value
+        self._walltime = round(value / ROUNDING_INTERVAL) * ROUNDING_INTERVAL
 
 
 class Project(models.Model):
