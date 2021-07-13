@@ -1,4 +1,4 @@
-name: HPC Chemistry Portal
-description: Run Chemistry jobs via a simple interface
-icon: fa://atom
+name: HPC Portal
+description: Run packaged HPC applications via a simple interface
+icon: fa://product-hunt
 category: Jobs
