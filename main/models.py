@@ -58,6 +58,7 @@ class JobManager(models.Manager):
                     commands=commands,
                     resources=resources["script_lines"],
                     custom_config=config_lines,
+                    job_name=f"portal_job_{job.job_number}",
                 )
             )
 
@@ -88,7 +89,7 @@ class Job(models.Model):
 
     @property
     def work_dir(self):
-        return settings.JOBS_DIR / f"{self.pk:08d}"
+        return settings.JOBS_DIR / self.job_number
 
     def delete(self):
         shutil.rmtree(self.work_dir)
@@ -118,6 +119,10 @@ class Job(models.Model):
         # this helps to ensure that jobs which hit their full walltime
         # should have the correct value
         self._walltime = round(value / ROUNDING_INTERVAL) * ROUNDING_INTERVAL
+
+    @property
+    def job_number(self):
+        return f"{self.pk:08d}"
 
 
 class Project(models.Model):
