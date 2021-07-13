@@ -20,3 +20,4 @@ script_template: |
   
   {commands}
 custom_config_line_regex: "#PBS .*"
+status_link:
