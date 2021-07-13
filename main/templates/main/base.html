@@ -37,7 +37,8 @@
             <a href="{% url 'main:index' %}" class="item">Home</a>
             <a href="{% url 'main:projects' %}" class="item">Projects</a>
             <a href="{% url 'main:job_type' %}" class="item">Create Job</a>
-            <a href="{% url 'main:list_jobs' %}" class="item">List Jobs</a>
+            <a href="{% url 'main:list_jobs' %}" class="item">List All Jobs</a>
+            <a href="{{ ACTIVE_JOBS_LINK }}" class="item">Active Jobs</a>
             <a href="{% url 'main:profile' %}" class="item">Profile</a>
 	    {% if STATUS_LINK %}
 	    <a href="{{ STATUS_LINK }}" class="item">System Status</a>

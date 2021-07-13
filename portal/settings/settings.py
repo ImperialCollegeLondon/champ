@@ -134,6 +134,7 @@ TEMPLATES[0]["OPTIONS"]["context_processors"] += [
     "main.context_processors.app_name",
     "main.context_processors.app_version",
     "main.context_processors.status_link",
+    "main.context_processors.active_jobs_link",
 ]
 APP_NAME = "HPC Portal"
 

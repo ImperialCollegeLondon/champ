@@ -1,3 +1,5 @@
+from urllib.parse import urljoin
+
 from django.conf import settings
 
 
@@ -11,3 +13,12 @@ def app_version(request):
 
 def status_link(request):
     return {"STATUS_LINK": settings.PORTAL_CONFIG["status_link"]}
+
+
+def active_jobs_link(request):
+    scheme = "https://" if request.is_secure() else "http://"
+    return {
+        "ACTIVE_JOBS_LINK": urljoin(
+            scheme + request.get_host(), "pun/sys/dashboard/activejobs"
+        )
+    }
