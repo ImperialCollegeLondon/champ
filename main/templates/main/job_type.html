@@ -12,6 +12,7 @@
 	    <div class="field">
 	      <label>{{ form.project.label }}</label>
 	      {{ form.project }}
+	      {{ form.project.errors }}
 	    </div>
 	  </td>
 	  <td style="vertical-align:bottom">
@@ -23,14 +24,17 @@
     <div class="field">
       <label>{{ form.resources.label }}</label>
       {{ form.resources }}
+      {{ form.resources.errors }}
     </div>
     <div class="field">
       <label>{{ form.software.label }}</label>
       {{ form.software }}
+      {{ form.software.errors }}
     </div>
     <div class="field">
       <label>{{ form.custom_config.label }}</label>
       {{ form.custom_config }}
+      {{ form.custom_config.errors }}
     </div>
     <input class="ui button" type="submit" value="Submit">
   </form>
