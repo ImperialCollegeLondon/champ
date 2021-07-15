@@ -54,8 +54,8 @@ def create_job(request, project_pk, resource_index, software_index, config_pk=No
                     custom_config,
                 )
                 return redirect("main:success", job.pk)
-            except scheduler.SchedulerError:
-                return redirect("main:failed")
+            except scheduler.SchedulerError as e:
+                return render(request, "main/failed.html", {"message": e.args[0]})
     else:
         form = SubmissionForm(software)
     return render(

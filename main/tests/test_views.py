@@ -11,7 +11,11 @@ from ..models import ROUNDING_INTERVAL, CustomConfig, Job, Profile, Project
 from ..resources import RESOURCES
 from ..software import SOFTWARE
 from . import create_dummy_job
-from .scheduler_mock import SchedulerTestCase, raise_scheduler_error
+from .scheduler_mock import (
+    SCHEDULER_ERROR_MESSAGE,
+    SchedulerTestCase,
+    raise_scheduler_error,
+)
 
 TEST_DATA_PATH = Path(__file__).absolute().parent / "test_data"
 
@@ -86,7 +90,8 @@ class TestCreateJobViews(SchedulerTestCase):
         """Failure during job submission is caught"""
         with (TEST_DATA_PATH / self.test_input).open() as f:
             response = self.client.post(self.url, {"file1": f})
-        self.assertRedirects(response, "/failed/")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["message"], SCHEDULER_ERROR_MESSAGE)
         self.assertEqual(len(Job.objects.all()), 0)
 
     def test_create_job_custom_config_get(self):

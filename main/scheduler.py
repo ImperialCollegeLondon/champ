@@ -44,7 +44,7 @@ def run_ruby_script(script_name, cmdline_args, timeout, run_dir=None):
             timeout=timeout,
         )
     except subprocess.CalledProcessError as e:
-        raise SchedulerError(e.stderr)
+        raise SchedulerError(e.stderr.decode(sys.getfilesystemencoding()).strip())
     except subprocess.TimeoutExpired:
         raise SchedulerError("Scheduler command timed out")
 

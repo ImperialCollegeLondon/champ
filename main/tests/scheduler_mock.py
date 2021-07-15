@@ -6,6 +6,8 @@ from django.test import TestCase
 
 from ..scheduler import SchedulerError
 
+SCHEDULER_ERROR_MESSAGE = "error_message"
+
 
 class Scheduler:
     """A testing replacement for `scheduler.py` that mocks an interface to
@@ -80,4 +82,4 @@ def raise_scheduler_error(job_id, work_dir):
     """Raises a scheduler.SchedulerError to simulate failure of job
     submision.
     """
-    raise SchedulerError()
+    raise SchedulerError(SCHEDULER_ERROR_MESSAGE)

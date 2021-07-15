@@ -11,4 +11,9 @@ script = OodCore::Job::Script.new(
   output_path: "job_output",
   error_path: "job_errors"
 )
-puts cluster.job_adapter.submit(script)
+begin
+  puts cluster.job_adapter.submit(script)
+rescue OodCore::JobAdapterError => error
+  STDERR.puts error.message
+  exit(1)
+end
