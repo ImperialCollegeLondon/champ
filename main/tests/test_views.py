@@ -7,10 +7,19 @@ from unittest.mock import patch
 from django.test import TestCase
 from django.urls import reverse
 
-from ..models import ROUNDING_INTERVAL, CustomConfig, Job, Profile, Project
+from ..models import (
+    ROUNDING_INTERVAL,
+    CustomConfig,
+    Job,
+    Profile,
+    Project,
+    Publication,
+    Token,
+)
 from ..resources import RESOURCES
 from ..software import SOFTWARE
 from . import create_dummy_job
+from .repository_mock import MockRepository
 from .scheduler_mock import (
     SCHEDULER_ERROR_MESSAGE,
     SchedulerTestCase,
@@ -91,7 +100,10 @@ class TestCreateJobViews(SchedulerTestCase):
         with (TEST_DATA_PATH / self.test_input).open() as f:
             response = self.client.post(self.url, {"file1": f})
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context["message"], SCHEDULER_ERROR_MESSAGE)
+        self.assertEqual(
+            response.context["message"],
+            "Job submission failed\n\n" + SCHEDULER_ERROR_MESSAGE,
+        )
         self.assertEqual(len(Job.objects.all()), 0)
 
     def test_create_job_custom_config_get(self):
@@ -112,8 +124,7 @@ class TestCreateJobViews(SchedulerTestCase):
 class TestListViews(SchedulerTestCase):
     def test_list_jobs(self):
         seconds = 1000
-        project = Project.objects.create(name="test")
-        job = create_dummy_job(project)
+        job = create_dummy_job()
 
         response = self.client.get("/list_jobs/")
         jobs = response.context["table"].data.data
@@ -146,8 +157,7 @@ class TestListViews(SchedulerTestCase):
 
 class TestDeleteViews(SchedulerTestCase):
     def test_delete(self):
-        project = Project.objects.create(name="test")
-        job = create_dummy_job(project)
+        job = create_dummy_job()
 
         response = self.client.get(f"/delete/{job.pk}/")
         self.assertEqual(len(Job.objects.all()), 0)
@@ -376,3 +386,50 @@ class TestDownloadView(SchedulerTestCase):
         """Trying to download unknown job should give 404"""
         response = self.client.get(f"/download/{self.job.pk + 1}/")
         self.assertEqual(response.status_code, 404)
+
+
+class TestPublishView(SchedulerTestCase):
+    def test_unknown_job(self):
+        """Trying to publish non-existant job gives 404"""
+        response = self.client.get("/publish/1/")
+        self.assertEqual(response.status_code, 404)
+
+    def test_already_published(self):
+        """Should not be able to publish an already published job"""
+        job = create_dummy_job()
+        Publication.objects.create(
+            job=job, repo_label="label", repo_name="name", doi="doi"
+        )
+        response = self.client.get(f"/publish/{job.pk}/")
+        self.assertEqual(response.context["message"], "Job already published")
+        self.assertEqual(Publication.objects.count(), 1)
+
+    def test_no_description(self):
+        """Trying to publish a job without a description gives a clean error message"""
+        job = create_dummy_job(description="")
+        Token.objects.create(label="test", value="test")
+        response = self.client.get(f"/publish/{job.pk}/")
+        self.assertEqual(
+            response.context["message"], "Job must have a description to be published"
+        )
+
+    def test_no_files_to_publish(self):
+        """Trying to publish a job with FILES_TO_PUBLISH file fails"""
+        job = create_dummy_job()
+        Token.objects.create(label="mock", value="test")
+        response = self.client.get(f"/publish/{job.pk}/")
+        self.assertEqual(
+            response.context["message"],
+            "Unable to open 'FILES_TO_PUBLISH' in job directory",
+        )
+
+    @patch("main.views.get_repositories", lambda: {"mock": MockRepository()})
+    def test_working(self):
+        """For a valid job publishing should creat a Publication record"""
+        job = create_dummy_job(description="description")
+        (job.work_dir / "FILES_TO_PUBLISH").touch()
+        (job.work_dir / "METADATA").touch()
+        Token.objects.create(label="mock", value="test")
+        response = self.client.get(f"/publish/{job.pk}/")
+        self.assertRedirects(response, "/")
+        self.assertEqual(Publication.objects.count(), 1)

@@ -1,6 +1,6 @@
 import django_tables2 as tables
 
-from .models import CustomConfig, Job
+from .models import CustomConfig, Job, Publication
 
 
 class JobTable(tables.Table):
@@ -27,6 +27,11 @@ class JobTable(tables.Table):
         orderable=False,
         verbose_name="Directory",
     )
+    publish = tables.TemplateColumn(
+        "{% if not record.published %}"
+        "<a href=\"{% url 'main:publish' record.pk %}\">Publish</a>{% endif %}",
+        verbose_name="",
+    )
     walltime = tables.Column(verbose_name="Runtime")
     pk = tables.Column(linkify=True, verbose_name="Job Number")
 
@@ -46,3 +51,13 @@ class CustomConfigTable(tables.Table):
         orderable=False,
         verbose_name="",
     )
+
+
+class PublicationTable(tables.Table):
+    class Meta:
+        model = Publication
+        template_name = "django_tables2/semantic.html"
+        fields = ("repo_name", "doi")
+
+    repo_name = tables.Column(verbose_name="Repository")
+    doi = tables.Column(linkify=lambda record: record.link)

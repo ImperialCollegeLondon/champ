@@ -1,3 +1,4 @@
+import csv
 import os
 from datetime import timedelta
 from itertools import chain
@@ -18,9 +19,10 @@ from .forms import (
     ProjectForm,
     SubmissionForm,
 )
-from .models import CustomConfig, Job, Profile, Project
+from .models import CustomConfig, Job, Profile, Project, Publication, Token
+from .repositories import RepositoryError, get_repositories, get_repository
 from .software import SOFTWARE
-from .tables import CustomConfigTable, JobTable
+from .tables import CustomConfigTable, JobTable, PublicationTable
 from .zip_stream import zipfile_generator
 
 
@@ -55,7 +57,8 @@ def create_job(request, project_pk, resource_index, software_index, config_pk=No
                 )
                 return redirect("main:success", job.pk)
             except scheduler.SchedulerError as e:
-                return render(request, "main/failed.html", {"message": e.args[0]})
+                msg = f"Job submission failed\n\n{e.args[0]}"
+                return render(request, "main/failed.html", {"message": msg})
     else:
         form = SubmissionForm(software)
     return render(
@@ -158,7 +161,8 @@ def job(request, job_pk):
         if form.is_valid():
             form.save()
             return redirect(request.META.get("HTTP_REFERER", "main:index"))
-    return render(request, "main/job.html", {"form": form})
+    table = PublicationTable(Publication.objects.filter(job=job))
+    return render(request, "main/job.html", {"form": form, "table": table})
 
 
 def software_help(request, software_index):
@@ -175,11 +179,22 @@ def profile(request):
         if form.is_valid():
             form.save()
             return redirect(request.META.get("HTTP_REFERER", "main:index"))
-    table = CustomConfigTable(CustomConfig.objects.all())
+    configs_table = CustomConfigTable(CustomConfig.objects.all())
+
+    repository_data = []
+    for label, repo in get_repositories().items():
+        token = Token.objects.filter(label=label).first()
+        linked = bool(token)
+        repository_data.append(dict(name=repo.full_name, linked=linked, label=label))
+    repository_data.sort(key=lambda x: x["name"])
     return render(
         request,
         "main/profile.html",
-        {"form": form, "table": table},
+        {
+            "form": form,
+            "configs_table": configs_table,
+            "repository_data": repository_data,
+        },
     )
 
 
@@ -225,3 +240,85 @@ def download(request, job_pk):
         content_type="application/zip",
         headers={"Content-Disposition": f'attachment; filename="{dir_name}.zip"'},
     )
+
+
+def publish(request, job_pk):
+    job = get_object_or_404(Job, pk=job_pk)
+    if job.published:
+        return render(
+            request,
+            "main/failed.html",
+            {"message": "Job already published"},
+        )
+
+    if not Token.objects.count():
+        profile_url = reverse("main:profile")
+        return render(
+            request,
+            "main/failed.html",
+            {
+                "message": (
+                    "No linked data repositories found. Please link with a repository "
+                    f'via <a href="{profile_url}">Profile</a>'
+                )
+            },
+        )
+
+    if not job.description:
+        return render(
+            request,
+            "main/failed.html",
+            {"message": "Job must have a description to be published"},
+        )
+    try:
+        with open(job.work_dir / "FILES_TO_PUBLISH") as f:
+            files = list(csv.DictReader(f, delimiter="\t"))
+    except IOError:
+        return render(
+            request,
+            "main/failed.html",
+            {"message": "Unable to open 'FILES_TO_PUBLISH' in job directory"},
+        )
+    try:
+        with open(job.work_dir / "METADATA") as f:
+            metadata = list(csv.DictReader(f, delimiter="\t"))
+    except IOError:
+        return render(
+            request,
+            "main/failed.html",
+            {"message": "Unable to open 'METADATA' in job directory"},
+        )
+
+    try:
+        for repo in get_repositories().values():
+            if Token.objects.filter(label=repo.label).last():
+                doi = repo.publish(job, files, metadata)
+                Publication.objects.create(
+                    job=job, repo_label=repo.label, repo_name=repo.full_name, doi=doi
+                )
+    except RepositoryError:
+        return render(
+            request,
+            "main/failed.html",
+            {"message": f"Error publishing to {repo.full_name}"},
+        )
+
+    return redirect(request.META.get("HTTP_REFERER", "main:index"))
+
+
+def request_token(request, repo_label):
+    repository = get_repository(repo_label)
+    return repository.request_token(request)
+
+
+def receive_token(request, repo_label):
+    repository = get_repository(repo_label)
+    token = repository.receive_token(request)
+    Token.objects.create(value=token, label=repository.label)
+    return redirect("main:profile")
+
+
+def delete_token(request, repo_label):
+    token = get_object_or_404(Token, label=repo_label)
+    token.delete()
+    return redirect(request.META.get("HTTP_REFERER", "main:index"))

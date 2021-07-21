@@ -112,6 +112,10 @@ class Job(models.Model):
             except (IOError, ValueError):
                 return "Unknown"
 
+    @property
+    def published(self):
+        return bool(Publication.objects.filter(job=self).count())
+
     @walltime.setter
     def walltime(self, value):
         # round value to nearest minute
@@ -153,3 +157,19 @@ class Profile(models.Model):
     orcid_id = models.CharField(
         max_length=19, validators=[validate_orcid_id], verbose_name="ORCID iD"
     )
+
+
+class Token(models.Model):
+    value = models.CharField(max_length=120)
+    label = models.CharField(max_length=20, unique=True)
+
+
+class Publication(models.Model):
+    job = models.ForeignKey(Job, on_delete=models.CASCADE)
+    repo_label = models.CharField(max_length=20)
+    repo_name = models.CharField(max_length=50)
+    doi = models.CharField(max_length=30, unique=True)
+
+    @property
+    def link(self):
+        return "https://doi.org/" + self.doi

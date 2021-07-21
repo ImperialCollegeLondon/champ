@@ -39,4 +39,8 @@ urlpatterns = [
         name="custom_config_delete",
     ),
     path("download/<int:job_pk>/", views.download, name="download"),
+    path("request_token/<str:repo_label>/", views.request_token, name="request_token"),
+    path("receive_token/<str:repo_label>/", views.receive_token, name="receive_token"),
+    path("publish/<int:job_pk>/", views.publish, name="publish"),
+    path("delete_token/<str:repo_label>/", views.delete_token, name="delete_token"),
 ]

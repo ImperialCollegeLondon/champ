@@ -3,8 +3,7 @@
 {% if not content %}
 
 <div class="ui text container">
-  <p>Job submission failed.</p>
-  <p>{{ message }}</p>
+  <p>{{ message | safe }}</p>
 </div>
 
 {% endif %}

@@ -1,4 +1,5 @@
 {% extends "main/base.html" %}
+{% load render_table from django_tables2 %}
 {% block content %}
 {% if not content %}
 
@@ -15,6 +16,8 @@
     {% endfor %}
     <input class="ui button" type="submit" value="Update">
   </form>
+  <h2 class="ui header">Publication Records</h2>
+  {% render_table table %}
 </div>
 
 {% endif %}

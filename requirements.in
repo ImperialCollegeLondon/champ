@@ -3,4 +3,5 @@ django-filter
 django-tables2
 python-dotenv
 pyyaml
+requests
 whitenoise

@@ -18,7 +18,7 @@ class Test(SchedulerTestCase):
     def test_project_deletion(self):
         """Job remains with null value after associated project is deleted"""
 
-        job = create_dummy_job(self.project)
+        job = create_dummy_job(project=self.project)
 
         self.assertEqual(job.project, self.project)
         self.project.delete()
@@ -31,7 +31,7 @@ class Test(SchedulerTestCase):
     def test_failed_job_creation(self):
         """Test that no mess is left if job creation fails"""
         with self.assertRaises(SchedulerError):
-            create_dummy_job(self.project)
+            create_dummy_job(project=self.project)
         self.assertEqual(len(Job.objects.all()), 0)
         # work directory should be tidied up
         self.assertEqual(len(list(Path(self.tmp_dir.name).glob("*"))), 0)

@@ -16,16 +16,45 @@
       {% endfor %}
       <input class="ui button" type="submit" value="Update"><a href="{% url 'main:delete_profile' %}"><div class="ui button">Delete all info</div></a>
     </form>
-    <h3 class="ui header">Custom Job Script Configurations</h3>
   </div>
 </div>
-  {% if table.rows|length != 0 %}
+
 <div class="row">
   <div class="ui text container">
-    {% render_table table %}
+    <h3 class="ui header">Data Repositories</h3>
+    <table class="ui celled table">
+      <thead>
+	<tr>
+	  <th>Name</th>
+	  <th>Status</th>
+	  <th></th>
+	</tr>
+      </thead>
+      <tbody>
+	{% for repo in repository_data %}
+	<tr>
+	  <td>{{ repo.name }}</td>
+	  <td>{% if repo.linked %}Linked{% else %}Unlinked{% endif %}</td>
+	  {% if repo.linked %}
+	  <td><a href="{% url 'main:delete_token' repo.label %}">Unlink</a></td>
+	  {% else %}
+	  <td><a href="{% url 'main:request_token' repo.label %}">Link</a></td>
+	  {% endif %}
+	<tr>
+	{% endfor %}
+      </tbody>
+    </table>
   </div>
 </div>
-  {% endif %}
+
+<div class="row">
+  <div class="ui text container">
+    <h3 class="ui header">Custom Job Script Configurations</h3>
+    {% if configs_table.rows|length != 0 %}
+    {% render_table configs_table %}
+    {% endif %}
+  </div>
+</div>
 <div class="row">
   <div class="ui text container">
     <a class="ui button" href="{% url 'main:custom_config' %}">Create a new custom configuration</a>
