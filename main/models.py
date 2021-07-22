@@ -92,6 +92,8 @@ class Job(models.Model):
         return settings.JOBS_DIR / self.job_number
 
     def delete(self):
+        if self.status != "Completed":
+            scheduler.delete(self.job_id)
         shutil.rmtree(self.work_dir)
         super().delete()
 

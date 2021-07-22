@@ -118,7 +118,18 @@ def list_jobs(request):
 
 def delete(request, job_pk):
     job = Job.objects.get(pk=job_pk)
-    job.delete()
+    try:
+        job.delete()
+    except scheduler.SchedulerError:
+        return render(
+            request,
+            "main/failed.html",
+            {
+                "message": (
+                    "Error encountered whilst deleting job. Please try again later."
+                )
+            },
+        )
     return redirect(request.META.get("HTTP_REFERER", "main:index"))
 
 
