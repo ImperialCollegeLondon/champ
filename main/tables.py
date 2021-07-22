@@ -32,6 +32,9 @@ class JobTable(tables.Table):
         "{% endif %}",
         verbose_name="",
     )
+    delete_ = tables.TemplateColumn(
+        "<a href=\"{% url 'main:delete' record.pk %}\">Delete</a>", verbose_name=""
+    )
     walltime = tables.Column(verbose_name="Runtime")
     pk = tables.Column(linkify=True, verbose_name="Job Number")
 
