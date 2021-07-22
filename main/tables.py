@@ -19,17 +19,17 @@ class JobTable(tables.Table):
         )
 
     work_dir = tables.TemplateColumn(
-        '<a href="{{ base_url }}/{{ value }}">Open</a>'
-        '{% if record.status == "Completed"%}'
-        "<br><a href=\"{% url 'main:download' record.pk %}\" data-tooltip"
-        '="Site will be unresponsive until download completes.">Download</a>'
+        '<a href="{{ base_url }}/{{ value }}" target="_blank" class="external-link">'
+        'Open</a>{% if record.status == "Completed"%}<br>'
+        '<a href="{% url \'main:download\' record.pk %}" class="blocking">Download</a>'
         "{% endif %}",
         orderable=False,
         verbose_name="Directory",
     )
     publish = tables.TemplateColumn(
         "{% if not record.published %}"
-        "<a href=\"{% url 'main:publish' record.pk %}\">Publish</a>{% endif %}",
+        '<a href="{% url \'main:publish\' record.pk %}" class="blocking">Publish</a>'
+        "{% endif %}",
         verbose_name="",
     )
     walltime = tables.Column(verbose_name="Runtime")
