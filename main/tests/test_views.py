@@ -431,5 +431,5 @@ class TestPublishView(SchedulerTestCase):
         (job.work_dir / "METADATA").touch()
         Token.objects.create(label="mock", value="test")
         response = self.client.get(f"/publish/{job.pk}/")
-        self.assertRedirects(response, "/")
+        self.assertRedirects(response, f"/job/{job.pk}/")
         self.assertEqual(Publication.objects.count(), 1)

@@ -314,7 +314,7 @@ def publish(request, job_pk):
             {"message": f"Error publishing to {repo.full_name}"},
         )
 
-    return redirect(request.META.get("HTTP_REFERER", "main:index"))
+    return redirect("main:job", job.pk)
 
 
 def request_token(request, repo_label):
