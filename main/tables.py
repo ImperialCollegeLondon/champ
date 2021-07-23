@@ -28,7 +28,7 @@ class JobTable(tables.Table):
         verbose_name="Directory",
     )
     publish = tables.TemplateColumn(
-        "{% if not record.published %}"
+        "{% if record.status == 'Completed' and not record.published %}"
         '<a href="{% url \'main:publish\' record.pk %}" class="blocking">Publish</a>'
         "{% endif %}",
         verbose_name="",
