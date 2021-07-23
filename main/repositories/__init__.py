@@ -19,6 +19,7 @@ def register(klass):
             "underscores and dashes."
         )
     REPOSITORIES[klass.label] = klass()
+    return klass
 
 
 def get_repository(label):
