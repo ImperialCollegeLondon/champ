@@ -324,7 +324,15 @@ def request_token(request, repo_label):
 
 def receive_token(request, repo_label):
     repository = get_repository(repo_label)
-    token = repository.receive_token(request)
+    try:
+        token = repository.receive_token(request)
+    except RepositoryError:
+        return render(
+            request,
+            "main/failed.html",
+            {"message": "Linking failed."},
+        )
+
     Token.objects.create(value=token, label=repository.label)
     return redirect("main:profile")
 
