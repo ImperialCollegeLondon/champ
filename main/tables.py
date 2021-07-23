@@ -17,6 +17,7 @@ class JobTable(tables.Table):
             "submission_time",
             "project",
         )
+        attrs = {"class": "ui compact celled table"}
 
     work_dir = tables.TemplateColumn(
         '<a href="{{ base_url }}/{{ value }}" target="_blank" class="external-link">'
