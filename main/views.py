@@ -120,7 +120,7 @@ def delete(request, job_pk):
     job = Job.objects.get(pk=job_pk)
     try:
         job.delete()
-    except scheduler.SchedulerError:
+    except (scheduler.SchedulerError, OSError):
         return render(
             request,
             "main/failed.html",
@@ -130,6 +130,8 @@ def delete(request, job_pk):
                 )
             },
         )
+    except FileNotFoundError:
+        pass
     return redirect(request.META.get("HTTP_REFERER", "main:index"))
 
 

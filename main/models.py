@@ -1,4 +1,5 @@
 import shutil
+import time
 from datetime import timedelta
 from itertools import chain
 from pathlib import Path
@@ -94,6 +95,9 @@ class Job(models.Model):
     def delete(self):
         if self.status != "Completed":
             scheduler.delete(self.job_id)
+            # small wait to let the scheduler delete the job to try and
+            # minimise issues with deleting the working directory
+            time.sleep(2)
         shutil.rmtree(self.work_dir)
         super().delete()
 
