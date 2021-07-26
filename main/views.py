@@ -1,4 +1,5 @@
 import csv
+import logging
 import os
 from datetime import timedelta
 from itertools import chain
@@ -24,6 +25,8 @@ from .repositories import RepositoryError, get_repositories, get_repository
 from .software import SOFTWARE
 from .tables import CustomConfigTable, JobTable, PublicationTable
 from .zip_stream import zipfile_generator
+
+logger = logging.getLogger(__name__)
 
 
 def index(request):
@@ -310,6 +313,7 @@ def publish(request, job_pk):
                     job=job, repo_label=repo.label, repo_name=repo.full_name, doi=doi
                 )
     except RepositoryError:
+        logger.exception(f"Exception whilst publishing to {repo.full_name}")
         return render(
             request,
             "main/failed.html",
