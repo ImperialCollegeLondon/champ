@@ -43,4 +43,5 @@ urlpatterns = [
     path("receive_token/<str:repo_label>/", views.receive_token, name="receive_token"),
     path("publish/<int:job_pk>/", views.publish, name="publish"),
     path("delete_token/<str:repo_label>/", views.delete_token, name="delete_token"),
+    path("directory/<int:job_pk>/", views.directory, name="directory"),
 ]

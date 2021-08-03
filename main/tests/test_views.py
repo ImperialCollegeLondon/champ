@@ -1,3 +1,4 @@
+import shutil
 import zipfile
 from datetime import timedelta
 from io import BytesIO
@@ -433,3 +434,22 @@ class TestPublishView(SchedulerTestCase):
         response = self.client.get(f"/publish/{job.pk}/")
         self.assertRedirects(response, f"/job/{job.pk}/")
         self.assertEqual(Publication.objects.count(), 1)
+
+
+class TestDirectoryView(SchedulerTestCase):
+    def test_working(self):
+        """All files in job directory should be presented in table"""
+        job = create_dummy_job()
+        (job.work_dir / "file1").touch()
+
+        response = self.client.get(f"/directory/{job.pk}/")
+        files = response.context["table"].data.data
+        self.assertEqual(files[0]["name"], "file1")
+        self.assertEqual(files[1]["name"], "sub.pbs")
+
+    def test_missing_directory(self):
+        """Appropriate message is displayed if job directory cannot be found"""
+        job = create_dummy_job()
+        shutil.rmtree(job.work_dir)
+        response = self.client.get(f"/directory/{job.pk}/")
+        self.assertIn("Job directory not found", response.context["message"])

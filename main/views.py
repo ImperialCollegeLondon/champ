@@ -23,7 +23,8 @@ from .forms import (
 from .models import CustomConfig, Job, Profile, Project, Publication, Token
 from .repositories import RepositoryError, get_repositories, get_repository
 from .software import SOFTWARE
-from .tables import CustomConfigTable, JobTable, PublicationTable
+from .tables import CustomConfigTable, DirectoryTable, JobTable, PublicationTable
+from .utils import file_properties
 from .zip_stream import zipfile_generator
 
 logger = logging.getLogger(__name__)
@@ -112,7 +113,6 @@ def list_jobs(request):
         "main/list_jobs.html",
         {
             "table": table,
-            "base_url": os.getenv("OOD_FILES_URL", "") + "/fs",
             "filter": job_filter,
             "options": (10, 25, 50),
         },
@@ -347,3 +347,22 @@ def delete_token(request, repo_label):
     token = get_object_or_404(Token, label=repo_label)
     token.delete()
     return redirect(request.META.get("HTTP_REFERER", "main:index"))
+
+
+def directory(request, job_pk):
+    job = get_object_or_404(Job, pk=job_pk)
+    if not job.work_dir.exists():
+
+        return render(
+            request,
+            "main/failed.html",
+            {"message": "Job directory not found. It may have been deleted."},
+        )
+
+    files = [file_properties(path) for path in job.work_dir.glob("*")]
+    files.sort(key=lambda x: x["name"])
+    table = DirectoryTable(files)
+    directory_url = os.getenv("OOD_FILES_URL", "") + "/fs" + str(job.work_dir)
+    return render(
+        request, "main/directory.html", {"table": table, "directory_url": directory_url}
+    )

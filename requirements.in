@@ -1,6 +1,7 @@
 django
 django-filter
 django-tables2
+humanize
 python-dotenv
 pyyaml
 requests

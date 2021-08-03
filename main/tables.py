@@ -20,7 +20,7 @@ class JobTable(tables.Table):
         attrs = {"class": "ui compact celled table"}
 
     work_dir = tables.TemplateColumn(
-        '<a href="{{ base_url }}/{{ value }}" target="_blank" class="external-link">'
+        "<a href=\"{% url 'main:directory' record.pk %}\">"
         'Open</a>{% if record.status == "Completed"%}<br>'
         '<a href="{% url \'main:download\' record.pk %}" class="blocking">Download</a>'
         "{% endif %}",
@@ -65,3 +65,16 @@ class PublicationTable(tables.Table):
 
     repo_name = tables.Column(verbose_name="Repository")
     doi = tables.Column(linkify=lambda record: record.link)
+
+
+class DirectoryTable(tables.Table):
+    class Meta:
+        template_name = "django_tables2/semantic.html"
+
+    name = tables.Column(verbose_name="File Name")
+    mtime = tables.Column(verbose_name="Last Modified")
+    file_size = tables.Column(verbose_name="Size")
+    view = tables.TemplateColumn(
+        '<a href="{{ directory_url }}/{{ record.name }}">View</a>',
+        verbose_name="",
+    )
