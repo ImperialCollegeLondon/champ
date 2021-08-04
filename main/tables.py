@@ -31,7 +31,8 @@ class JobTable(tables.Table):
     )
     publish = tables.Column(verbose_name="", empty_values=())
     delete_ = tables.TemplateColumn(
-        "<a href=\"{% url 'main:delete' record.pk %}\">Delete</a>", verbose_name=""
+        "<a href=\"{% url 'main:delete' record.pk %}\" onclick=\"return confirm('You are about to delete job {{record.job_number}}. Are you sure?')\">Delete</a>",  # noqa: E501
+        verbose_name="",
     )
     walltime = tables.Column(verbose_name="Runtime")
     pk = tables.Column(linkify=True, verbose_name="Job Number")
