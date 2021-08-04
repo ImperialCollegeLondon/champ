@@ -90,7 +90,7 @@ def failed(request):
 def list_jobs(request):
     job_filter = JobFilter(request.GET, queryset=Job.objects.order_by("-pk"))
     table = JobTable(job_filter.qs)
-    config = tables.RequestConfig(request, paginate={"per_page": 10})
+    config = tables.RequestConfig(request, paginate={"per_page": 15})
     config.configure(table)
 
     for job in table.page.object_list.data:
@@ -120,7 +120,7 @@ def list_jobs(request):
         {
             "table": table,
             "filter": job_filter,
-            "options": (10, 25, 50),
+            "options": (10, 15, 25, 50),
             "message": message,
         },
     )

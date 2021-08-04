@@ -63,7 +63,7 @@
 	  <label>Results per page</label>
 	  <select name="per_page" id="id_per_page" onchange="this.form.submit()">
 	    {% for value in options %}
-	    <option value={{value}}{% if value|stringformat:"s" == request.GET.per_page %} selected{% endif %}>{{ value }}</option>
+	    <option value={{value}}{% if value == table.paginator.per_page %} selected{% endif %}>{{ value }}</option>
 	    {% endfor %}
 	  </select>
 	</div>
