@@ -41,6 +41,8 @@ class JobTable(tables.Table):
         return f"{value:08d}"
 
     def render_publish(self, record):
+        if record.status != "Completed":
+            return ""
         publications = Publication.objects.filter(job=record)
         if publications:
             return format_html(
