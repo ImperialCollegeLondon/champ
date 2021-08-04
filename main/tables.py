@@ -74,6 +74,10 @@ class PublicationTable(tables.Table):
 
     repo_name = tables.Column(verbose_name="Repository")
     doi = tables.Column(linkify=lambda record: record.link, verbose_name="DOI")
+    metadata = tables.TemplateColumn(
+        '<a href="https://data.datacite.org/application/vnd.datacite.datacite+xml/{{ record.doi }}">Metadata</a>',  # noqa: 501
+        verbose_name="Publication Metadata",
+    )
 
 
 class DirectoryTable(tables.Table):
