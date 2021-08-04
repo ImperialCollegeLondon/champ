@@ -73,7 +73,7 @@ class PublicationTable(tables.Table):
         fields = ("repo_name", "doi")
 
     repo_name = tables.Column(verbose_name="Repository")
-    doi = tables.Column(linkify=lambda record: record.link)
+    doi = tables.Column(linkify=lambda record: record.link, verbose_name="DOI")
 
 
 class DirectoryTable(tables.Table):
