@@ -1,4 +1,6 @@
 import django_tables2 as tables
+from django.urls import reverse
+from django.utils.html import format_html
 
 from .models import CustomConfig, Job, Publication
 
@@ -27,12 +29,7 @@ class JobTable(tables.Table):
         orderable=False,
         verbose_name="Directory",
     )
-    publish = tables.TemplateColumn(
-        "{% if record.status == 'Completed' and not record.published %}"
-        '<a href="{% url \'main:publish\' record.pk %}" class="blocking">Publish</a>'
-        "{% endif %}",
-        verbose_name="",
-    )
+    publish = tables.Column(verbose_name="", empty_values=())
     delete_ = tables.TemplateColumn(
         "<a href=\"{% url 'main:delete' record.pk %}\">Delete</a>", verbose_name=""
     )
@@ -41,6 +38,18 @@ class JobTable(tables.Table):
 
     def render_pk(self, value):
         return f"{value:08d}"
+
+    def render_publish(self, record):
+        publications = Publication.objects.filter(job=record)
+        if publications:
+            return format_html(
+                "<br>".join(
+                    f'<a href="{pub.link}">{pub.doi}</a>' for pub in publications
+                )
+            )
+        else:
+            url = reverse("main:publish", args=[record.pk])
+            return format_html(f'<a href="{url}">Publish</a>')
 
 
 class CustomConfigTable(tables.Table):
