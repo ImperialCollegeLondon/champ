@@ -71,7 +71,7 @@ class TestCreateJobViews(SchedulerTestCase):
         with (job.work_dir / "sub.pbs").open() as f:
             self.assertIn(self.test_input, f.read())
 
-        self.assertRedirects(response, f"/success/{job.pk}/")
+        self.assertRedirects(response, f"/list_jobs/?success={job.pk}")
 
     def test_create_job_post_optional(self):
         test_fchk = "test.fchk"
@@ -93,7 +93,7 @@ class TestCreateJobViews(SchedulerTestCase):
             self.assertIn(self.test_input, contents)
             self.assertIn(test_fchk, contents)
 
-        self.assertRedirects(response, f"/success/{job.pk}/")
+        self.assertRedirects(response, f"/list_jobs/?success={job.pk}")
 
     @patch("main.scheduler.submit", raise_scheduler_error)
     def test_create_job_failure(self):
@@ -115,7 +115,7 @@ class TestCreateJobViews(SchedulerTestCase):
         with (TEST_DATA_PATH / self.test_input).open() as f:
             response = self.client.post(self.url + f"{self.config.pk}/", {"file1": f})
         job = Job.objects.get()
-        self.assertRedirects(response, f"/success/{job.pk}/")
+        self.assertRedirects(response, f"/list_jobs/?success={job.pk}")
 
         with (job.work_dir / "sub.pbs").open() as f:
             contents = f.read()

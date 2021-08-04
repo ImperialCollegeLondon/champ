@@ -59,7 +59,8 @@ def create_job(request, project_pk, resource_index, software_index, config_pk=No
                     software_index,
                     custom_config,
                 )
-                return redirect("main:success", job.pk)
+                url = reverse("main:list_jobs")
+                return redirect(url + f"?success={job.pk}")
             except scheduler.SchedulerError as e:
                 msg = f"Job submission failed\n\n{e.args[0]}"
                 return render(request, "main/failed.html", {"message": msg})
@@ -108,6 +109,11 @@ def list_jobs(request):
                     pass
             job.save()
 
+    if "success" in request.GET:
+        job = get_object_or_404(Job, pk=int(request.GET.get("success")))
+        message = f"Successfully submitted job - {job.job_number} ({job.job_id})"
+    else:
+        message = None
     return render(
         request,
         "main/list_jobs.html",
@@ -115,6 +121,7 @@ def list_jobs(request):
             "table": table,
             "filter": job_filter,
             "options": (10, 25, 50),
+            "message": message,
         },
     )
 
