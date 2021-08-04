@@ -92,3 +92,7 @@ class DirectoryTable(tables.Table):
         '<a href="{{ directory_url }}/{{ record.name }}">View</a>',
         verbose_name="",
     )
+    download = tables.TemplateColumn(
+        '<a href="{{ directory_url }}/{{ record.name }}?download=1">Download</a>',
+        verbose_name="",
+    )
