@@ -25,6 +25,23 @@
 	.errorlist {
 	    color: red;
 	}
+
+	/* add arrows to end of headers for sorted columns  */
+	.orderable {
+	    white-space: nowrap;
+	}
+	.asc.orderable::after {
+	    display: inline-block;
+	    text-rendering: auto;
+	    font-family: "Icons";
+	    content: '\f106';
+	}
+	.desc.orderable::after {
+	    display: inline-block;
+	    text-rendering: auto;
+	    font-family: "Icons";
+	    content: '\f107';
+	}
     </style>
 </head>
 

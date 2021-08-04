@@ -369,7 +369,11 @@ def directory(request, job_pk):
     files = [file_properties(path) for path in job.work_dir.glob("*")]
     files.sort(key=lambda x: x["name"])
     table = DirectoryTable(files)
+    config = tables.RequestConfig(request)
+    config.configure(table)
     directory_url = os.getenv("OOD_FILES_URL", "") + "/fs" + str(job.work_dir)
     return render(
-        request, "main/directory.html", {"table": table, "directory_url": directory_url}
+        request,
+        "main/directory.html",
+        {"table": table, "directory_url": directory_url, "job": job},
     )

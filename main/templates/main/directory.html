@@ -4,6 +4,8 @@
 {% if not content %}
 
 <div class="ui text container">
+  <h2 class="ui header">Files for job {{ job.job_number }}</h2>
+  <p>Job description - {{ job.description }}</p>
   <p><a href="{% url 'main:list_jobs' %}">Back to job list</a></p>
   <p><a href="{{ directory_url }}">View directory in Open OnDemand</a></p>
   {% render_table table %}
