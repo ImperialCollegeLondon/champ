@@ -109,10 +109,10 @@ def list_jobs(request):
                     pass
             job.save()
 
-    if "success" in request.GET:
-        job = get_object_or_404(Job, pk=int(request.GET.get("success")))
+    try:
+        job = Job.objects.get(pk=int(request.GET["success"]))
         message = f"Successfully submitted job - {job.job_number} ({job.job_id})"
-    else:
+    except (KeyError, Job.DoesNotExist, ValueError):
         message = None
     return render(
         request,
