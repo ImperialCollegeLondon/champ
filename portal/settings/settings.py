@@ -185,3 +185,5 @@ with open(os.getenv("PORTAL_CONFIG_PATH", "portal_config.yaml")) as f:
 VERSION = "0.1.0-alpha"
 
 CONFIG_LINE_REGEX = re.compile(PORTAL_CONFIG["custom_config_line_regex"])
+
+ENABLED_REPOSITORIES = PORTAL_CONFIG.get("enabled_repositories", [])

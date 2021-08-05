@@ -2,6 +2,8 @@ import importlib
 import pkgutil
 import re
 
+from django.conf import settings
+
 from . import plugins
 
 REPOSITORIES = {}
@@ -13,6 +15,8 @@ class RepositoryError(Exception):
 
 
 def register(klass):
+    if klass.label not in settings.ENABLED_REPOSITORIES:
+        return klass
     if not LABEL_REGEX.match(klass.label):
         raise ValueError(
             "Unable to register repository. Label must contain only letters, numbers, "
