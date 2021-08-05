@@ -15,10 +15,11 @@ class RepositoryBase(ABC):
         pass
 
     @abstractmethod
-    def publish(self, job, files, metadata):
+    def publish(self, request, job, files, metadata):
         """Publish a dataset to the repository.
 
         Arguments:
+        request - a django.HttpRequest object
         job - a main.models.Job instanceg
         files - a list of dicts of the form -
                 [{"name": "name of file", "description": "description of file"}...]
@@ -30,7 +31,7 @@ class RepositoryBase(ABC):
         pass
 
     @abstractmethod
-    def request_token(self, request):
+    def authorize(self, request):
         """Perform the required tasks to get an access token from the
         repository provider.
 
@@ -42,7 +43,7 @@ class RepositoryBase(ABC):
         pass
 
     @abstractmethod
-    def receive_token(self, request):
+    def token(self, request):
         """Process a request containing a token from a repository provider.
 
         Arguments:

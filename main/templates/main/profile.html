@@ -38,7 +38,7 @@
 	  {% if repo.linked %}
 	  <td><a href="{% url 'main:delete_token' repo.label %}">Unlink</a></td>
 	  {% else %}
-	  <td><a href="{% url 'main:request_token' repo.label %}">Link</a></td>
+	  <td><a href="{% url 'main:authorize' repo.label %}">Link</a></td>
 	  {% endif %}
 	<tr>
 	{% endfor %}

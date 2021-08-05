@@ -163,11 +163,16 @@ class Profile(models.Model):
     orcid_id = models.CharField(
         max_length=19, validators=[validate_orcid_id], verbose_name="ORCID iD"
     )
+    given_names = models.CharField(max_length=100)
+    family_name = models.CharField(max_length=40)
+    affiliation = models.CharField(max_length=50)
 
 
 class Token(models.Model):
     value = models.CharField(max_length=120)
     label = models.CharField(max_length=20, unique=True)
+    refresh_token = models.CharField(max_length=120, blank=True)
+    expires = models.DateTimeField(blank=True, null=True)
 
 
 class Publication(models.Model):

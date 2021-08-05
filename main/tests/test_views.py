@@ -284,29 +284,25 @@ class TestCustomConfigView(TestCase):
 
 
 class TestProfileView(TestCase):
+    form_data = dict(
+        orcid_id="0000-0000-0000-0000",
+        family_name="family_name",
+        given_names="given_names",
+        affiliation="affiliation",
+    )
+
     def test_get(self):
         """Get request should return with 200 status"""
         response = self.client.get("/profile/")
         self.assertEqual(response.status_code, 200)
 
-    def test_single_instance(self):
-        """Multiple requests to view should only create 1 Profile instance"""
-        self.assertEqual(Profile.objects.count(), 0)
-        response = self.client.get("/profile/")
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(Profile.objects.count(), 1)
-
-        response = self.client.get("/profile/")
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(Profile.objects.count(), 1)
-
     def test_existing(self):
         """Data from existing Profile instance should be used as initial data"""
-        orcid_id = "0000-0000-0000-0000"
-        Profile.objects.create(orcid_id=orcid_id)
+        Profile.objects.create(**self.form_data)
         response = self.client.get("/profile/")
         initial_data = response.context["form"].initial
-        self.assertEqual(initial_data["orcid_id"], orcid_id)
+        initial_data.pop("id")
+        self.assertEqual(initial_data, self.form_data)
 
     def test_get_with_custom_config(self):
         """Existing CustomConfig's should be included in the response"""
@@ -318,22 +314,20 @@ class TestProfileView(TestCase):
         self.assertEqual(table.data.data.get(), config)
 
     def test_post_create(self):
-        orcid_id = "0000-0000-0000-0000"
-        response = self.client.post("/profile/", {"orcid_id": orcid_id})
+        response = self.client.post("/profile/", self.form_data)
         self.assertRedirects(response, "/")
 
         profile = Profile.objects.get()
-        self.assertEqual(profile.orcid_id, orcid_id)
+        self.assertEqual(profile.orcid_id, self.form_data["orcid_id"])
 
     def test_post_update(self):
-        orcid_id1 = "0000-0000-0000-0000"
         orcid_id2 = "0000-0000-0000-000X"
-        Profile.objects.create(orcid_id=orcid_id1)
-        response = self.client.post("/profile/", {"orcid_id": orcid_id2})
+        Profile.objects.create(orcid_id=orcid_id2)
+        response = self.client.post("/profile/", self.form_data)
         self.assertRedirects(response, "/")
 
         profile = Profile.objects.get()
-        self.assertEqual(profile.orcid_id, orcid_id2)
+        self.assertEqual(profile.orcid_id, self.form_data["orcid_id"])
 
 
 class TestProfileDelete(SchedulerTestCase):
@@ -390,6 +384,32 @@ class TestDownloadView(SchedulerTestCase):
 
 
 class TestPublishView(SchedulerTestCase):
+    def setUp(self):
+        self.profile = Profile.objects.create(
+            orcid_id="0000-0000-0000-0000",
+            given_names="given names",
+            family_name="family name",
+            affiliation="affiliation",
+        )
+        super().setUp()
+
+    def test_no_profile(self):
+        """Profile information must be available for publications to be made"""
+        self.profile.delete()
+        job = create_dummy_job(description="")
+        response = self.client.get(f"/publish/{job.pk}/")
+        self.assertIn("Profile information not set.", response.context["message"])
+
+    def test_incomplete_profile(self):
+        """Profile information must be fully complete for publications to be made.
+        This test covers a transition case caused by changes to the Profile model.
+        """
+        self.profile.family_name = ""
+        self.profile.save()
+        job = create_dummy_job(description="")
+        response = self.client.get(f"/publish/{job.pk}/")
+        self.assertIn("Profile information not set.", response.context["message"])
+
     def test_unknown_job(self):
         """Trying to publish non-existant job gives 404"""
         response = self.client.get("/publish/1/")
@@ -419,14 +439,14 @@ class TestPublishView(SchedulerTestCase):
         job = create_dummy_job()
         Token.objects.create(label="mock", value="test")
         response = self.client.get(f"/publish/{job.pk}/")
-        self.assertEqual(
-            response.context["message"],
+        self.assertIn(
             "Unable to open 'FILES_TO_PUBLISH' in job directory",
+            response.context["message"],
         )
 
     @patch("main.views.get_repositories", lambda: {"mock": MockRepository()})
     def test_working(self):
-        """For a valid job publishing should creat a Publication record"""
+        """For a valid job publishing should create a Publication record"""
         job = create_dummy_job(description="description")
         (job.work_dir / "FILES_TO_PUBLISH").touch()
         (job.work_dir / "METADATA").touch()
@@ -453,3 +473,17 @@ class TestDirectoryView(SchedulerTestCase):
         shutil.rmtree(job.work_dir)
         response = self.client.get(f"/directory/{job.pk}/")
         self.assertIn("Job directory not found", response.context["message"])
+
+
+class TestProfilePublishInteraction(SchedulerTestCase):
+    def test(self):
+        """Regression test for bug where accessing the profile would allow job
+        publication without profile information being set."""
+        response = self.client.get("/profile/")
+        self.assertEqual(response.status_code, 200)
+
+        job = create_dummy_job()
+        Token.objects.create(label="mock", value="test")
+        response = self.client.get(f"/publish/{job.pk}/")
+
+        self.assertIn("Profile information not set", response.context["message"])

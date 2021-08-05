@@ -129,21 +129,29 @@ class Test(SchedulerTestCase):
 
     def test_profile_orcid_id(self):
         """Validation should catch incorrectly formatted ids"""
-        Profile(orcid_id="0000-0000-0000-0000").full_clean()
-        Profile(orcid_id="0000-0000-0000-000X").full_clean()
+        self.clean_profile("0000-0000-0000-0000")
+        self.clean_profile("0000-0000-0000-000X")
 
         # incorrect character at end
         with self.assertRaises(ValidationError):
-            Profile(orcid_id="0000-0000-0000-000A").full_clean()
+            self.clean_profile(orcid_id="0000-0000-0000-000A")
 
         # too short
         with self.assertRaises(ValidationError):
-            Profile(orcid_id="0000-0000-0000-000").full_clean()
+            self.clean_profile(orcid_id="0000-0000-0000-000")
 
         # too long
         with self.assertRaises(ValidationError):
-            Profile(orcid_id="0000-0000-0000-00000").full_clean()
+            self.clean_profile(orcid_id="0000-0000-0000-00000")
 
         # letter not at end
         with self.assertRaises(ValidationError):
-            Profile(orcid_id="0000-000X-0000-00000").full_clean()
+            self.clean_profile(orcid_id="0000-000X-0000-00000")
+
+    def clean_profile(self, orcid_id):
+        other_data = dict(
+            family_name="family_name",
+            given_names="given_names",
+            affiliation="affiliation",
+        )
+        Profile(orcid_id=orcid_id, **other_data).full_clean()

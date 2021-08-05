@@ -6,6 +6,7 @@ from itertools import chain
 
 import django_tables2 as tables
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.http import Http404, StreamingHttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -196,7 +197,10 @@ def software_help(request, software_index):
 
 
 def profile(request):
-    profile, _ = Profile.objects.get_or_create()
+    try:
+        profile = Profile.objects.get()
+    except Profile.DoesNotExist:
+        profile = Profile()
     form = ProfileForm(request.POST or None, instance=profile)
     if request.method == "POST":
         if form.is_valid():
@@ -267,6 +271,22 @@ def download(request, job_pk):
 
 def publish(request, job_pk):
     job = get_object_or_404(Job, pk=job_pk)
+    try:
+        profile = Profile.objects.get()
+        profile.full_clean()
+    except (Profile.DoesNotExist, ValidationError):
+        profile_url = reverse("main:profile")
+        return render(
+            request,
+            "main/failed.html",
+            {
+                "message": (
+                    "Profile information not set. Please complete your "
+                    f'<a href="{profile_url}">profile</a> to publish.'
+                )
+            },
+        )
+
     if job.published:
         return render(
             request,
@@ -300,7 +320,12 @@ def publish(request, job_pk):
         return render(
             request,
             "main/failed.html",
-            {"message": "Unable to open 'FILES_TO_PUBLISH' in job directory"},
+            {
+                "message": (
+                    "Unable to open 'FILES_TO_PUBLISH' in job directory. This usually "
+                    "means the job did not complete within its allotted walltime."
+                )
+            },
         )
     try:
         with open(job.work_dir / "METADATA") as f:
@@ -315,7 +340,7 @@ def publish(request, job_pk):
     try:
         for repo in get_repositories().values():
             if Token.objects.filter(label=repo.label).last():
-                doi = repo.publish(job, files, metadata)
+                doi = repo.publish(request, job, files, metadata)
                 Publication.objects.create(
                     job=job, repo_label=repo.label, repo_name=repo.full_name, doi=doi
                 )
@@ -330,23 +355,25 @@ def publish(request, job_pk):
     return redirect("main:job", job.pk)
 
 
-def request_token(request, repo_label):
+def authorize(request, repo_label):
     repository = get_repository(repo_label)
-    return repository.request_token(request)
+    return repository.authorize(request)
 
 
-def receive_token(request, repo_label):
-    repository = get_repository(repo_label)
+def token(request, repo_label):
+    repo = get_repository(repo_label)
     try:
-        token = repository.receive_token(request)
+        repo.token(request)
     except RepositoryError:
+        logging.exception(
+            f"Error from repository in response to linking request: {repo.full_name}."
+        )
         return render(
             request,
             "main/failed.html",
             {"message": "Linking failed."},
         )
 
-    Token.objects.create(value=token, label=repository.label)
     return redirect("main:profile")
 
 
