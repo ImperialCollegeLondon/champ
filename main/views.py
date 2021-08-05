@@ -63,6 +63,7 @@ def create_job(request, project_pk, resource_index, software_index, config_pk=No
                 url = reverse("main:list_jobs")
                 return redirect(url + f"?success={job.pk}")
             except scheduler.SchedulerError as e:
+                logger.exception("Exception during job submission")
                 msg = f"Job submission failed\n\n{e.args[0]}"
                 return render(request, "main/failed.html", {"message": msg})
     else:
@@ -132,6 +133,7 @@ def delete(request, job_pk):
     try:
         job.delete()
     except (scheduler.SchedulerError, OSError):
+        logger.exception(f"Error deleting job: Job pk {job.pk}")
         return render(
             request,
             "main/failed.html",
