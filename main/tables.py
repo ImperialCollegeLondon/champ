@@ -29,7 +29,7 @@ class JobTable(tables.Table):
         orderable=False,
         verbose_name="Directory",
     )
-    publish = tables.Column(verbose_name="", empty_values=())
+    publish = tables.Column(verbose_name="Repository", empty_values=(), orderable=False)
     delete_ = tables.TemplateColumn(
         "<a href=\"{% url 'main:delete' record.pk %}\" onclick=\"return confirm('You are about to delete job {{record.job_number}}. Are you sure?')\">Delete</a>",  # noqa: E501
         verbose_name="",
