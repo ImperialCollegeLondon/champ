@@ -91,7 +91,7 @@ class DirectoryTable(tables.Table):
     mtime = tables.Column(verbose_name="Last Modified")
     file_size = tables.Column(verbose_name="Size")
     view = tables.TemplateColumn(
-        '<a href="{{ directory_url }}/{{ record.name }}">View</a>',
+        '<a href="{{ directory_url }}/{{ record.name }}" target="_blank" class="external-link">View</a>',  # noqa: E501
         verbose_name="",
     )
     download = tables.TemplateColumn(
