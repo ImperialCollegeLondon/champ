@@ -55,10 +55,9 @@
             <a href="{% url 'main:job_type' %}" class="item">Create Job</a>
             <a href="{% url 'main:list_jobs' %}" class="item">List All Jobs</a>
             <a href="{% url 'main:profile' %}" class="item">Profile</a>
-	    {% if STATUS_LINK %}
-	    <a href="{{ STATUS_LINK }}" target="_blank" class="item external-link">System Status</a>
-            <a href="https://github.com/ImperialCollegeLondon/hpc_portal/issues" class="item">Report Issue</a>
-	    {% endif %}
+	    {% for name, url in EXTERNAL_LINKS.items %}
+            <a href="{{ url }}" target="_blank" class="item external-link">{{ name }}</a>
+	    {% endfor %}
 	    <div class="right menu">
 	      <div class="item">{{ APP_NAME }} v{{ APP_VERSION }}</div>
 	    </div>

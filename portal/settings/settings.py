@@ -133,8 +133,7 @@ INSTALLED_APPS += ["main.apps.MainConfig", "django_tables2", "django_filters"]
 TEMPLATES[0]["OPTIONS"]["context_processors"] += [
     "main.context_processors.app_name",
     "main.context_processors.app_version",
-    "main.context_processors.status_link",
-    "main.context_processors.active_jobs_link",
+    "main.context_processors.external_links",
 ]
 TEMPLATES[0]["DIRS"] = list(
     (BASE_DIR / "main" / "repositories" / "plugins").glob("*/templates")
