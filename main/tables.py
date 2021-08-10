@@ -8,7 +8,7 @@ from .models import CustomConfig, Job, Publication
 class JobTable(tables.Table):
     class Meta:
         model = Job
-        template_name = "django_tables2/semantic.html"
+        template_name = "main/job_table.html"
         fields = (
             "pk",
             "software",
