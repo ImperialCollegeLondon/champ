@@ -11,6 +11,7 @@ from django.urls import reverse
 from ..models import (
     ROUNDING_INTERVAL,
     CustomConfig,
+    CustomResource,
     Job,
     Profile,
     Project,
@@ -169,6 +170,15 @@ class TestJobTypeViews(TestCase):
     def test_get(self):
         response = self.client.get("/job_type/")
         self.assertEqual(response.status_code, 200)
+
+    def test_get_with_custom_resource(self):
+        label = "foo"
+        CustomResource.objects.create(label=label)
+        response = self.client.get("/job_type/")
+        self.assertEqual(response.status_code, 200)
+        form = response.context["form"]
+        choices = form.fields["resources"].choices.choices_func()
+        self.assertIn((1, label), choices)
 
     def test_post(self):
         resources_index = 0

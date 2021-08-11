@@ -8,10 +8,11 @@ from django.conf import settings
 from django.db import models
 from django.urls import reverse
 
-from . import scheduler
-from .resources import RESOURCES
-from .software import SOFTWARE
-from .validators import validate_config_lines, validate_orcid_id
+from .. import scheduler
+from ..resources import get_resource
+from ..software import SOFTWARE
+from ..validators import validate_orcid_id
+from .custom import CustomConfig, CustomResource  # noqa: F401
 
 ROUNDING_INTERVAL = timedelta(seconds=15)
 
@@ -26,7 +27,7 @@ class JobManager(models.Manager):
         software_index,
         custom_config=None,
     ):
-        resources = RESOURCES[resource_index]
+        resources = get_resource(resource_index)
         software = SOFTWARE[software_index]
         job = self.create(
             status="Queueing",
@@ -135,28 +136,15 @@ class Job(models.Model):
         return f"{self.pk:08d}"
 
 
-class Project(models.Model):
-    name = models.CharField(max_length=50)
-
-    def __str__(self):
-        return f"{self.name}"
+class Publication(models.Model):
+    job = models.ForeignKey(Job, on_delete=models.CASCADE)
+    repo_label = models.CharField(max_length=20)
+    repo_name = models.CharField(max_length=50)
+    doi = models.CharField(max_length=30, unique=True)
 
     @property
-    def number_of_jobs(self):
-        return len(Job.objects.filter(project=self))
-
-
-class CustomConfig(models.Model):
-    label = models.CharField(max_length=50)
-    script_lines = models.TextField(
-        max_length=1000,
-        verbose_name="Script Lines",
-        help_text="Lines placed here are used as scheduler directives for new jobs.",
-        validators=[validate_config_lines],
-    )
-
-    def __str__(self):
-        return f"{self.label}"
+    def link(self):
+        return "https://doi.org/" + self.doi
 
 
 class Profile(models.Model):
@@ -168,19 +156,19 @@ class Profile(models.Model):
     affiliation = models.CharField(max_length=50)
 
 
+class Project(models.Model):
+    name = models.CharField(max_length=50)
+
+    def __str__(self):
+        return f"{self.name}"
+
+    @property
+    def number_of_jobs(self):
+        return len(Job.objects.filter(project=self))
+
+
 class Token(models.Model):
     value = models.CharField(max_length=120)
     label = models.CharField(max_length=20, unique=True)
     refresh_token = models.CharField(max_length=120, blank=True)
     expires = models.DateTimeField(blank=True, null=True)
-
-
-class Publication(models.Model):
-    job = models.ForeignKey(Job, on_delete=models.CASCADE)
-    repo_label = models.CharField(max_length=20)
-    repo_name = models.CharField(max_length=50)
-    doi = models.CharField(max_length=30, unique=True)
-
-    @property
-    def link(self):
-        return "https://doi.org/" + self.doi

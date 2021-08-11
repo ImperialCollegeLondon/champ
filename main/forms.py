@@ -1,7 +1,7 @@
 from django import forms
 
-from .models import CustomConfig, Job, Profile, Project
-from .resources import RESOURCE_CHOICES
+from .models import CustomConfig, CustomResource, Job, Profile, Project
+from .resources import get_resource_choices
 from .software import SOFTWARE_CHOICES
 
 
@@ -23,7 +23,7 @@ class JobTypeForm(forms.Form):
     )
     resources = forms.ChoiceField(
         label="Job Resources",
-        choices=RESOURCE_CHOICES,
+        choices=get_resource_choices,
         label_suffix=" (*)",
     )
     software = forms.ChoiceField(
@@ -55,6 +55,19 @@ class CustomConfigForm(forms.ModelForm):
     class Meta:
         model = CustomConfig
         fields = "__all__"
+        help_texts = {
+            "script_lines": "Lines placed here are used as scheduler directives for new jobs. Resource specifications may not be provided here and will not be honoured."  # noqa: E501
+        }
+
+
+class CustomResourceForm(forms.ModelForm):
+    class Meta:
+        model = CustomResource
+        fields = "__all__"
+        help_texts = {
+            "script_lines": "Lines should be valid scheduler directives that specify job resource requirements. Other lines may also be necessary e.g. setting environment variables. It is strongly suggested that you use a system resource configuration as a reference..",  # noqa: E501
+            "label": "When a job is run using this resource configuration only the label is recorded. Therefore it is important that you provide a label that is clear and descriptive of the resources used.",  # noqa: E501
+        }
 
 
 class ProfileForm(forms.ModelForm):

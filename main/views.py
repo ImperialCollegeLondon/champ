@@ -13,18 +13,25 @@ from django.urls import reverse
 
 from . import scheduler
 from .filters import JobFilter
-from .forms import (
-    CustomConfigForm,
-    JobForm,
-    JobTypeForm,
-    ProfileForm,
-    ProjectForm,
-    SubmissionForm,
+from .forms import JobForm, JobTypeForm, ProfileForm, ProjectForm, SubmissionForm
+from .models import (
+    CustomConfig,
+    CustomResource,
+    Job,
+    Profile,
+    Project,
+    Publication,
+    Token,
 )
-from .models import CustomConfig, Job, Profile, Project, Publication, Token
 from .repositories import RepositoryError, get_repositories, get_repository
 from .software import SOFTWARE
-from .tables import CustomConfigTable, DirectoryTable, JobTable, PublicationTable
+from .tables import (
+    CustomConfigTable,
+    CustomResourceTable,
+    DirectoryTable,
+    JobTable,
+    PublicationTable,
+)
 from .utils import file_properties
 from .zip_stream import zipfile_generator
 
@@ -209,6 +216,7 @@ def profile(request):
             form.save()
             return redirect(request.META.get("HTTP_REFERER", "main:index"))
     configs_table = CustomConfigTable(CustomConfig.objects.all())
+    resource_table = CustomResourceTable(CustomResource.objects.all())
 
     repository_data = []
     for label, repo in get_repositories().items():
@@ -222,6 +230,7 @@ def profile(request):
         {
             "form": form,
             "configs_table": configs_table,
+            "resource_table": resource_table,
             "repository_data": repository_data,
         },
     )
@@ -236,26 +245,25 @@ def delete_profile(request):
     return redirect(request.META.get("HTTP_REFERER", "main:index"))
 
 
-def custom_config(request, config_pk=None):
-    if config_pk is None:
-        config = CustomConfig()
+def custom_config(request, pk=None, form_class=None):
+    model = form_class.Meta.model
+    if pk is None:
+        instance = model()
     else:
-        config = get_object_or_404(CustomConfig, pk=config_pk)
+        instance = get_object_or_404(model, pk=pk)
+    form = form_class(request.POST or None, instance=instance)
     if request.method == "POST":
-        form = CustomConfigForm(request.POST, instance=config)
         if form.is_valid():
             form.save()
             return redirect("main:profile")
-    else:
-        form = CustomConfigForm(instance=config)
     return render(
-        request, "main/custom_config.html", {"form": form, "create": config_pk is None}
+        request, "main/custom_config.html", {"form": form, "create": pk is None}
     )
 
 
-def custom_config_delete(request, config_pk):
-    config = CustomConfig.objects.get(pk=config_pk)
-    config.delete()
+def custom_config_delete(request, pk, klass):
+    instance = klass.objects.get(pk=pk)
+    instance.delete()
     return redirect(request.META.get("HTTP_REFERER", "main:index"))
 
 

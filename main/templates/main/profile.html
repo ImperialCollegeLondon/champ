@@ -49,7 +49,8 @@
 
 <div class="row">
   <div class="ui text container">
-    <h3 class="ui header">Custom Job Script Configurations</h3>
+    <h3 class="ui header">Custom Job Script Configurations (Advanced)</h3>
+    <p>Use to provide additional configuration when you run jobs e.g. to provide accounting information or access to a private queue.</p>
     {% if configs_table.rows|length != 0 %}
     {% render_table configs_table %}
     {% endif %}
@@ -58,6 +59,20 @@
 <div class="row">
   <div class="ui text container">
     <a class="ui button" href="{% url 'main:custom_config' %}">Create a new custom configuration</a>
+  </div>
+</div>
+<div class="row">
+  <div class="ui text container">
+    <h3 class="ui header">Custom Resource Configurations (Advanced)</h3>
+    <p>Use these to run jobs with a customised set of resources. Once created, the configuration will appear in the Job Resources dropdown on the Create Job page.</p>
+    {% if resource_table.rows|length != 0 %}
+    {% render_table resource_table %}
+    {% endif %}
+  </div>
+</div>
+<div class="row">
+  <div class="ui text container">
+    <a class="ui button" href="{% url 'main:custom_resource' %}">Create a new resource configuration</a>
   </div>
 </div>
 {% endif %}

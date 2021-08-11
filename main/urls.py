@@ -1,6 +1,8 @@
 from django.urls import path
 
 from . import views
+from .forms import CustomConfigForm, CustomResourceForm
+from .models import CustomConfig, CustomResource
 
 app_name = "main"
 
@@ -31,12 +33,41 @@ urlpatterns = [
     ),
     path("profile/", views.profile, name="profile"),
     path("delete_profile/", views.delete_profile, name="delete_profile"),
-    path("custom_config/", views.custom_config, name="custom_config"),
-    path("custom_config/<int:config_pk>/", views.custom_config, name="custom_config"),
     path(
-        "custom_config/delete/<int:config_pk>/",
+        "custom_config/",
+        views.custom_config,
+        {"form_class": CustomConfigForm},
+        name="custom_config",
+    ),
+    path(
+        "custom_config/<int:pk>/",
+        views.custom_config,
+        {"form_class": CustomConfigForm},
+        name="custom_config",
+    ),
+    path(
+        "custom_config/delete/<int:pk>/",
         views.custom_config_delete,
+        {"klass": CustomConfig},
         name="custom_config_delete",
+    ),
+    path(
+        "custom_config/resource/",
+        views.custom_config,
+        {"form_class": CustomResourceForm},
+        name="custom_resource",
+    ),
+    path(
+        "custom_config/resource/<int:pk>/",
+        views.custom_config,
+        {"form_class": CustomResourceForm},
+        name="custom_resource",
+    ),
+    path(
+        "custom_config/resource/delete/<int:pk>/",
+        views.custom_config_delete,
+        {"klass": CustomResource},
+        name="custom_resource_delete",
     ),
     path("download/<int:job_pk>/", views.download, name="download"),
     path("authorize/<str:repo_label>/", views.authorize, name="authorize"),

@@ -2,7 +2,7 @@ import django_tables2 as tables
 from django.urls import reverse
 from django.utils.html import format_html
 
-from .models import CustomConfig, Job, Publication
+from .models import CustomConfig, CustomResource, Job, Publication
 
 
 class JobTable(tables.Table):
@@ -64,6 +64,20 @@ class CustomConfigTable(tables.Table):
     pk = tables.TemplateColumn(
         "<a href=\"{% url 'main:custom_config' value %}\"/>Edit</a><br>"
         "<a href=\"{% url 'main:custom_config_delete' value %}\"/>Delete</a><br>",
+        orderable=False,
+        verbose_name="",
+    )
+
+
+class CustomResourceTable(CustomConfigTable):
+    class Meta:
+        model = CustomResource
+        template_name = "django_tables2/semantic.html"
+        fields = ("label", "pk")
+
+    pk = tables.TemplateColumn(
+        "<a href=\"{% url 'main:custom_resource' value %}\"/>Edit</a><br>"
+        "<a href=\"{% url 'main:custom_resource_delete' value %}\"/>Delete</a><br>",
         orderable=False,
         verbose_name="",
     )
