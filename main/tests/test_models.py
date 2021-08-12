@@ -155,3 +155,10 @@ class Test(SchedulerTestCase):
             affiliation="affiliation",
         )
         Profile(orcid_id=orcid_id, **other_data).full_clean()
+
+    def delete_job_without_job_id(self):
+        """Job records with a job_id can be deleted without error"""
+        job = create_dummy_job()
+        job.job_id = ""
+        job.save()
+        job.delete()

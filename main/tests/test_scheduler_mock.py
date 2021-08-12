@@ -1,3 +1,4 @@
+from ..scheduler import SchedulerError
 from .scheduler_mock import SchedulerTestCase
 
 
@@ -41,4 +42,5 @@ class TestJobSubmission(SchedulerTestCase):
         job_id = submit("", "")
         self.scheduler.job_starts(job_id)
         self.scheduler.job_finishes(job_id)
-        delete(job_id)
+        with self.assertRaises(SchedulerError):
+            delete(job_id)

@@ -34,8 +34,10 @@ class Scheduler:
             return "completed"
 
     def delete(self, job_id):
+        if not job_id:
+            raise SchedulerError("illegal job identifier")
         if job_id not in self.queued_jobs and job_id not in self.running_jobs:
-            return
+            raise SchedulerError("Unknown job id")
         self.completed_jobs.add(job_id)
         self.queued_jobs.discard(job_id)
         self.running_jobs.discard(job_id)
