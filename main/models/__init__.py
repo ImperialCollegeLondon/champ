@@ -94,7 +94,7 @@ class Job(models.Model):
         return settings.JOBS_DIR / self.job_number
 
     def delete(self):
-        if self.status != "Completed":
+        if self.status != "Completed" and self.job_id:
             scheduler.delete(self.job_id)
             # small wait to let the scheduler delete the job to try and
             # minimise issues with deleting the working directory
