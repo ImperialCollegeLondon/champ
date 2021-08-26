@@ -4,7 +4,7 @@ script_path = ARGV[0]
 
 clusters = OodCore::Clusters.load_file("/etc/ood/config/clusters.d/")
 
-cluster = clusters["rcs"]
+cluster = clusters[ARGV[1]]
 script = OodCore::Job::Script.new(
   content: Pathname.new(script_path).read,
   accounting_id: nil,

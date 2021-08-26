@@ -3,6 +3,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+from django.conf import settings
+
 SCRIPT_DIR = Path(__file__).absolute().parent / "ruby_scripts"
 
 
@@ -33,7 +35,9 @@ def run_ruby_script(script_name, cmdline_args, timeout, run_dir=None):
 
     run_dir = run_dir if run_dir else os.getenv("HOME", "/tmp")
 
-    command = ["ruby", str(SCRIPT_DIR / script_name)] + cmdline_args
+    command = (
+        ["ruby", str(SCRIPT_DIR / script_name)] + cmdline_args + [settings.CLUSTER]
+    )
     try:
         cp = subprocess.run(  # blocking call
             command,
