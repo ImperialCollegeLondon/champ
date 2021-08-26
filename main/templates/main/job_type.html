@@ -12,13 +12,19 @@
 	    <div class="field">
 	      {{ form.project.label_tag }}
 	      {{ form.project }}
-	      {{ form.project.errors }}
 	    </div>
 	  </td>
 	  <td style="vertical-align:bottom">
 	    <a href="{% url 'main:projects' %}">or create a new project</a>
 	  </td>
 	</tr>
+	{% if form.project.errors %}
+	<tr>
+	  <td>
+	    {{ form.project.errors }}
+	  </td>
+	</tr>
+	{% endif %}
       </tbody>
     </table>
     <div class="field">
