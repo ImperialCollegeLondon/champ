@@ -10,7 +10,7 @@
 	<tr>
 	  <td width="70%">
 	    <div class="field">
-	      <label>{{ form.project.label }}</label>
+	      {{ form.project.label_tag }}
 	      {{ form.project }}
 	      {{ form.project.errors }}
 	    </div>
@@ -22,17 +22,17 @@
       </tbody>
     </table>
     <div class="field">
-      <label>{{ form.resources.label }}</label>
+      {{ form.resources.label_tag }}
       {{ form.resources }}
       {{ form.resources.errors }}
     </div>
     <div class="field">
-      <label>{{ form.software.label }}</label>
+      {{ form.software.label_tag }}
       {{ form.software }}
       {{ form.software.errors }}
     </div>
     <div class="field">
-      <label>{{ form.custom_config.label }}</label>
+      {{ form.custom_config.label_tag }}
       {{ form.custom_config }}
       {{ form.custom_config.errors }}
     </div>

@@ -6,30 +6,33 @@ from .software import SOFTWARE_CHOICES
 
 
 class SubmissionForm(forms.Form):
+    required_css_class = "required"
+
     def __init__(self, software, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["description"] = forms.CharField(
             max_length=200, label="Description", required=False
         )
         for name, label in software["input_files"]["required"].items():
-            self.fields[name] = forms.FileField(label=label, label_suffix=" (*)")
+            self.fields[name] = forms.FileField(label=label)
         for name, label in software["input_files"]["optional"].items():
             self.fields[name] = forms.FileField(label=label, required=False)
 
 
 class JobTypeForm(forms.Form):
+    required_css_class = "required"
     project = forms.ModelChoiceField(
-        Project.objects.all(), label="Project", label_suffix=" (*)", empty_label=None
+        Project.objects.all(),
+        label="Project",
+        empty_label=None,
     )
     resources = forms.ChoiceField(
         label="Job Resources",
         choices=get_resource_choices,
-        label_suffix=" (*)",
     )
     software = forms.ChoiceField(
         label="Software",
         choices=SOFTWARE_CHOICES,
-        label_suffix=" (*)",
     )
     custom_config = forms.ModelChoiceField(
         CustomConfig.objects.all(),
