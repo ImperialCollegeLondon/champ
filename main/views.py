@@ -88,7 +88,7 @@ def create_job(request, project_pk, resource_index, software_index, config_pk=No
 
 
 def success(request, job_pk):
-    job = Job.objects.get(pk=job_pk)
+    job = get_object_or_404(Job, pk=job_pk)
     return render(request, "main/success.html", {"job_id": job.job_id})
 
 
@@ -136,7 +136,7 @@ def list_jobs(request):
 
 
 def delete(request, job_pk):
-    job = Job.objects.get(pk=job_pk)
+    job = get_object_or_404(Job, pk=job_pk)
     try:
         job.delete()
     except (scheduler.SchedulerError, OSError):
@@ -183,7 +183,7 @@ def projects(request):
 
 
 def delete_project(request, project_pk):
-    Project.objects.get(pk=project_pk).delete()
+    get_object_or_404(Project, pk=project_pk).delete()
     return redirect(request.META.get("HTTP_REFERER", "main:index"))
 
 
@@ -262,7 +262,7 @@ def custom_config(request, pk=None, form_class=None):
 
 
 def custom_config_delete(request, pk, klass):
-    instance = klass.objects.get(pk=pk)
+    instance = get_object_or_404(klass, pk=pk)
     instance.delete()
     return redirect(request.META.get("HTTP_REFERER", "main:index"))
 
