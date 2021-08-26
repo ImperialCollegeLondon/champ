@@ -181,7 +181,7 @@ JOBS_DIR = Path(os.getenv("JOBS_DIR", str(BASE_DIR / "portal_jobs")))
 with open(os.getenv("PORTAL_CONFIG_PATH", "portal_config.yaml")) as f:
     PORTAL_CONFIG = yaml.safe_load(f)
 
-VERSION = "0.1.0-alpha"
+VERSION = "2.0.0-beta"
 
 CONFIG_LINE_REGEX = re.compile(PORTAL_CONFIG["custom_config_line_regex"])
 
