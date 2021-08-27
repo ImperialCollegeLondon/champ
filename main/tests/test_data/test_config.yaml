@@ -1,6 +1,6 @@
 resources:
   - description: "test_description"
-    script_lines: 
+    script_lines: ""
 software:
   - name: "test"
     input_files:
@@ -11,7 +11,7 @@ software:
     commands: |
       {file1}
       {file2}
-    help_text:
+    help_text: ""
 script_template: |
   #!/bin/bash
   {custom_config}{resources}
@@ -21,3 +21,5 @@ script_template: |
   {commands}
 custom_config_line_regex: "#PBS .*"
 cluster: ""
+enabled_repositories:
+  - ""

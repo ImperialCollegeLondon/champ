@@ -2,6 +2,7 @@ django
 django-filter
 django-tables2
 humanize
+marshmallow
 python-dotenv
 pyyaml
 requests

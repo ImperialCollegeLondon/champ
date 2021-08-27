@@ -16,6 +16,8 @@ from pathlib import Path
 
 import yaml
 
+from config_validation import ConfigSchema
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -180,6 +182,7 @@ JOBS_DIR = Path(os.getenv("JOBS_DIR", str(BASE_DIR / "portal_jobs")))
 
 with open(os.getenv("PORTAL_CONFIG_PATH", "portal_config.yaml")) as f:
     PORTAL_CONFIG = yaml.safe_load(f)
+ConfigSchema().load(PORTAL_CONFIG)
 
 VERSION = "2.0.0-beta"
 
