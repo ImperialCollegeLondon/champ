@@ -1,11 +1,17 @@
+from pathlib import Path
 from unittest import TestCase
 
+import yaml
 from marshmallow import ValidationError
 
 from config_validation import ConfigSchema, FilesSchema, ResourceSchema, SoftwareSchema
+from main.software import clean_software_config
+
+TEST_DATA_PATH = Path(__file__).absolute().parent / "test_data"
 
 
 def without_key(d, key):
+    """Return a copy of dict `d` with `key` removed."""
     d2 = d.copy()
     d2.pop(key)
     return d2
@@ -119,3 +125,22 @@ class TestConfigSchema(SchemaTestCase):
 
     def test_valid(self):
         self.schema.load(self.valid_data)
+
+    def test_test_config(self):
+        """The configuration provided for running tests must be valid"""
+        with open(TEST_DATA_PATH / "test_config.yaml") as f:
+            self.schema.load(yaml.safe_load(f))
+
+
+class TestCleanSoftwareConfig(TestCase):
+    def test_replace_none(self):
+        """"""
+        config = dict(
+            name="",
+            input_files=dict(required=None, optional=None),
+            commands="",
+            help_text="",
+        )
+        config = clean_software_config(config)
+        self.assertEqual(config["input_files"]["required"], {})
+        self.assertEqual(config["input_files"]["optional"], {})

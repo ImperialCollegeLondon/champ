@@ -2,7 +2,7 @@ from django.conf import settings
 
 from .models.custom import CustomResource
 
-RESOURCES = settings.PORTAL_CONFIG["resources"]
+RESOURCES = settings.PORTAL_CONFIG["resources"] or []
 RESOURCE_CHOICES = list(enumerate(s["description"] for s in RESOURCES))
 
 

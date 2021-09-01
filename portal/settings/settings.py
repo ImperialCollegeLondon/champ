@@ -188,6 +188,6 @@ VERSION = "2.0.0-beta"
 
 CONFIG_LINE_REGEX = re.compile(PORTAL_CONFIG["custom_config_line_regex"])
 
-ENABLED_REPOSITORIES = PORTAL_CONFIG.get("enabled_repositories", [])
+ENABLED_REPOSITORIES = PORTAL_CONFIG.get("enabled_repositories") or []
 
 CLUSTER = PORTAL_CONFIG["cluster"]
