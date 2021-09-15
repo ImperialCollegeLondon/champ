@@ -96,6 +96,9 @@ class ZenodoRepository(RepositoryBase):
         Return:
           None
         """
+        if "error" in request.GET:
+            raise RepositoryError("Invalid response received from repository")
+
         try:
             session = self.get_oauth_session(
                 request, state=request.session.pop("oauth_state")
