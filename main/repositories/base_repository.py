@@ -44,11 +44,12 @@ class RepositoryBase(ABC):
 
     @abstractmethod
     def token(self, request):
-        """Process a request containing a token from a repository provider.
+        """Process a request containing a token from a repository provider. This
+        function should create or update an existing models.Token object.
 
         Arguments:
           request - A Django Request object passed through from a view
         Return:
-          A token (string)
+          None
         """
         pass
