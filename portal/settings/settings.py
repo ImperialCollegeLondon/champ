@@ -149,7 +149,7 @@ CONTACT_EMAIL = "c.cave-ayland@imperial.ac.uk"
 DEFAULT_FROM_EMAIL = "noreply@imperial.ac.uk"
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
-STATIC_ROOT = BASE_DIR / "staticfiles"
+STATIC_ROOT = "/var/www/ood/public/portal/"
 LOGIN_URL = "main:login"
 LOGOUT_REDIRECT_URL = "main:index"
 

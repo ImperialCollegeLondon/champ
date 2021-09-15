@@ -7,4 +7,3 @@ python-dotenv
 pyyaml
 requests
 requests_oauthlib
-whitenoise

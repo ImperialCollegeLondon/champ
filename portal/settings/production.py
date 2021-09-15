@@ -12,7 +12,6 @@ from .settings import *  # noqa: F401, F403
 
 DEBUG = False
 SECRET_KEY = os.environ["SECRET_KEY"]
-MIDDLEWARE.insert(1, "whitenoise.middleware.WhiteNoiseMiddleware")  # noqa: F405
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 SECURE_HSTS_SECONDS = 15552000
