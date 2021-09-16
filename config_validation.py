@@ -30,6 +30,7 @@ class ConfigSchema(Schema):
     enabled_repositories = fields.List(fields.Str, required=True, allow_none=True)
     external_links = fields.Dict(keys=fields.Str(), values=fields.Str())
     cluster = fields.Str(required=True)
+    config_link = fields.Str()
 
 
 if __name__ == "__main__":

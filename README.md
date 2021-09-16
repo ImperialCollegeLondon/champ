@@ -145,7 +145,7 @@ following:
   the `OldChk` directive to the Gaussian input file
 * Runs `formchk` after the job is complete.
 
-[example configuration]: https://github.com/ImperialCollegeLondon/hpc_portal_config
+
 
 ### Configuration File Reference
 
@@ -156,7 +156,16 @@ can also use the script `config_validation.py` to check your config.
 
 [marshmallow]: https://marshmallow.readthedocs.io/en/stable/
 
-#### `cluster`
+#### `config_link` (optional)
+
+A string providing a URL linking to the current portal configuration file. This
+is primarily intended for use where the configuration is made public in a git
+repository (e.g. the Imperial College [example configuration][]). This allows
+users of the system to provide additional software configurations according to
+their needs. When this key is provided the link is added to the "Create Job"
+page of the Portal with the text "add a new software".
+
+#### cluster
 
 The name of the cluster that the portal will use for job submission as
 configured for OOD (i.e. the file prefix for the cluster configuration file in
@@ -402,3 +411,5 @@ mind and only this method is officially supported. That said the class is
 flexible enough that it can be (and has been) used with other schemes. The
 included Zenodo integration is a good starting point for interacting with other
 OAuth2 applications.
+
+[example configuration]: https://github.com/ImperialCollegeLondon/hpc_portal_config

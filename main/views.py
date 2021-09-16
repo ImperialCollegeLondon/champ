@@ -167,7 +167,11 @@ def job_type(request):
             return redirect("main:create_job", project.pk, *args)
     else:
         form = JobTypeForm()
-    return render(request, "main/job_type.html", {"form": form})
+    return render(
+        request,
+        "main/job_type.html",
+        {"form": form, "config_link": settings.CONFIG_LINK},
+    )
 
 
 def projects(request):

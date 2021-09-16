@@ -32,11 +32,34 @@
       {{ form.resources }}
       {{ form.resources.errors }}
     </div>
+    {% if config_link %}
+    <table style="width:100%; padding-bottom: 10px;">
+      <tbody>
+	<tr>
+	  <td width="70%">
+	    <div class="field">
+    {% endif %}
     <div class="field">
       {{ form.software.label_tag }}
       {{ form.software }}
-      {{ form.software.errors }}
+      {% if not config_link %}{{ form.software.errors }}{% endif %}
     </div>
+    {% if config_link %}
+	  </td>
+	  <td style="vertical-align:bottom">
+	    <a href="{{ config_link }}">or add a new software</a>
+	  </td>
+	</tr>
+	{% if form.project.errors %}
+	<tr>
+	  <td>
+	    {{ form.project.errors }}
+	  </td>
+	</tr>
+	{% endif %}
+      </tbody>
+    </table>
+    {% endif %}
     <div class="field">
       {{ form.custom_config.label_tag }}
       {{ form.custom_config }}
