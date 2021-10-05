@@ -87,15 +87,6 @@ def create_job(request, project_pk, resource_index, software_index, config_pk=No
     )
 
 
-def success(request, job_pk):
-    job = get_object_or_404(Job, pk=job_pk)
-    return render(request, "main/success.html", {"job_id": job.job_id})
-
-
-def failed(request):
-    return render(request, "main/failed.html")
-
-
 def list_jobs(request):
     job_filter = JobFilter(request.GET, queryset=Job.objects.order_by("-pk"))
     table = JobTable(job_filter.qs)
