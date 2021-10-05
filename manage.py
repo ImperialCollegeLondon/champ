@@ -2,6 +2,7 @@
 """Django's command-line utility for administrative tasks."""
 import os
 import sys
+from pathlib import Path
 
 
 def main():
@@ -15,6 +16,16 @@ def main():
             "available on your PYTHONPATH environment variable? Did you "
             "forget to activate a virtual environment?"
         ) from exc
+
+    # if we are running tests ensure that the correct config file is used
+    if sys.argv[1] == "test":
+        os.environ["PORTAL_CONFIG_PATH"] = str(
+            Path(__file__).absolute().parent
+            / "main"
+            / "tests"
+            / "test_data"
+            / "test_config.yaml"
+        )
     execute_from_command_line(sys.argv)
 
 
