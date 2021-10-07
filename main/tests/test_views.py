@@ -454,6 +454,18 @@ class TestPublishView(SchedulerTestCase):
             response.context["message"],
         )
 
+    def test_missing_files(self):
+        """Files listed in FILES_TO_PUBLISH must be present"""
+        job = create_dummy_job()
+        Token.objects.create(label="mock", value="test")
+        with open(job.work_dir / "FILES_TO_PUBLISH", "w") as f:
+            f.write("name\tdescription\nfile_name\tdesc")
+        response = self.client.get(f"/publish/{job.pk}/")
+        self.assertIn(
+            "Unable to find file file_name required for publication.",
+            response.context["message"],
+        )
+
     @patch("main.views.get_repositories", lambda: {"mock": MockRepository()})
     def test_working(self):
         """For a valid job publishing should create a Publication record"""

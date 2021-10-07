@@ -332,6 +332,18 @@ def publish(request, job_pk):
                 )
             },
         )
+    for filename in (f["name"] for f in files):
+        if not (job.work_dir / filename).exists():
+            return render(
+                request,
+                "main/failed.html",
+                {
+                    "message": (
+                        f"Unable to find file {filename} required for publication."
+                    )
+                },
+            )
+
     try:
         with open(job.work_dir / "METADATA") as f:
             metadata = list(csv.DictReader(f, delimiter="\t"))
