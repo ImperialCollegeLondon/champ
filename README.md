@@ -57,6 +57,11 @@ template. This can be useful for e.g. providing accounting information.
 
 ## Setup Instructions
 
+This section covers setting up the portal within an OpenOnDemand (OOD)
+instance. It is possible to run the tests and a development version the portal
+outside of OOD with limited functionality. Please see the [Development
+Guide](#development-guide) section for this.
+
 ### Requirements
 
 * A server with an Open OnDemand installation with the required cluster
@@ -411,5 +416,50 @@ mind and only this method is officially supported. That said the class is
 flexible enough that it can be (and has been) used with other schemes. The
 included Zenodo integration is a good starting point for interacting with other
 OAuth2 applications.
+
+## Development Guide
+
+A development setup is provided for working with the portal even without an
+installation of Open OnDemand. Needless to say when run in this way you won't be
+able submit jobs but the test suite can be run. You should either create a
+python virtual environment and install the dependencies from `requirements.txt`
+or you can use the provided Dockerfile with Docker Compose.
+
+Please see <./CONTRIBUTING.md> for details of the expected workflow for making
+pull requests.
+
+### Run Tests
+
+All tests can be run by using e.g.:
+
+```
+python manage.py test
+```
+
+or using Docker Compose:
+
+```
+docker-compose run app python manage.py test
+```
+
+### Run Development Server
+
+To run CHAMP locally first copy `docs/example_config.yaml` to
+`portal_config.yaml` in repository root directory. Add an empty string to the
+`cluster` key. This is the minimum required config to run the server. Then:
+
+```
+python manage.py runserver
+```
+
+or using Docker Compose:
+
+```
+docker-compose up
+```
+
+then point your browser to `localhost:8000`. The working tree of the repository
+is mounted into the Docker container so updates to the code should be reflected
+in the running server using both methods.
 
 [example configuration]: https://github.com/ImperialCollegeLondon/hpc_portal_config
