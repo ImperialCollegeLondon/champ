@@ -39,11 +39,24 @@ logger = logging.getLogger(__name__)
 
 
 def index(request):
+    """The index view"""
     admin_email = settings.ADMINS[0][1] if settings.ADMINS else ""
     return render(request, "main/index.html", {"admin_email": admin_email})
 
 
 def create_job(request, project_pk, resource_index, software_index, config_pk=None):
+    """This view handles a form that when submitted triggers creation of a job.
+
+    args:
+      request (HttpRequest): request that triggered this view
+      project_pk (int): pk of the project for this job
+      resource_index (int): index of the resource configuration for this job
+      software_index (int): index of the sofware configuration for this job
+      config_pk (int): pk of the CustomConfig record for this job
+
+    returns:
+      (HttpResponse): the page to display
+    """
     project = get_object_or_404(Project, pk=project_pk)
     software = SOFTWARE[software_index]
     custom_config = (
@@ -88,6 +101,15 @@ def create_job(request, project_pk, resource_index, software_index, config_pk=No
 
 
 def list_jobs(request):
+    """The list view used to display jobs that have submitted via the portal. An
+    important secondary function is to update job records when they complete.
+
+    args:
+      request (HttpRequest): request that triggered this view
+
+    returns:
+      (HttpResponse): the page to display
+    """
     job_filter = JobFilter(request.GET, queryset=Job.objects.order_by("-pk"))
     table = JobTable(job_filter.qs)
     config = tables.RequestConfig(request, paginate={"per_page": 15})
@@ -127,6 +149,15 @@ def list_jobs(request):
 
 
 def delete(request, job_pk):
+    """Delete a job from the database.
+
+    args:
+      request (HttpRequest): request that triggered this view
+      job_pk (int): the pk of the job to delete
+
+    returns:
+      (HttpResponseRedirect): a redirect to previous view
+    """
     job = get_object_or_404(Job, pk=job_pk)
     try:
         job.delete()
@@ -147,6 +178,14 @@ def delete(request, job_pk):
 
 
 def job_type(request):
+    """Handles the initial form for job creation.
+
+    args:
+      request (HttpRequest): request that triggered this view
+
+    returns:
+      (HttpResponse or HttpResponseRedirect): a page or redirect to next form view
+    """
     if request.method == "POST":
         form = JobTypeForm(request.POST)
         if form.is_valid():
@@ -166,6 +205,14 @@ def job_type(request):
 
 
 def projects(request):
+    """Displays existings projects and a form to create new projects
+
+    args:
+      request (HttpRequest): request that triggered this view
+
+    returns:
+      (HttpResponse or HttpResponseRedirect): a page or redirect to the previous view
+    """
     if request.method == "POST":
         form = ProjectForm(request.POST)
         if form.is_valid():
@@ -178,11 +225,30 @@ def projects(request):
 
 
 def delete_project(request, project_pk):
+    """Delete a project from the database.
+
+    args:
+      request (HttpRequest): request that triggered this view
+      project_pk (int): the pk of the job to delete
+
+    returns:
+      (HttpResponseRedirect): a redirect to previous view
+    """
     get_object_or_404(Project, pk=project_pk).delete()
     return redirect(request.META.get("HTTP_REFERER", "main:index"))
 
 
 def job(request, job_pk):
+    """Detailed information for a single job. Handles a form allowing update of the
+    job.
+
+    args:
+      request (HttpRequest): request that triggered this view
+      job_pk (int): the pk of the job to displayg
+
+    returns:
+      (HttpResponse or HttpResponseRedirect): a page or redirect to the previous view
+    """
     job = get_object_or_404(Job, pk=job_pk)
     form = JobForm(request.POST or None, instance=job)
     if request.method == "POST":
@@ -194,6 +260,15 @@ def job(request, job_pk):
 
 
 def software_help(request, software_index):
+    """Displays the detailed help text associated with a software.
+
+    args:
+      request (HttpRequest): request that triggered this view
+      software_index (int): the index of the software for which to display the help text
+
+    returns:
+      (HttpResponse): the page to display
+    """
     software = SOFTWARE[software_index]
     return render(
         request, "main/software_help.html", {"help_text": software["help_text"]}
@@ -201,6 +276,18 @@ def software_help(request, software_index):
 
 
 def profile(request):
+    """Display details of users profile information and linked data
+    repositories. Assumes existence of no more than one Profile record. If
+    present, the existing record is displayed as pre-populated fields in a
+    form. All enabled repositories are displayed in a table. A repository is
+    considered linked if there is an associated Token record.
+
+    args:
+      request (HttpRequest): request that triggered this view
+
+    returns:
+      (HttpResponse or HttpResponseRedirect): a page or redirect to the previous view
+    """
     try:
         profile = Profile.objects.get()
     except Profile.DoesNotExist:
@@ -232,6 +319,14 @@ def profile(request):
 
 
 def delete_profile(request):
+    """Delete profile data from the database.
+
+    args:
+      request (HttpRequest): request that triggered this view
+
+    returns:
+      (HttpResponseRedirect): a redirect to previous view
+    """
     try:
         profile = Profile.objects.get()
         profile.delete()
@@ -241,6 +336,16 @@ def delete_profile(request):
 
 
 def custom_config(request, pk=None, form_class=None):
+    """Create/update a CustomConfig or CustomResource record.
+
+    args:
+      request (HttpRequest): request that triggered this view
+      pk (int): the pk of object to update
+      form_class (CustomConfig or CustomResource): which class to work with
+
+    returns:
+      (HttpResponse or HttpResponseRedirect): the page or redirect to the previous view
+    """
     model = form_class.Meta.model
     if pk is None:
         instance = model()
@@ -257,12 +362,34 @@ def custom_config(request, pk=None, form_class=None):
 
 
 def custom_config_delete(request, pk, klass):
+    """Delete a CustomConfig or CustomResource
+
+    args:
+      request (HttpRequest): request that triggered this view
+      pk (int): pk of the record to delete
+      klass (CustomConfig or CustomResource): the klass we are deleting from
+
+    returns:
+      (HttpResponseRedirect): a redirect to previous view
+    """
     instance = get_object_or_404(klass, pk=pk)
     instance.delete()
     return redirect(request.META.get("HTTP_REFERER", "main:index"))
 
 
 def download(request, job_pk):
+    """Download a job working directory as a zip archive. The archive is
+    generated on the fly and streamed to the user. This has the advantage that
+    the download starts immediately but also means that this view blocks other
+    requests until the download is complete.
+
+    args:
+      request (HttpRequest): request that triggered this view
+      job_pk (int): pk of the job to download
+
+    returns:
+      (StreamingHttpResponse): the zip archive of the working directory
+    """
     job = get_object_or_404(Job, pk=job_pk)
     if job.status != "Completed":
         raise Http404("Job not completed")
@@ -275,6 +402,15 @@ def download(request, job_pk):
 
 
 def publish(request, job_pk):
+    """Publish a job to all linked repositories.
+
+    args:
+      request (HttpRequest): request that triggered this view
+      job_pk (int): pk of the job to publish
+
+    returns:
+      (HttpResponse or HttpResponseRedirect): a page or redirect to the previous view
+    """
     job = get_object_or_404(Job, pk=job_pk)
     try:
         profile = Profile.objects.get()
@@ -373,11 +509,31 @@ def publish(request, job_pk):
 
 
 def authorize(request, repo_label):
+    """Perform the required authorisation process for a data repository.
+
+    args:
+      request (HttpRequest): request that triggered this view
+      repo_label (str): identifying label for repository class
+
+    returns:
+      (A valid Django response usually a HttpResponseRedirect): the appropriate
+        response to continue the authorisation process
+    """
     repository = get_repository(repo_label)
     return repository.authorize(request)
 
 
 def token(request, repo_label):
+    """Request and process the returned access token for a repository.
+
+    args:
+      request (HttpRequest): request that triggered this view
+      repo_label (str): identifying label for repository class
+
+    returns:
+      (HttpResponse or HttpResponseRedirect): an error page or redirect to the
+        profile view
+    """
     repo = get_repository(repo_label)
     try:
         repo.token(request)
@@ -395,12 +551,30 @@ def token(request, repo_label):
 
 
 def delete_token(request, repo_label):
+    """Delete a Token object.
+
+    args:
+      request (HttpRequest): request that triggered this view
+      repo_label (str): identifying label for repository class
+
+    returns:
+      (HttpResponseRedirect): a redirect to previous view
+    """
     token = get_object_or_404(Token, label=repo_label)
     token.delete()
     return redirect(request.META.get("HTTP_REFERER", "main:index"))
 
 
 def directory(request, job_pk):
+    """Displays a table showing the files in a job working directory.
+
+    args:
+      request (HttpRequest): request that triggered this view
+      job_pk (int): the job files to display
+
+    returns:
+      (HttpResponse): the page requested
+    """
     job = get_object_or_404(Job, pk=job_pk)
     if not job.work_dir.exists():
 

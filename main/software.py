@@ -7,6 +7,12 @@ def clean_software_config(config):
     internal use. This allows for a simplified schema to be available to users
     whilst preserving consistent internal data structures by e.g. replacing null
     values with empty lists etc.
+
+    args:
+      config (dict): A validated SoftwareSchema
+
+    returns:
+      (dict): A cleaned version of `config`
     """
 
     config = config.copy()

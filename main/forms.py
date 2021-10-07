@@ -6,9 +6,20 @@ from .software import SOFTWARE_CHOICES
 
 
 class SubmissionForm(forms.Form):
+    """Used in the final step before job submission in the create_job view. Form fields
+    are generated based on the software configuration provided.
+    """
+
     required_css_class = "required"
 
     def __init__(self, software, *args, **kwargs):
+        """
+        args:
+          software (dict): The software package on which to base the form. Must follow
+            config_validation.SoftwareSchema.
+          *args: passed through to base class init method
+          **kwargs: passed through to base class init method
+        """
         super().__init__(*args, **kwargs)
         self.fields["description"] = forms.CharField(
             max_length=200, label="Description", required=False
@@ -20,6 +31,8 @@ class SubmissionForm(forms.Form):
 
 
 class JobTypeForm(forms.Form):
+    """Used in the initial step of job creation in the job_type view."""
+
     required_css_class = "required"
     project = forms.ModelChoiceField(
         Project.objects.all(),

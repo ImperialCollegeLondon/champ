@@ -4,6 +4,8 @@ from .models import Job
 
 
 class JobFilter(django_filters.FilterSet):
+    """Filter for Job objects used by the list_jobs view"""
+
     class Meta:
         model = Job
         fields = ("description", "project", "status", "resources", "software")

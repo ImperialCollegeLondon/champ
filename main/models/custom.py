@@ -4,6 +4,8 @@ from ..validators import validate_config_lines
 
 
 class Custom(models.Model):
+    """An abstract class for custom content to be added to job script templates."""
+
     class Meta:
         abstract = True
 
@@ -15,8 +17,12 @@ class Custom(models.Model):
 
 
 class CustomConfig(Custom):
+    """Custom scheduler directives not related to job resources."""
+
     pass
 
 
 class CustomResource(Custom):
+    """Custom scheduler directives related to job resources."""
+
     pass

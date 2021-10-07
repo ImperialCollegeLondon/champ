@@ -46,6 +46,13 @@ def zipfile_generator(dir_name, paths):
     """Generator yielding bytestrings for a zip archive constructed on the
     fly. The zip archive will contain the files specified by `paths`
     (iterable of pathlib.Path) in a parent directory `dir_name` (str).
+
+    args:
+      dir_name (str): name of parent directory that will contain files in the archive
+      paths (iterable of Path): the files to add to the archive
+
+    yields:
+      (bytes): next chunk of the archive
     """
     stream = Stream()
     with ZipFile(stream, mode="w") as zf:

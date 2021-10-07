@@ -6,6 +6,8 @@ from .models import CustomConfig, CustomResource, Job, Publication
 
 
 class JobTable(tables.Table):
+    """Table of all job records used by `job_list` view."""
+
     class Meta:
         model = Job
         template_name = "main/job_table.html"
@@ -56,6 +58,8 @@ class JobTable(tables.Table):
 
 
 class CustomConfigTable(tables.Table):
+    """Table of all CustomConfig objects."""
+
     class Meta:
         model = CustomConfig
         template_name = "django_tables2/semantic.html"
@@ -70,6 +74,8 @@ class CustomConfigTable(tables.Table):
 
 
 class CustomResourceTable(CustomConfigTable):
+    """Table of all CustomResource objects."""
+
     class Meta:
         model = CustomResource
         template_name = "django_tables2/semantic.html"
@@ -84,6 +90,8 @@ class CustomResourceTable(CustomConfigTable):
 
 
 class PublicationTable(tables.Table):
+    """Table of Publication objects for a job."""
+
     class Meta:
         model = Publication
         template_name = "django_tables2/semantic.html"
@@ -98,6 +106,8 @@ class PublicationTable(tables.Table):
 
 
 class DirectoryTable(tables.Table):
+    """Table displaying the files in a directory."""
+
     class Meta:
         template_name = "django_tables2/semantic.html"
 
