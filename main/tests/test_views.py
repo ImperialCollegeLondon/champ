@@ -69,7 +69,7 @@ class TestCreateJobViews(SchedulerTestCase):
 
         files = list(job.work_dir.glob("*"))
         self.assertIn(job.work_dir / self.test_input, files)
-        with (job.work_dir / "sub.pbs").open() as f:
+        with (job.work_dir / "sub.sh").open() as f:
             self.assertIn(self.test_input, f.read())
 
         self.assertRedirects(response, f"/list_jobs/?success={job.pk}")
@@ -89,7 +89,7 @@ class TestCreateJobViews(SchedulerTestCase):
         files = list(job.work_dir.glob("*"))
         self.assertIn(job.work_dir / self.test_input, files)
         self.assertIn(job.work_dir / test_fchk, files)
-        with (job.work_dir / "sub.pbs").open() as f:
+        with (job.work_dir / "sub.sh").open() as f:
             contents = f.read()
             self.assertIn(self.test_input, contents)
             self.assertIn(test_fchk, contents)
@@ -118,7 +118,7 @@ class TestCreateJobViews(SchedulerTestCase):
         job = Job.objects.get()
         self.assertRedirects(response, f"/list_jobs/?success={job.pk}")
 
-        with (job.work_dir / "sub.pbs").open() as f:
+        with (job.work_dir / "sub.sh").open() as f:
             contents = f.read()
         self.assertIn(self.custom_lines, contents)
 
@@ -376,7 +376,7 @@ class TestDownloadView(SchedulerTestCase):
         zf = zipfile.ZipFile(streamed_bytes)
         dir_name = self.job.work_dir.name
         self.assertEqual(
-            sorted(zf.namelist()), [f"{dir_name}/sub.pbs", f"{dir_name}/test.com"]
+            sorted(zf.namelist()), [f"{dir_name}/sub.sh", f"{dir_name}/test.com"]
         )
         with zf.open(dir_name + "/" + self.test_input) as f:
             with (TEST_DATA_PATH / self.test_input).open("rb") as f2:
@@ -487,7 +487,7 @@ class TestDirectoryView(SchedulerTestCase):
         response = self.client.get(f"/directory/{job.pk}/")
         files = response.context["table"].data.data
         self.assertEqual(files[0]["name"], "file1")
-        self.assertEqual(files[1]["name"], "sub.pbs")
+        self.assertEqual(files[1]["name"], "sub.sh")
 
     def test_missing_directory(self):
         """Appropriate message is displayed if job directory cannot be found"""

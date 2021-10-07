@@ -60,7 +60,7 @@ class JobManager(models.Manager):
             with (job.work_dir / Path(inp.name).name).open("wb") as f:
                 f.write(inp.read())
 
-        script_path = job.work_dir / "sub.pbs"
+        script_path = job.work_dir / "sub.sh"
 
         files_spec = software["input_files"]
         formatting_kwargs = {
