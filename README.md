@@ -1,9 +1,12 @@
-# HPC Portal
+# CHAMP is an HPC Access and Metadata Portal
 
-A web portal providing a simple interface to run packaged applications via a HPC
-batch system. The portal is designed primarily for beginner or occasional users
-of HPC facilities. Integration with data repositories supports publication of
-data compatible with FAIR principles.
+A web portal providing a simple interface to run packaged applications via a
+high performance computing (HPC) batch system. CHAMP is designed primarily for
+beginner or occasional users of HPC facilities. Integration with data
+repositories supports publication of data compatible with FAIR principles.
+
+To report bugs, request new features or provide feedback please create an issue
+in this repository.
 
 ## Feature Overview
 
@@ -29,17 +32,17 @@ data compatible with FAIR principles.
 
 ## Technical Overview
 
-The portal has been developed as a Passenger App within the [Open OnDemand][]
-(OOD) framework. This approach allows the portal to be very simple but also
-portable across a wide range of HPC infrastructure. OOD provides a consistent
+CHAMP has been developed as a Passenger App within the [Open OnDemand][] (OOD)
+framework. This approach allows the portal to be very simple but also portable
+across a wide range of HPC infrastructure. OOD provides a consistent
 programmatic interface for interacting with a number of popular HPC resource
 managers. It also supports a wide range of authentication mechanisms. All portal
 processes and jobs are run using the correct UID for each user.
 
 [Open Ondemand]: https://openondemand.org/
 
-The portal is written in Python (>=3.7) using [Django][]. Front-end web content
-is almost exclusively HTML with very minimal use of JavaScript. Interaction with
+CHAMP is written in Python (>=3.7) using [Django][]. Front-end web content is
+almost exclusively HTML with very minimal use of JavaScript. Interaction with
 the OOD libraries is provided via simple Ruby shims called as a sub-process.
 
 [Django]: https://www.djangoproject.com/
@@ -49,17 +52,17 @@ allows integrations with institution-specific repositories to be developed and
 deployed easily. Authentication using OAuth2 only is supported however the
 provided data models may also be suitable for use with other mechanisms.
 
-The portal is primarily configured via a yaml file and is extremely
-flexible. Use of a templating approach means there are no restrictions on the
-types of computing resources or software that can be made available. It is
-possible for users to add their own configuration within relevant parts of the
-template. This can be useful for e.g. providing accounting information.
+CHAMP is primarily configured via a yaml file and is extremely flexible. Use of
+a templating approach means there are no restrictions on the types of computing
+resources or software that can be made available. It is possible for users to
+add their own configuration within relevant parts of the template. This can be
+useful for e.g. providing accounting information.
 
 ## Setup Instructions
 
-This section covers setting up the portal within an OpenOnDemand (OOD)
-instance. It is possible to run the tests and a development version the portal
-outside of OOD with limited functionality. Please see the [Development
+This section covers setting up CHAMP within an OpenOnDemand (OOD) instance. It
+is possible to run the tests and a development version the portal outside of OOD
+with limited functionality. Please see the [Development
 Guide](#development-guide) section for this.
 
 ### Requirements
@@ -72,15 +75,15 @@ Guide](#development-guide) section for this.
 
 ### Test Deployment
 
-It's best to first deploy a version of the portal within the OOD development
-sandbox to allow testing and refinement of the configuration. If you're not
-familiar with this process its strongly recommended that you follow the
-[tutorial][] provided by the OOD documentation first.
+It's best to first deploy a version of CHAMP within the OOD development sandbox
+to allow testing and refinement of the configuration. If you're not familiar
+with this process its strongly recommended that you follow the [tutorial][]
+provided by the OOD documentation first.
 
 [tutorial]: https://osc.github.io/ood-documentation/latest/app-development/tutorials-passenger-apps.html
 
-When you're ready [clone and setup][] the portal app. Some additional
-configuration is required before the app will run:
+When you're ready [clone and setup][] CHAMP. Some additional configuration is
+required before the app will run:
 
 [clone and setup]: https://osc.github.io/ood-documentation/latest/app-development/tutorials-passenger-apps/ps-to-quota.html#clone-and-setup
 
@@ -99,7 +102,7 @@ configuration is required before the app will run:
    PORTAL_VENV: '/var/portal_venv/bin/python'
    ```
 
-1. If the portal source code is not on a filesystem from which jobs can be
+1. If the CHAMP source code is not on a filesystem from which jobs can be
    submitted then in the root directory create a `.env` file containing
    something like:
 
@@ -109,7 +112,7 @@ configuration is required before the app will run:
 
    Jobs will be stored and submitted from the specified location. You can skip
    this step in which case job files will be stored in `portal_jobs` in the same
-   directory as the portal source code.
+   directory as the CHAMP source code.
 1. Django's usual method for serving static files during development doesn't
    work within OOD so run the below command to have Apache serve them instead:
 
@@ -131,13 +134,13 @@ minimal configuration. See below for details on creating a full configuration.
 
 Before creating a production deployment a full configuration file must be
 developed. This configuration will depend on details of your cluster so only
-generic guidance is provided here. The HPC Portal is very flexible and you have
-a lot of choice in how jobs will behave when run. An [example configuration][] as
-used in production by Imperial College London is available for reference.
+generic guidance is provided here. CHAMP is very flexible and you have a lot of
+choice in how jobs will behave when run. An [example configuration][] as used in
+production by Imperial College London is available for reference.
 
 Reference documentation for the configuration file can be found below however
-we'll start with a short overview. The HPC Portal generates submission scripts
-for jobs via a simple template system. The primary template is provided by the
+we'll start with a short overview. CHAMP generates submission scripts for jobs
+via a simple template system. The primary template is provided by the
 `script_template` key in the config file. Different resource and software
 configurations provide lines to be inserted into the template.
 
@@ -150,14 +153,12 @@ following:
   the `OldChk` directive to the Gaussian input file
 * Runs `formchk` after the job is complete.
 
-
-
 ### Configuration File Reference
 
 All keys are required unless stated otherwise. Validation of config files is
-provided by the [marshmallow][] library when the HPC Portal loads. This should
-give easy to understand errors in the case of problems in the config file. You
-can also use the script `config_validation.py` to check your config.
+provided by the [marshmallow][] library when CHAMP loads. This should give easy
+to understand errors in the case of problems in the config file. You can also
+use the script `config_validation.py` to check your config.
 
 [marshmallow]: https://marshmallow.readthedocs.io/en/stable/
 
@@ -168,12 +169,12 @@ is primarily intended for use where the configuration is made public in a git
 repository (e.g. the Imperial College [example configuration][]). This allows
 users of the system to provide additional software configurations according to
 their needs. When this key is provided the link is added to the "Create Job"
-page of the Portal with the text "add a new software".
+page of the portal with the text "add a new software".
 
 #### cluster
 
-The name of the cluster that the portal will use for job submission as
-configured for OOD (i.e. the file prefix for the cluster configuration file in
+The name of the cluster that CHAMP will use for job submission as configured for
+OOD (i.e. the file prefix for the cluster configuration file in
 `/etc/ood/config/clusters.d`).
 
 #### `custom_config_line_regex`
@@ -195,7 +196,7 @@ may publish data. To be enabled a data repository must be registered via the
 repository plugin system. See the section on [Data
 Repositories](#data-repositories) for details. Strings in this list should
 correspond to the label attribute of the registered class. Plugins for the
-following repositories are included with the Portal:
+following repositories are included with CHAMP:
 
 * Zenodo (label - 'zenodo')
 
@@ -260,7 +261,7 @@ script_template: |
 #### `software`
 
 A list of dictionaries, each specifying a piece of software that can be run
-using the Portal. Each list entry corresponds to an item in the dropdown box for
+using the portal. Each list entry corresponds to an item in the dropdown box for
 software when creating a new job. Each dictionary contains 4 keys:
 
 * `commands` (string): The commands to be inserted into `script_template` that
@@ -316,7 +317,7 @@ software when creating a new job. Each dictionary contains 4 keys:
 #### `external_links` (optional)
 
 A dictionary of links to external resources. These are added as items to the
-banner menu at the top of the Portal web interface. The intended use is to add
+banner menu at the top of the CHAMP web interface. The intended use is to add
 links to resources (e.g. a service status page) that may be relevant for
 individual deployments. Both keys and values of the dictionary should be
 strings. Keys will be used as the text displayed in the banner menu whilst
@@ -341,13 +342,13 @@ Once a suitable configuration has been developed and tested.
    settings. At a minimum you will need to set values for `ALLOWED_HOSTS` and
    `ADMINS` as well as valid configuration of an SMTP server (including
    credentials if required). You can also use this file to overwrite any
-   settings from `settings.py` and `production.py`. Settings for the Portal that
+   settings from `settings.py` and `production.py`. Settings for the portal that
    you may wish to override:
   * `DATABASES["default"]["name"]` - due to OOD's use of dedicated per user
     servers to run apps each user has their own sqlite3 database. The value of
     this setting determines where the database is saved. The default location is
     the file `portal_db_DO_NOT_DELETE.sqlite3` in the users home directory.
-  * `JOBS_DIR` - this is the location where the Portal will store data for jobs
+  * `JOBS_DIR` - this is the location where the portal will store data for jobs
     that it runs. Job submission is carried out from sub-directories. The
     default value is the directory `portal_jobs` in the user's home directory.
 1. Create a `.env` file in the root directory of the portal source code
@@ -359,13 +360,13 @@ Once a suitable configuration has been developed and tested.
    PORTAL_CONFIG_PATH="/path/to/your/portal_config.yaml"
    ```
 
-The Portal should now be launchable for all users via the OOD Dashboard as "HPC
+CHAMP should now be launchable for all users via the OOD Dashboard as "HPC
 Portal" under the Jobs category. If you've enabled the Zenodo repository please
 see the below section on completing the setup steps required for this.
 
 ### Data Repositories
 
-The Portal supports publishing individual jobs to linked data repository
+CHAMP supports publishing individual jobs to linked data repository
 services. The DOI from the publication is recorded in the portal against the job
 record. Where repositories support the full DataCite Subject schema publication
 of rich metadata is also possible. The files and metadata uploaded for a record
@@ -389,8 +390,8 @@ application in order to function. This can be setup via the Zenodo website using
 any valid user account but it's suggested to something institutional so that
 everything looks official for end users. At time of writing an app can be
 created via Settings->Applications->Developer Applications. The correct redirect
-URI to use will depend on your deployment of the Portal but should be the URI of
-the index page suffixed with `token/zenodo`. The client type should be private.
+URI to use will depend on your deployment but should be the URI of the index
+page suffixed with `token/zenodo`. The client type should be private.
 
 Once created you'll need the Client ID and Client Secret in order to
 proceed. With these in hand add the following entries to the `.env` file in the
