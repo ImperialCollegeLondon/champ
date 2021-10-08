@@ -429,8 +429,10 @@ able submit jobs but the test suite can be run. You should either create a
 python virtual environment and install the dependencies from `requirements.txt`
 or you can use the provided Dockerfile with Docker Compose.
 
-Please see <./CONTRIBUTING.md> for details of the expected workflow for making
+Please see [CONTRIBUTING.md][] for details of the expected workflow for making
 pull requests.
+
+[CONTRIBUTING.md]: CONTRIBUTING.md
 
 ### Run Tests
 
