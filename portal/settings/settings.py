@@ -184,7 +184,7 @@ with open(os.getenv("PORTAL_CONFIG_PATH", "portal_config.yaml")) as f:
     PORTAL_CONFIG = yaml.safe_load(f)
 ConfigSchema().load(PORTAL_CONFIG)
 
-VERSION = "2.0.0-beta"
+VERSION = "2.0.0"
 
 CONFIG_LINE_REGEX = re.compile(PORTAL_CONFIG["custom_config_line_regex"])
 
