@@ -347,13 +347,13 @@ Once a suitable configuration has been developed and tested.
    credentials if required). You can also use this file to overwrite any
    settings from `settings.py` and `production.py`. Settings for the portal that
    you may wish to override:
-  * `DATABASES["default"]["name"]` - due to OOD's use of dedicated per user
-    servers to run apps each user has their own sqlite3 database. The value of
-    this setting determines where the database is saved. The default location is
-    the file `portal_db_DO_NOT_DELETE.sqlite3` in the users home directory.
-  * `JOBS_DIR` - this is the location where the portal will store data for jobs
-    that it runs. Job submission is carried out from sub-directories. The
-    default value is the directory `portal_jobs` in the user's home directory.
+    * `DATABASES["default"]["name"]` - due to OOD's use of dedicated per user
+      servers to run apps each user has their own sqlite3 database. The value of
+      this setting determines where the database is saved. The default location
+      is the file `portal_db_DO_NOT_DELETE.sqlite3` in the users home directory.
+    * `JOBS_DIR` - this is the location where the portal will store data for
+      jobs that it runs. Job submission is carried out from sub-directories. The
+      default value is the directory `portal_jobs` in the user's home directory.
 1. Create a `.env` file in the root directory of the portal source code
    containing:
 
