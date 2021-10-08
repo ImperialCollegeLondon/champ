@@ -1,5 +1,7 @@
 # CHAMP is an HPC Access and Metadata Portal
 
+[![DOI](https://zenodo.org/badge/367421932.svg)](https://zenodo.org/badge/latestdoi/367421932)
+
 A web portal providing a simple interface to run packaged applications via a
 high performance computing (HPC) batch system. CHAMP is designed primarily for
 beginner or occasional users of HPC facilities. Integration with data
