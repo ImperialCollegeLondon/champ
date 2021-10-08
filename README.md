@@ -171,7 +171,7 @@ users of the system to provide additional software configurations according to
 their needs. When this key is provided the link is added to the "Create Job"
 page of the portal with the text "add a new software".
 
-#### cluster
+#### `cluster`
 
 The name of the cluster that CHAMP will use for job submission as configured for
 OOD (i.e. the file prefix for the cluster configuration file in
