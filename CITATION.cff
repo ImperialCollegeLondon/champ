@@ -1,0 +1,20 @@
+cff-version: 2.0.0
+message: "If you use this software, please cite it as below"
+authors:
+  - family-names: Cave-Ayland
+    given-names: Christopher
+    orcid: 0000-0003-0942-8030
+  - family-names: Bearpark
+    given-names: Michael 
+    orcid: 0000-0002-1117-7536
+  - family-names: Charles
+    given-names: Romain
+    orcid: 0000-0002-1851-8612
+  - family-names: Rzepa
+    given-names: Henry S.
+    orcid: 0000-0002-8635-8390
+title: "CHAMP is an HPC Access and Metadata Portal"
+version: 2.0.0
+doi: 10.5281/zenodo.5557269
+date-released: 2021-10-08
+url: "https://github.com/ImperialCollegeLondon/champ/"
