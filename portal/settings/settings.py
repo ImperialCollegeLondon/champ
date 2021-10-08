@@ -140,7 +140,7 @@ TEMPLATES[0]["OPTIONS"]["context_processors"] += [
 TEMPLATES[0]["DIRS"] = list(
     (BASE_DIR / "main" / "repositories" / "plugins").glob("*/templates")
 )
-APP_NAME = "HPC Portal"
+APP_NAME = "CHAMP"
 
 DATABASES["default"]["NAME"] = BASE_DIR / "db" / "db.sqlite3"
 
