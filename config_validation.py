@@ -6,13 +6,19 @@ class ResourceSchema(Schema):
     script_lines = fields.Str(required=True)
 
 
+class FileSchema(Schema):
+    key = fields.Str(required=True)
+    description = fields.Str(required=True)
+
+
 class FilesSchema(Schema):
-    required = fields.Dict(
-        keys=fields.Str(), values=fields.Str(), allow_none=True, required=True
-    )
-    optional = fields.Dict(
-        keys=fields.Str(), values=fields.Str(), allow_none=True, required=True
-    )
+    required = fields.Nested(FileSchema, many=True, allow_none=True, required=True)
+    optional = fields.Nested(FileSchema, many=True, allow_none=True, required=True)
+
+
+class ExternalLinkSchema(Schema):
+    text = fields.Str(required=True)
+    url = fields.Url(required=True)
 
 
 class SoftwareSchema(Schema):
@@ -28,7 +34,7 @@ class ConfigSchema(Schema):
     script_template = fields.Str(required=True)
     custom_config_line_regex = fields.Str(required=True)
     enabled_repositories = fields.List(fields.Str, required=True, allow_none=True)
-    external_links = fields.Dict(keys=fields.Str(), values=fields.Str())
+    external_links = fields.Nested(ExternalLinkSchema, many=True)
     cluster = fields.Str(required=True)
     config_link = fields.Str()
 

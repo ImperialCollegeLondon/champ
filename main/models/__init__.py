@@ -64,8 +64,10 @@ class JobManager(models.Manager):
 
         files_spec = software["input_files"]
         formatting_kwargs = {
-            key: (input_files[key].name if key in input_files else "")
-            for key in chain(files_spec["required"], files_spec["optional"])
+            spec["key"]: (
+                input_files[spec["key"]].name if spec["key"] in input_files else ""
+            )
+            for spec in chain(files_spec["required"], files_spec["optional"])
         }
         commands = software["commands"].format(**formatting_kwargs)
 

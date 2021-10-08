@@ -5,9 +5,11 @@ software:
   - name: "test"
     input_files:
       required:
-        file1: "test_file1"
+        - key: file1
+          description: test_file1
       optional:
-        file2: "test_file2"
+        - key: file2
+          description: test_file2
     commands: |
       {file1}
       {file2}

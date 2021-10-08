@@ -59,8 +59,8 @@
             <a href="{% url 'main:job_type' %}" class="item">Create Job</a>
             <a href="{% url 'main:list_jobs' %}" class="item">List All Jobs</a>
             <a href="{% url 'main:profile' %}" class="item">Profile</a>
-	    {% for name, url in EXTERNAL_LINKS.items %}
-            <a href="{{ url }}" target="_blank" class="item external-link">{{ name }}</a>
+	    {% for link in EXTERNAL_LINKS %}
+            <a href="{{ link.url }}" target="_blank" class="item external-link">{{ link.text }}</a>
 	    {% endfor %}
 	    <div class="right menu">
 	      <div class="item">{{ APP_NAME }} v{{ APP_VERSION }}</div>

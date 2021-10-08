@@ -24,10 +24,13 @@ class SubmissionForm(forms.Form):
         self.fields["description"] = forms.CharField(
             max_length=200, label="Description", required=False
         )
-        for name, label in software["input_files"]["required"].items():
-            self.fields[name] = forms.FileField(label=label)
-        for name, label in software["input_files"]["optional"].items():
-            self.fields[name] = forms.FileField(label=label, required=False)
+        input_files = software["input_files"]
+        for spec in input_files["required"]:
+            self.fields[spec["key"]] = forms.FileField(label=spec["description"])
+        for spec in input_files["optional"]:
+            self.fields[spec["key"]] = forms.FileField(
+                label=spec["description"], required=False
+            )
 
 
 class JobTypeForm(forms.Form):

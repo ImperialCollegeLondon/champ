@@ -10,4 +10,4 @@ def app_version(request):
 
 
 def external_links(request):
-    return {"EXTERNAL_LINKS": settings.PORTAL_CONFIG.get("external_links", {})}
+    return {"EXTERNAL_LINKS": settings.PORTAL_CONFIG.get("external_links", [])}

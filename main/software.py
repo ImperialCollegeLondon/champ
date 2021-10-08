@@ -17,9 +17,9 @@ def clean_software_config(config):
 
     config = config.copy()
     if not config["input_files"]["required"]:
-        config["input_files"]["required"] = {}
+        config["input_files"]["required"] = []
     if not config["input_files"]["optional"]:
-        config["input_files"]["optional"] = {}
+        config["input_files"]["optional"] = []
     return config
 
 

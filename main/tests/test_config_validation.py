@@ -4,7 +4,14 @@ from unittest import TestCase
 import yaml
 from marshmallow import ValidationError
 
-from config_validation import ConfigSchema, FilesSchema, ResourceSchema, SoftwareSchema
+from config_validation import (
+    ConfigSchema,
+    ExternalLinkSchema,
+    FileSchema,
+    FilesSchema,
+    ResourceSchema,
+    SoftwareSchema,
+)
 from main.software import clean_software_config
 
 TEST_DATA_PATH = Path(__file__).absolute().parent / "test_data"
@@ -46,8 +53,49 @@ class TestResourceSchema(SchemaTestCase):
         self.schema.load(self.valid_data)
 
 
+class TestExternalLinkSchema(ExternalLinkSchema):
+    valid_data = {"text": "", "url": "https://foo.com"}
+    schema = ResourceSchema()
+
+    def test_fields_required(self):
+        """All fields for required for successful validation"""
+        self.required_fields(["text", "url"])
+
+    def test_fields_type(self):
+        """Non-string values for fields do not pass validation"""
+        self.field_types({"description": 0, "script_lines": 0})
+
+    def test_url_validation(self):
+        """Url field must be a valid URL"""
+        self.field_types({"url": "notaurl"})
+
+    def test_valid(self):
+        """Valid data should not trigger a validation error"""
+        self.schema.load(self.valid_data)
+
+
+class TestFileSchema(SchemaTestCase):
+    valid_data = {"description": "", "key": ""}
+    schema = FileSchema()
+
+    def test_fields_required(self):
+        """All fields for required for successful validation"""
+        self.required_fields(["description", "key"])
+
+    def test_fields_type(self):
+        """Non-string values for fields do not pass validation"""
+        self.field_types({"description": 0, "key": 0})
+
+    def test_valid(self):
+        """Valid data should not trigger a validation error"""
+        self.schema.load(self.valid_data)
+
+
 class TestFilesSchema(SchemaTestCase):
-    valid_data = {"required": {"a": "b"}, "optional": {"a": "b"}}
+    valid_data = {
+        "required": [TestFileSchema.valid_data],
+        "optional": [TestFileSchema.valid_data],
+    }
     schema = FilesSchema()
 
     def test_fields_required(self):
@@ -64,7 +112,7 @@ class TestFilesSchema(SchemaTestCase):
 
 
 class TestSoftwareSchema(SchemaTestCase):
-    files_data = {"required": None, "optional": None}
+    files_data = TestFilesSchema.valid_data
     valid_data = dict(name="", input_files=files_data, commands="", help_text="")
     schema = SoftwareSchema()
 
@@ -79,9 +127,9 @@ class TestSoftwareSchema(SchemaTestCase):
 
 
 class TestConfigSchema(SchemaTestCase):
-    resource_data = {"description": "", "script_lines": ""}
-    files_data = {"required": {"a": "b"}, "optional": {"a": "b"}}
-    software = dict(name="", input_files=files_data, commands="", help_text="")
+    software = dict(
+        name="", input_files=TestFilesSchema.valid_data, commands="", help_text=""
+    )
     schema = ConfigSchema()
 
     valid_data = dict(
@@ -90,7 +138,7 @@ class TestConfigSchema(SchemaTestCase):
         script_template="",
         custom_config_line_regex="",
         enabled_repositories=[""],
-        external_links={"a": "b"},
+        external_links=[TestExternalLinkSchema.valid_data],
         cluster="",
     )
 
@@ -142,5 +190,5 @@ class TestCleanSoftwareConfig(TestCase):
             help_text="",
         )
         config = clean_software_config(config)
-        self.assertEqual(config["input_files"]["required"], {})
-        self.assertEqual(config["input_files"]["optional"], {})
+        self.assertEqual(config["input_files"]["required"], [])
+        self.assertEqual(config["input_files"]["optional"], [])

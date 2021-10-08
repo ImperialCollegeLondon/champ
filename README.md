@@ -288,24 +288,26 @@ software when creating a new job. Each dictionary contains 4 keys:
     of an item metadata and its value.
 * `input_files` (dictionary): The input files to be provided by the end user to
   run their calculation. This dictionary must contain 2 keys, `required` and
-  `optional`. Each of these in turn may be either be empty or a dictionary
-  containing insertion point tags (keys) and human-readable descriptions
-  (values). This is most easily demonstrated with an example.
+  `optional`. Each of these in turn may be either empty or a list of
+  dictionaries with the keys "key" and "description". This is most easily
+  demonstrated with an example.
 
   ```
   input_files:
     required:
-      file1: human readable description of file1
+      - key: file1
+        description: "human readable description of file1"
     optional:
-      file2: human readable description of file1
+      - key: file2
+        description: "human readable description of file2"
   ```
 
   The above defines two input files, `file1` and `file2`, for a piece of
   software. Of these `file1` is required for a job to run whilst `file2` is
   optional. This is reflected in the form generated for users when submitting a
-  job using this software. Both `file1` and `file2` are available as insertion
-  points within the body of `commands`. The human readable description of each
-  file will be used as the label for the form field during upload.
+  job using this software. The key values `file1` and `file2` are available as
+  insertion points within the body of `commands`. The human readable description
+  of each file will be used as the label for the form field during upload.
 * `help_text` (string): The help text made available to the user when submitting
   a job with this software. It should provide sufficient detail to enable users
   to prepare the input files for their jobs. This text is rendered as part of a
@@ -316,16 +318,17 @@ software when creating a new job. Each dictionary contains 4 keys:
 
 #### `external_links` (optional)
 
-A dictionary of links to external resources. These are added as items to the
-banner menu at the top of the CHAMP web interface. The intended use is to add
-links to resources (e.g. a service status page) that may be relevant for
-individual deployments. Both keys and values of the dictionary should be
-strings. Keys will be used as the text displayed in the banner menu whilst
-values provide the associated link. For example:
+A list of dictionaries of links to external resources. These are added as items
+to the banner menu at the top of the CHAMP web interface. The intended use is to
+add links to resources (e.g. a service status page) that may be relevant for
+individual deployments. Dictionaries should have exactly two keys - "text" and
+"url". The "text" value will be displayed in the banner menu whilst "url"
+provides the associated link. For example:
 
 ```
 external_links:
-  "System Status": https://my.status.page
+  - text: "System Status"
+    url: https://my.status.page
 ```
 
 ### Production Deployment

@@ -67,9 +67,9 @@ def create_job(request, project_pk, resource_index, software_index, config_pk=No
         files_spec = software["input_files"]
         if form.is_valid():
             input_files = {
-                key: request.FILES[key]
-                for key in chain(files_spec["required"], files_spec["optional"])
-                if key in request.FILES
+                spec["key"]: request.FILES[spec["key"]]
+                for spec in chain(files_spec["required"], files_spec["optional"])
+                if spec["key"] in request.FILES
             }
             try:
                 job = Job.objects.create_job(
