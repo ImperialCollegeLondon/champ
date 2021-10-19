@@ -455,6 +455,7 @@ To run CHAMP locally first copy `docs/example_config.yaml` to
 `cluster` key. This is the minimum required config to run the server. Then:
 
 ```
+python manage.py migrate  # create initial database schema
 python manage.py runserver
 ```
 
