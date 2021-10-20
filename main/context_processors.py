@@ -15,3 +15,12 @@ def external_links(request):
 
 def index_page_templates(request):
     return {"INDEX_PAGE_TEMPLATES": ["main/welcome_override.html", "main/welcome.html"]}
+
+
+def menu_style_templates(request):
+    return {
+        "MENU_STYLE_TEMPLATES": [
+            "main/menu_style_override.html",
+            "main/menu_style.html",
+        ]
+    }
