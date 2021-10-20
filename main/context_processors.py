@@ -11,3 +11,7 @@ def app_version(request):
 
 def external_links(request):
     return {"EXTERNAL_LINKS": settings.PORTAL_CONFIG.get("external_links", [])}
+
+
+def index_page_templates(request):
+    return {"INDEX_PAGE_TEMPLATES": ["main/welcome_override.html", "main/welcome.html"]}

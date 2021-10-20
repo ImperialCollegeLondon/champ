@@ -136,6 +136,7 @@ TEMPLATES[0]["OPTIONS"]["context_processors"] += [
     "main.context_processors.app_name",
     "main.context_processors.app_version",
     "main.context_processors.external_links",
+    "main.context_processors.index_page_templates",
 ]
 TEMPLATES[0]["DIRS"] = list(
     (BASE_DIR / "main" / "repositories" / "plugins").glob("*/templates")
