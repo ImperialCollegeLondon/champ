@@ -331,7 +331,42 @@ external_links:
     url: https://my.status.page
 ```
 
-### Production Deployment
+## Customisation
+
+Limited customisation of the appearance of CHAMP is supported.
+
+### Index Page Content
+
+CHAMP provides some generic text for the index page. To customise this content create
+the file `main/templates/main/welcome_override.html`. This will be inserted into the
+index page template. For reference see the default index page content in
+`main/templates/main/welcome.html`.
+
+### Menu Styling
+
+Appearance of the top menu can be customised by creating the file
+`main/templates/main/menu_style_override.html`. For reference see the default styling in
+`main/templates/main/menu_style.html`. As an example to change the menu bar to a light
+background with black text:
+
+```css
+.ui.inverted.menu {
+  background-color: #F0F0F0;
+}
+
+.ui.inverted.menu .item {
+  color: #000000;
+}
+
+.ui.menu .item img.logo {
+  filter: invert(1);
+  margin-right: 5em;
+  min-height: 100%;
+  min-width: 100%;
+}
+```
+
+## Production Deployment
 
 Once a suitable configuration has been developed and tested.
 
