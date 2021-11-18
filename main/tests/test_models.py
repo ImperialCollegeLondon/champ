@@ -5,11 +5,18 @@ from unittest.mock import patch
 from django.core.exceptions import ValidationError
 
 from ..models import ROUNDING_INTERVAL, CustomConfig, Job, Profile, Project
+from ..portal_config import SettingsGetter
 from ..scheduler import SchedulerError
 from . import create_dummy_job
 from .scheduler_mock import SchedulerTestCase, raise_scheduler_error
 
+TEST_DATA_PATH = Path(__file__).absolute().parent / "test_data"
 
+
+@patch(
+    "main.portal_config.get_portal_settings._settings",
+    SettingsGetter(TEST_DATA_PATH / "test_config.yaml")(),
+)
 class Test(SchedulerTestCase):
     def setUp(self):
         super().setUp()

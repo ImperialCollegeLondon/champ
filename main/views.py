@@ -23,8 +23,9 @@ from .models import (
     Publication,
     Token,
 )
+from .portal_config import get_portal_settings
 from .repositories import RepositoryError, get_repositories, get_repository
-from .software import SOFTWARE
+from .software import get_software
 from .tables import (
     CustomConfigTable,
     CustomResourceTable,
@@ -58,7 +59,7 @@ def create_job(request, project_pk, resource_index, software_index, config_pk=No
       (HttpResponse): the page to display
     """
     project = get_object_or_404(Project, pk=project_pk)
-    software = SOFTWARE[software_index]
+    software = get_software()[software_index]
     custom_config = (
         None if config_pk is None else get_object_or_404(CustomConfig, pk=config_pk)
     )
@@ -200,7 +201,10 @@ def job_type(request):
     return render(
         request,
         "main/job_type.html",
-        {"form": form, "config_link": settings.CONFIG_LINK},
+        {
+            "form": form,
+            "config_link": get_portal_settings().CONFIG_LINK,
+        },
     )
 
 
@@ -269,7 +273,7 @@ def software_help(request, software_index):
     returns:
       (HttpResponse): the page to display
     """
-    software = SOFTWARE[software_index]
+    software = get_software()[software_index]
     return render(
         request, "main/software_help.html", {"help_text": software["help_text"]}
     )
