@@ -458,18 +458,24 @@ OAuth2 applications.
 
 ## Development Guide
 
-A development setup is provided for working with the portal even without an
-installation of Open OnDemand. Needless to say when run in this way you won't be
-able submit jobs but the test suite can be run. You should either create a
-python virtual environment and install the dependencies from `requirements.txt`
-or you can use the provided Dockerfile with Docker Compose.
+Two development setups are available for working with the portal. Firstly the
+portal can be run without an installation of Open OnDemand. Alternatively a
+Docker Compose configuration running a demo cluster with Open OnDemand is also
+available.
+
+### Without Open OnDemand
+
+Needless to say when working in this way you won't be able submit jobs but the
+test suite can be run. You should either create a python virtual environment and
+install the dependencies from `requirements.txt` or you can use the provided
+Dockerfile with Docker Compose.
 
 Please see [CONTRIBUTING.md][] for details of the expected workflow for making
 pull requests.
 
 [CONTRIBUTING.md]: CONTRIBUTING.md
 
-### Run Tests
+#### Run Tests
 
 All tests can be run by using e.g.:
 
@@ -483,7 +489,7 @@ or using Docker Compose:
 docker-compose run app python manage.py test
 ```
 
-### Run Development Server
+#### Run Server
 
 To run CHAMP locally first copy `docs/example_config.yaml` to
 `portal_config.yaml` in repository root directory. Add an empty string to the
@@ -503,5 +509,31 @@ docker-compose up
 then point your browser to `localhost:8000`. The working tree of the repository
 is mounted into the Docker container so updates to the code should be reflected
 in the running server using both methods.
+
+### Demo Cluster
+
+Configuration is provided by a Docker Compose file in the `demo_cluster`
+directory. This borrows heavily from the [ubccr/hpc-toolset-tutorial][].
+
+[ubcrr/hpc-toolset-tutorial]: https://github.com/ubccr/hpc-toolset-tutorial
+
+#### Run Tests
+
+All tests, including those that perform job submission, can be run by using e.g.:
+
+```
+docker-compose -f demo_cluster/docker-compose.demo.yaml run ondemand bash demo_cluster/run_test.sh
+```
+
+#### Run Server
+
+Start the server with:
+
+```
+docker-compose -f demo_cluster/docker-compose.demo.yaml
+```
+
+then access `https://localhost:3443/pun/sys/champ` in a browser. When prompted
+for credentials use `hpcadmin` with the password `ilovelinux`.
 
 [example configuration]: https://github.com/ImperialCollegeLondon/hpc_portal_config

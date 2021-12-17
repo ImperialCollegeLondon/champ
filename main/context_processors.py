@@ -1,5 +1,7 @@
 from django.conf import settings
 
+from .portal_config import get_portal_settings
+
 
 def app_name(request):
     return {"APP_NAME": settings.APP_NAME}
@@ -10,7 +12,7 @@ def app_version(request):
 
 
 def external_links(request):
-    return {"EXTERNAL_LINKS": settings.PORTAL_CONFIG.get("external_links", [])}
+    return {"EXTERNAL_LINKS": get_portal_settings().EXTERNAL_LINKS}
 
 
 def index_page_templates(request):

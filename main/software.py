@@ -1,4 +1,4 @@
-from django.conf import settings
+from .portal_config import get_portal_settings
 
 
 def clean_software_config(config):
@@ -23,8 +23,10 @@ def clean_software_config(config):
     return config
 
 
-SOFTWARE = [
-    clean_software_config(config) for config in settings.PORTAL_CONFIG["software"] or []
-]
+def get_software():
+    portal_config = get_portal_settings()
+    return [clean_software_config(config) for config in portal_config.SOFTWARE or []]
 
-SOFTWARE_CHOICES = list(enumerate(s["name"] for s in SOFTWARE))
+
+def get_software_choices():
+    return list(enumerate(s["name"] for s in get_software()))

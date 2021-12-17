@@ -11,12 +11,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 import os
-import re
 from pathlib import Path
-
-import yaml
-
-from config_validation import ConfigSchema
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -182,15 +177,7 @@ LOGGING = {
 
 JOBS_DIR = Path(os.getenv("JOBS_DIR", str(BASE_DIR / "portal_jobs")))
 
-with open(os.getenv("PORTAL_CONFIG_PATH", "portal_config.yaml")) as f:
-    PORTAL_CONFIG = yaml.safe_load(f)
-ConfigSchema().load(PORTAL_CONFIG)
+
+PORTAL_CONFIG_PATH = os.getenv("PORTAL_CONFIG_PATH", "portal_config.yaml")
 
 VERSION = "2.0.0"
-
-CONFIG_LINE_REGEX = re.compile(PORTAL_CONFIG["custom_config_line_regex"])
-
-ENABLED_REPOSITORIES = PORTAL_CONFIG.get("enabled_repositories") or []
-
-CLUSTER = PORTAL_CONFIG["cluster"]
-CONFIG_LINK = PORTAL_CONFIG.get("config_link")

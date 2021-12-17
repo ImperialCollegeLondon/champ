@@ -9,8 +9,9 @@ from django.db import models
 from django.urls import reverse
 
 from .. import scheduler
+from ..portal_config import get_portal_settings
 from ..resources import get_resource
-from ..software import SOFTWARE
+from ..software import get_software
 from ..validators import validate_orcid_id
 from .custom import CustomConfig, CustomResource  # noqa: F401
 
@@ -46,7 +47,7 @@ class JobManager(models.Manager):
 
         """
         resources = get_resource(resource_index)
-        software = SOFTWARE[software_index]
+        software = get_software()[software_index]
         job = self.create(
             status="Queueing",
             description=description,
@@ -74,9 +75,10 @@ class JobManager(models.Manager):
         config_lines = (
             custom_config.script_lines.strip() + "\n" if custom_config else ""
         )
+        portal_settings = get_portal_settings()
         with script_path.open("w") as f:
             f.write(
-                settings.PORTAL_CONFIG["script_template"].format(
+                portal_settings.SCRIPT_TEMPLATE.format(
                     commands=commands,
                     resources=resources["script_lines"],
                     custom_config=config_lines,

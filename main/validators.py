@@ -1,7 +1,8 @@
 import re
 
-from django.conf import settings
 from django.core.exceptions import ValidationError
+
+from .portal_config import get_portal_settings
 
 ORCID_REGEX = re.compile(r"^\d{4}-\d{4}-\d{4}-(\d{3}X|\d{4})$")
 
@@ -13,8 +14,9 @@ def validate_config_lines(lines):
       lines (str): The config lines to check
     """
     lines = lines.strip()
+    portal_settings = get_portal_settings()
     for line in lines.split("\n"):
-        if settings.CONFIG_LINE_REGEX.match(line) is None:
+        if portal_settings.CONFIG_LINE_REGEX.match(line) is None:
             raise ValidationError(f"Invalid line: '{line}'")
 
 

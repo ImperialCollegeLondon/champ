@@ -23,3 +23,10 @@ jobs:
       - name: Run tests
         run: |
           PORTAL_CONFIG_PATH=./main/tests/test_data/test_config.yaml python manage.py test --no-input
+  demo_cluster:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run tests in demo cluster
+        run: |
+          docker-compose -f demo_cluster/docker-compose.demo.yaml run --rm ondemand bash demo_cluster/run_test.sh
