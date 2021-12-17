@@ -3,3 +3,7 @@
 !manage.py
 !requirements.txt
 !portal
+!config_validation.py
+!passenger_wsgi.py
+!demo_cluster
+!manifest.yml
