@@ -2,8 +2,7 @@ import importlib
 import pkgutil
 import re
 
-from django.conf import settings
-
+from ..portal_config import get_portal_settings
 from . import plugins
 
 REPOSITORIES = {}
@@ -15,8 +14,6 @@ class RepositoryError(Exception):
 
 
 def register(klass):
-    if klass.label not in settings.ENABLED_REPOSITORIES:
-        return klass
     if not LABEL_REGEX.match(klass.label):
         raise ValueError(
             "Unable to register repository. Label must contain only letters, numbers, "
@@ -31,7 +28,12 @@ def get_repository(label):
 
 
 def get_repositories():
-    return REPOSITORIES.copy()
+    portal_settings = get_portal_settings()
+    return {
+        label: repo
+        for label, repo in REPOSITORIES.items()
+        if label in portal_settings.ENABLED_REPOSITORIES
+    }
 
 
 # import plugins, no need to do anything with them as they should use

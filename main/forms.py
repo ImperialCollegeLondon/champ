@@ -2,7 +2,7 @@ from django import forms
 
 from .models import CustomConfig, CustomResource, Job, Profile, Project
 from .resources import get_resource_choices
-from .software import SOFTWARE_CHOICES
+from .software import get_software_choices
 
 
 class SubmissionForm(forms.Form):
@@ -48,7 +48,7 @@ class JobTypeForm(forms.Form):
     )
     software = forms.ChoiceField(
         label="Software",
-        choices=SOFTWARE_CHOICES,
+        choices=get_software_choices,
     )
     custom_config = forms.ModelChoiceField(
         CustomConfig.objects.all(),

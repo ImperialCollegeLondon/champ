@@ -6,6 +6,15 @@ INTERP = os.environ["PORTAL_VENV"]
 if sys.executable != INTERP:
     os.execl(INTERP, INTERP, *sys.argv)
 
+sqlite_library_path = os.getenv("SQLITE_LIBRARY_PATH")
+if sqlite_library_path:
+    ld_library_path = os.environ["LD_LIBRARY_PATH"]
+    if ld_library_path:
+        ld_library_path = ":".join((ld_library_path, sqlite_library_path))
+    else:
+        ld_library_path = sqlite_library_path
+    os.environ["LD_LIBRARY_PATH"] = ld_library_path
+
 import django  # noqa: E402
 from django.core import management  # noqa: E402
 

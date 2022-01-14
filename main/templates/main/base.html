@@ -8,15 +8,7 @@
     <link rel="icon" href="{% static 'main/favicon-32x32.png' %}">
     <link rel="stylesheet" href="{% static 'main/css/semantic.min.css' %}">
     <style>
-        .ui.inverted.menu {
-            background-color: #003E74;
-        }
-
-        .ui.menu .item img.logo {
-            margin-right: 5em;
-            min-height: 100%;
-            min-width: 100%;
-        }
+	{% include MENU_STYLE_TEMPLATES %}
 
         .grid.container {
             margin-top: 5em;

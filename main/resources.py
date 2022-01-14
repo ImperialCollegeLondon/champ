@@ -1,9 +1,10 @@
-from django.conf import settings
-
 from .models.custom import CustomResource
+from .portal_config import get_portal_settings
 
-RESOURCES = settings.PORTAL_CONFIG["resources"] or []
-RESOURCE_CHOICES = list(enumerate(s["description"] for s in RESOURCES))
+
+def _get_resources():
+    portal_settings = get_portal_settings()
+    return portal_settings.RESOURCES or []
 
 
 def get_resource_choices():
@@ -15,7 +16,7 @@ def get_resource_choices():
     returns:
       (list): the resource choices as a list of 2-ples.
     """
-    choices = list(enumerate(s["description"] for s in RESOURCES))
+    choices = list(enumerate(s["description"] for s in _get_resources()))
     custom_resources = CustomResource.objects.all()
     choices += list(enumerate((r.label for r in custom_resources), len(choices)))
     return choices
@@ -33,7 +34,7 @@ def get_resource(index):
       (dict): the resource configuration
     """
     custom_resources = CustomResource.objects.all()
-    all_resources = RESOURCES + [
+    all_resources = _get_resources() + [
         {"description": r.label, "script_lines": r.script_lines}
         for r in custom_resources
     ]
