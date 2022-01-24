@@ -1,5 +1,5 @@
 ---
-title: "CHAMP is an HPC Access and Metadata Portal"
+title: "CHAMP is a HPC Access and Metadata Portal"
 tags:
   - High Performance Computing
   - Python
@@ -28,33 +28,33 @@ bibliography: refs.bib
 
 # Summary
 
-CHAMP (CHAMP is an HPC Access and Metadata Portal) provides an easy to use
-workflow for FAIR data generation and publication using high performance
-computing (HPC) resources. It provides a web based interface allowing submission
-of HPC workloads and subsequent one-click publication of the results to data
-repositories such as Zenodo. Depositions support rich metadata to repositories
-that include a full implemention of the Subject property of the DataCite
-metadata schema [@datacite].
+CHAMP is a high performance computing (HPC) and metadata portal which provides
+an easy to use workflow for FAIR (Findable, Accessible, Interoperable, and
+Reusabe) data generation and publication. It provides a web based interface
+allowing submission of HPC workloads and subsequent one-click publication of the
+results to data repositories such as Zenodo. Depositions support rich metadata
+to repositories that include a full implemention of the Subject property of the
+DataCite metadata schema [@datacite].
 
 Users submit jobs simply by choosing from pre-configured software and computing
-resource specifications:
+resource specifications (see Figure 1).
 
 ![The form for the initial step in job creation](docs/images/resources.png)
 
 The user is then asked to upload the required input files for their chosen
-software and may optionally provide a job description:
+software and may optionally provide a job description (see Figure 2).
 
 ![The form for the file upload step in job creation](docs/images/job_files.png)
 
-The status of jobs is available via a dedicated view. Publication to data
-repositories is also possible once the job has completed, with the reserved
-persistent identifier (a DOI) shown associated with the job.
+The status of jobs is available via a dedicated view (see Figure 3). Publication
+to data repositories is also possible once the job has completed, with the
+reserved persistent identifier (a DOI) shown associated with the job.
 
 ![Summary table of jobs run using the portal](docs/images/job_list.png)
 
-CHAMP makes use of the Open OnDemand [@Hudak2018] framework. This allows CHAMP
-to be portable across different HPC systems and to integrate flexibly with
-institutional infrastructure (e.g. authentication mechanisms).
+CHAMP makes use of the Open OnDemand [@Hudak2018] (OOD) framework. This allows
+CHAMP to be portable across different HPC systems and to integrate flexibly with
+institutional infrastructure (e.g., authentication mechanisms).
 
 CHAMP represents over 15 years of experimentation in HPC portal design
 [@Harvey2014]. The recent 2.0 release is a ground up rewrite to facilitate its
@@ -82,21 +82,22 @@ the selected software.
 
 # Implementation and Features
 
-CHAMP is written as a Passenger App within the Open OnDemand (OOD) framework. It
-must therefore be deployed within a local OOD instance. Use of OOD provides
-numerous advantages such as portability, a strong security model and an active
-community of users. This allows the CHAMP code base to be quite minimal with
-mechanisms for authenticaton and system scheduler interaction provided by the
-parent framework. The per-user NGINX architecture of OOD ensures all relevant
-computational processes are run under individual user UIDs.
+CHAMP is written as a Passenger App within the OOD framework. It must therefore
+be deployed within a local OOD instance. Use of OOD provides numerous advantages
+such as portability, a strong security model and an active community of
+users. This allows the CHAMP code base to be quite minimal with mechanisms for
+authenticaton and system scheduler interaction provided by the parent
+framework. The per-user NGINX [@Reese2008] architecture of OOD ensures all
+relevant computational processes are run under individual user identifiers.
 
-CHAMP is written in Python (>=3.7) using Django [@django] and supports extensive
-customisation via its main YAML configuration file. Administrators may configure
-the relevant software packages and resource configurations for their local
-system. There are no restrictions on the software or resource types that may be
-configured. Arbitrary workflows may be used to run software and to generate
-metadata. This allows flexibility to e.g. use a job restart file if uploaded by
-a user or vary metadata for publication depending on job inputs.
+CHAMP is written for use in Python (>3.6) using Django [@django] and supports
+extensive customisation via its main YAML (YAML Ain't Markup Language)
+configuration file. Administrators may configure the relevant software packages
+and resource configurations for their local system. There are no restrictions on
+the software or resource types that may be configured. Arbitrary workflows may
+be used to run software and to generate metadata. For example, this allows
+flexibility to use a job restart file if uploaded by a user or vary metadata for
+publication depending on job inputs.
 
 The workflow that CHAMP imposes for HPC usage also provides inherent
 reproducibility. Individual jobs are structured within separate directories with
@@ -106,14 +107,15 @@ projects. Job history can be filtered and searched according to this metadata
 allowing the portal to act as a simple electronic lab notebook.
 
 An integration with Zenodo is included in the code base. Additional data
-repositories that support interaction via API and OAuth2 authentication may be
-configured via a plugin mechanism. This allows the development of custom
-integrations with institutional data repositories where desired, in the case of
-Imperial College with an existing repository service [@Harvey2017].
+repositories that support interaction via application programming interface and
+OAuth2 [@Hardt2012] authentication may be configured via a plugin
+mechanism. This allows the development of custom integrations with institutional
+data repositories where desired, as in the case of Imperial College with an
+existing repository service [@Harvey2017].
 
 # Acknowledgments
 
-We acknowledge the extensive contributions of Dr Matthew Harvey for work on
+We acknowledge the extensive contributions of Dr. Matthew Harvey for work on
 version 1 of this software.
 
 # References
