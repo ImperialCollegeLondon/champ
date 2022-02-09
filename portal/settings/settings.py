@@ -180,6 +180,6 @@ JOBS_DIR = Path(os.getenv("JOBS_DIR", str(BASE_DIR / "portal_jobs")))
 
 PORTAL_CONFIG_PATH = os.getenv("PORTAL_CONFIG_PATH", "portal_config.yaml")
 
-VERSION = "2.0.0"
+VERSION = "2.1.0"
 
 TEST_RUNNER = "main.tests.TestSuiteRunner"
