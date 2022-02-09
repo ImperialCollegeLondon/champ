@@ -1,4 +1,4 @@
-# CHAMP is an HPC Access and Metadata Portal
+# CHAMP is a HPC Access and Metadata Portal
 
 [![DOI](https://zenodo.org/badge/367421932.svg)](https://zenodo.org/badge/latestdoi/367421932)
 
