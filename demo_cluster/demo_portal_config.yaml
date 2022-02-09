@@ -1,0 +1,24 @@
+resources:
+  - description: "job"
+    script_lines: |
+      #SBATCH --nodes=1
+software:
+  - name: "blah"
+    input_files:
+      required:
+      optional:
+    commands: |
+      echo "running a blah job"
+    help_text: "etet"
+script_template: |
+  #!/bin/bash
+  #SBATCH --job-name={job_name}
+  {custom_config}{resources}
+
+  cd "$SLURM_SUBMIT_DIR"
+  (while true; do echo "$SECONDS" > WALLTIME; sleep 5s; done) &
+  sleep 30s
+  {commands}
+custom_config_line_regex: ".*"
+enabled_repositories:
+cluster: "hpc"

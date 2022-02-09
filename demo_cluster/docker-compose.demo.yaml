@@ -1,0 +1,81 @@
+version: "3.8"
+
+services:
+  ldap:
+    image: ghcr.io/imperialcollegelondon/champ-demo-ldap:2020-12
+    environment:
+      - LDAP_RFC2307BIS_SCHEMA=true
+      - LDAP_TLS_VERIFY_CLIENT=never
+
+  mysql:
+    image: ghcr.io/imperialcollegelondon/champ-demo-mysql:2020-12
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+    expose:
+      - "3306"
+
+  slurmdbd:
+    image: ghcr.io/imperialcollegelondon/champ-demo-slurm:2020-12
+    command: ["slurmdbd"]
+    hostname: slurmdbd
+    expose:
+      - "6819"
+    depends_on:
+      - ldap
+      - mysql
+
+  slurmctld:
+    image: ghcr.io/imperialcollegelondon/champ-demo-slurm:2020-12
+    command: ["slurmctld"]
+    hostname: slurmctld
+    expose:
+      - "6817"
+    depends_on:
+      - ldap
+      - slurmdbd
+
+  cpn01:
+    init: true
+    image: ghcr.io/imperialcollegelondon/champ-demo-slurm:2020-12
+    command: ["slurmd"]
+    hostname: cpn01
+    volumes:
+      - home:/home
+    expose:
+      - "6818"
+    depends_on:
+      - ldap
+      - slurmctld
+
+  frontend:
+    image: ghcr.io/imperialcollegelondon/champ-demo-slurm:2020-12
+    command: ["frontend"]
+    depends_on:
+      - ldap
+      - slurmctld
+      - cpn01
+
+  ondemand:
+    image: ghcr.io/imperialcollegelondon/champ-demo-ood:2.0
+    command: ["serve"]
+    environment:
+      - PORTAL_CONFIG_PATH=./docs/hpc_portal_config.yaml
+      - PORTAL_VENV=/var/portal_venv/bin/python
+      - JOBS_DIR=/tmp
+      - LD_LIBRARY_PATH=/usr/local/lib64
+      - DEMO_CLUSTER=true
+    volumes:
+      - ..:/var/www/ood/apps/sys/champ/
+      - ./demo_portal_config.yaml:/var/www/ood/apps/sys/champ/portal_config.yaml
+      - ./demo_dotenv:/var/www/ood/apps/sys/champ/.env
+      - ./demo_settings.py:/var/www/ood/apps/sys/champ/portal/settings/demo_settings.py
+      - ./test_job.sbatch://var/www/ood/apps/sys/champ/test_job.sbatch
+    ports:
+      - "127.0.0.1:3443:3443"
+      - "127.0.0.1:5554:5554"
+    depends_on:
+      - ldap
+      - frontend
+
+volumes:
+  home:

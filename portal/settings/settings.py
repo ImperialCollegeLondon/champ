@@ -11,12 +11,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 import os
-import re
 from pathlib import Path
-
-import yaml
-
-from config_validation import ConfigSchema
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -136,6 +131,8 @@ TEMPLATES[0]["OPTIONS"]["context_processors"] += [
     "main.context_processors.app_name",
     "main.context_processors.app_version",
     "main.context_processors.external_links",
+    "main.context_processors.index_page_templates",
+    "main.context_processors.menu_style_templates",
 ]
 TEMPLATES[0]["DIRS"] = list(
     (BASE_DIR / "main" / "repositories" / "plugins").glob("*/templates")
@@ -180,15 +177,9 @@ LOGGING = {
 
 JOBS_DIR = Path(os.getenv("JOBS_DIR", str(BASE_DIR / "portal_jobs")))
 
-with open(os.getenv("PORTAL_CONFIG_PATH", "portal_config.yaml")) as f:
-    PORTAL_CONFIG = yaml.safe_load(f)
-ConfigSchema().load(PORTAL_CONFIG)
 
-VERSION = "2.0.0"
+PORTAL_CONFIG_PATH = os.getenv("PORTAL_CONFIG_PATH", "portal_config.yaml")
 
-CONFIG_LINE_REGEX = re.compile(PORTAL_CONFIG["custom_config_line_regex"])
+VERSION = "2.1.0"
 
-ENABLED_REPOSITORIES = PORTAL_CONFIG.get("enabled_repositories") or []
-
-CLUSTER = PORTAL_CONFIG["cluster"]
-CONFIG_LINK = PORTAL_CONFIG.get("config_link")
+TEST_RUNNER = "main.tests.TestSuiteRunner"

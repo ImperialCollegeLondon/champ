@@ -1,0 +1,3 @@
+LOGGING_FILE=${HOME}/portal.log
+SECRET_KEY="$6fi=ib58zsnurji6!!&7=bwik#r_3biatn(pvfm3f@#zo9xik"
+DJANGO_SETTINGS_MODULE="portal.settings.demo_settings"

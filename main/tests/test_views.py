@@ -18,8 +18,9 @@ from ..models import (
     Publication,
     Token,
 )
-from ..resources import RESOURCES
-from ..software import SOFTWARE
+from ..portal_config import SettingsGetter
+from ..resources import get_resource
+from ..software import get_software
 from . import create_dummy_job
 from .repository_mock import MockRepository
 from .scheduler_mock import (
@@ -29,6 +30,19 @@ from .scheduler_mock import (
 )
 
 TEST_DATA_PATH = Path(__file__).absolute().parent / "test_data"
+
+SETTINGS_PATCHER = patch(
+    "main.portal_config.get_portal_settings._settings",
+    SettingsGetter(TEST_DATA_PATH / "test_config.yaml")(),
+)
+
+
+def setUpModule():
+    SETTINGS_PATCHER.start()
+
+
+def tearDownModule():
+    SETTINGS_PATCHER.stop()
 
 
 class TestIndexViews(TestCase):
@@ -64,8 +78,10 @@ class TestCreateJobViews(SchedulerTestCase):
         self.assertEqual(len(Job.objects.all()), 1)
         job = Job.objects.get()
 
-        self.assertEqual(job.resources, RESOURCES[self.resources_index]["description"])
-        self.assertEqual(job.software, SOFTWARE[self.software_index]["name"])
+        self.assertEqual(
+            job.resources, get_resource(self.resources_index)["description"]
+        )
+        self.assertEqual(job.software, get_software()[self.software_index]["name"])
 
         files = list(job.work_dir.glob("*"))
         self.assertIn(job.work_dir / self.test_input, files)
