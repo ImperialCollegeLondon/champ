@@ -229,7 +229,7 @@ class Project(models.Model):
 class Token(models.Model):
     """Used to store authentication tokens suitable for use with OAuth2 resources"""
 
-    value = models.CharField(max_length=120)
+    value = models.CharField(max_length=240)
     label = models.CharField(max_length=20, unique=True)
-    refresh_token = models.CharField(max_length=120, blank=True)
+    refresh_token = models.CharField(max_length=240, blank=True)
     expires = models.DateTimeField(blank=True, null=True)
