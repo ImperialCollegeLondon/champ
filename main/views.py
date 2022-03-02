@@ -117,14 +117,14 @@ def list_jobs(request):
     config.configure(table)
 
     for job in table.page.object_list.data:
-        if job.status != "Completed":
+        if job.status != Job.COMPLETED:
             try:
-                job.status = scheduler.status(job.job_id).capitalize()
+                job.status = scheduler.status(job.job_id).capitalize()[0]
             except scheduler.SchedulerError:
                 # if something goes wrong with getting status info for one
                 # job, assume a problem and don't try the rest
                 break
-            if job.status == "Completed":
+            if job.status == Job.COMPLETED:
                 try:
                     with (job.work_dir / "WALLTIME").open() as f:
                         job.walltime = timedelta(seconds=int(f.read()))
@@ -395,7 +395,7 @@ def download(request, job_pk):
       (StreamingHttpResponse): the zip archive of the working directory
     """
     job = get_object_or_404(Job, pk=job_pk)
-    if job.status != "Completed":
+    if job.status != Job.COMPLETED:
         raise Http404("Job not completed")
     dir_name = job.work_dir.name
     return StreamingHttpResponse(
