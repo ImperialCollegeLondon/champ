@@ -62,7 +62,7 @@ class Test(SchedulerTestCase):
         """Queueing jobs always give walltime as 'N/A'"""
         seconds = 6000
         job = Job.objects.create(
-            status="Queueing",
+            status=Job.QUEUEING,
             resources="",
             software="",
         )
@@ -79,7 +79,7 @@ class Test(SchedulerTestCase):
         """Running jobs return walltime from file"""
         seconds = 6000
         job = Job.objects.create(
-            status="Running",
+            status=Job.RUNNING,
             resources="",
             software="",
         )
@@ -97,7 +97,7 @@ class Test(SchedulerTestCase):
         """Completed jobs return walltime from model field else 'Unknown'"""
         seconds = 6000
         job = Job.objects.create(
-            status="Completed",
+            status=Job.COMPLETED,
             resources="",
             software="",
         )
@@ -117,7 +117,7 @@ class Test(SchedulerTestCase):
     def test_walltime_assignment(self):
         """Value assigned to walltime is rounded according to ROUNDING_INTERVAL"""
         job = Job.objects.create(
-            status="Completed",
+            status=Job.COMPLETED,
             resources="",
             software="",
         )

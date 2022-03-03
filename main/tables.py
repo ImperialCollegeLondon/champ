@@ -25,7 +25,7 @@ class JobTable(tables.Table):
 
     work_dir = tables.TemplateColumn(
         "<a href=\"{% url 'main:directory' record.pk %}\">"
-        'Open</a>{% if record.status == "Completed"%}<br>'
+        f'Open</a>{{% if record.status == "{Job.COMPLETED}"%}}<br>'
         '<a href="{% url \'main:download\' record.pk %}" class="blocking">Download</a>'
         "{% endif %}",
         orderable=False,
@@ -43,7 +43,7 @@ class JobTable(tables.Table):
         return f"{value:08d}"
 
     def render_publish(self, record):
-        if record.status != "Completed":
+        if record.status != Job.COMPLETED:
             return ""
         publications = Publication.objects.filter(job=record)
         if publications:

@@ -532,7 +532,7 @@ docker-compose -f demo_cluster/docker-compose.demo.yaml run ondemand bash demo_c
 Start the server with:
 
 ```
-docker-compose -f demo_cluster/docker-compose.demo.yaml
+docker-compose -f demo_cluster/docker-compose.demo.yaml up
 ```
 
 then access `https://localhost:3443/pun/sys/champ` in a browser. When prompted

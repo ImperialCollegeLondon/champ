@@ -147,7 +147,7 @@ class TestListViews(SchedulerTestCase):
         response = self.client.get("/list_jobs/")
         jobs = response.context["table"].data.data
         self.assertEqual(len(jobs), 1)
-        self.assertEqual(jobs[0].status, "Queueing")
+        self.assertEqual(jobs[0].status, Job.QUEUEING)
         self.assertEqual(jobs[0].walltime, "N/A")
 
         # simulate job running and creating WALLTIME file
@@ -158,7 +158,7 @@ class TestListViews(SchedulerTestCase):
         response = self.client.get("/list_jobs/")
         jobs = response.context["table"].data.data
         self.assertEqual(len(jobs), 1)
-        self.assertEqual(jobs[0].status, "Running")
+        self.assertEqual(jobs[0].status, Job.RUNNING)
         self.assertEqual(jobs[0].walltime, timedelta(seconds=seconds))
 
         self.scheduler.job_finishes(job.job_id)
@@ -166,7 +166,7 @@ class TestListViews(SchedulerTestCase):
         response = self.client.get("/list_jobs/")
         jobs = response.context["table"].data.data
         self.assertEqual(len(jobs), 1)
-        self.assertEqual(jobs[0].status, "Completed")
+        self.assertEqual(jobs[0].status, Job.COMPLETED)
         self.assertEqual(
             jobs[0].walltime,
             round(timedelta(seconds=seconds) / ROUNDING_INTERVAL) * ROUNDING_INTERVAL,
@@ -384,7 +384,7 @@ class TestDownloadView(SchedulerTestCase):
 
     def test_archive(self):
         """Downloaded zip archive should contain files in job.work_dir"""
-        self.job.status = "Completed"
+        self.job.status = Job.COMPLETED
         self.job.save()
 
         response = self.client.get(f"/download/{self.job.pk}/")

@@ -49,7 +49,7 @@ class JobManager(models.Manager):
         resources = get_resource(resource_index)
         software = get_software()[software_index]
         job = self.create(
-            status="Queueing",
+            status=Job.QUEUEING,
             description=description,
             project=project,
             resources=resources["description"],
@@ -99,7 +99,14 @@ class JobManager(models.Manager):
 class Job(models.Model):
     """A representation of a job run on a computing cluster."""
 
-    STATUS_CHOICES = [("C", "Completed"), ("Q", "Queueing"), ("R", "Running")]
+    COMPLETED = "C"
+    QUEUEING = "Q"
+    RUNNING = "R"
+    STATUS_CHOICES = [
+        (COMPLETED, "Completed"),
+        (QUEUEING, "Queueing"),
+        (RUNNING, "Running"),
+    ]
 
     status = models.CharField(max_length=1, choices=STATUS_CHOICES)
     job_id = models.CharField(max_length=20, blank=True)
@@ -122,7 +129,7 @@ class Job(models.Model):
         """Delete job instance, if not yet completed delete from scheduler and remove
         working directory from disk.
         """
-        if self.status != "Completed" and self.job_id:
+        if self.status != self.COMPLETED and self.job_id:
             scheduler.delete(self.job_id)
             # small wait to let the scheduler delete the job to try and
             # minimise issues with deleting the working directory
@@ -140,9 +147,9 @@ class Job(models.Model):
         running this is looked up from using the WALLTIME file in the job working
         directory.
         """
-        if self.status == "Completed":
+        if self.status == self.COMPLETED:
             return "Unknown" if self._walltime is None else self._walltime
-        elif self.status == "Queueing":
+        elif self.status == self.QUEUEING:
             return "N/A"
         else:
             # if job is not complete get the most up-to-date walltime from disk
@@ -222,7 +229,7 @@ class Project(models.Model):
 class Token(models.Model):
     """Used to store authentication tokens suitable for use with OAuth2 resources"""
 
-    value = models.CharField(max_length=120)
+    value = models.CharField(max_length=240)
     label = models.CharField(max_length=20, unique=True)
-    refresh_token = models.CharField(max_length=120, blank=True)
+    refresh_token = models.CharField(max_length=240, blank=True)
     expires = models.DateTimeField(blank=True, null=True)

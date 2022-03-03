@@ -17,12 +17,5 @@ class JobFilter(django_filters.FilterSet):
         exclude=True,
         label="Description does not contain",
     )
-    status = django_filters.ChoiceFilter(
-        choices=(
-            ("Completed", "Completed"),
-            ("Queueing", "Queueing"),
-            ("Running", "Running"),
-        )
-    )
     resources = django_filters.AllValuesFilter()
     software = django_filters.AllValuesFilter()
