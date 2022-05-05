@@ -169,3 +169,15 @@ class Test(SchedulerTestCase):
         job.job_id = ""
         job.save()
         job.delete()
+
+    @patch(
+        "main.models.get_resource",
+        lambda x: dict(
+            description="", script_lines="a string\r\nwith\r\nbad linebreaks"
+        ),
+    )
+    def test_eol(self):
+        job = create_dummy_job()
+        with open(job.work_dir / "sub.sh") as f:
+            f.read()
+            self.assertNotIn("\r\n", f.newlines)

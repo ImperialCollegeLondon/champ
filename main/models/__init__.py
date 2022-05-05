@@ -72,15 +72,32 @@ class JobManager(models.Manager):
         }
         commands = software["commands"].format(**formatting_kwargs)
 
-        config_lines = (
-            custom_config.script_lines.strip() + "\n" if custom_config else ""
+        resource_lines = (
+            "\n".join(
+                line.rstrip() for line in resources["script_lines"].rstrip().split("\n")
+            )
+            + "\n"
         )
+
+        config_lines = (
+            "\n".join(
+                line.rstrip()
+                for line in custom_config.script_lines.rstrip().split("\n")
+            )
+            + "\n"
+            if custom_config
+            else ""
+        )
+        # config_lines = (
+        #     custom_config.script_lines.strip() + "\n" if custom_config else ""
+        # )
         portal_settings = get_portal_settings()
         with script_path.open("w") as f:
             f.write(
                 portal_settings.SCRIPT_TEMPLATE.format(
                     commands=commands,
-                    resources=resources["script_lines"],
+                    # resources=resources["script_lines"],
+                    resources=resource_lines,
                     custom_config=config_lines,
                     job_name=f"portal_job_{job.job_number}",
                 )
