@@ -22,3 +22,7 @@ script_template: |
 custom_config_line_regex: ".*"
 enabled_repositories:
 cluster: "hpc"
+timeouts:
+  submit: 10
+  status: 2
+  delete: 2

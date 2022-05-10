@@ -19,13 +19,13 @@ class Scheduler:
         self.completed_jobs = set()
         self.current_id = 1
 
-    def submit(self, script_path, submission_dir):
+    def submit(self, script_path, submission_dir, timeout=0):
         job_id = f"{self.current_id:08d}.pbs"
         self.current_id += 1
         self.queued_jobs.add(job_id)
         return job_id
 
-    def status(self, job_id):
+    def status(self, job_id, timeout=0):
         if job_id in self.queued_jobs:
             return "queueing"
         elif job_id in self.running_jobs:
@@ -33,7 +33,7 @@ class Scheduler:
         else:
             return "completed"
 
-    def delete(self, job_id):
+    def delete(self, job_id, timeout=0):
         if not job_id:
             raise SchedulerError("illegal job identifier")
         if job_id not in self.queued_jobs and job_id not in self.running_jobs:
@@ -80,7 +80,7 @@ class SchedulerTestCase(TestCase):
         self.work_dir_patcher.stop()
 
 
-def raise_scheduler_error(job_id, work_dir):
+def raise_scheduler_error(job_id, work_dir, timeout=0):
     """Raises a scheduler.SchedulerError to simulate failure of job
     submision.
     """

@@ -11,6 +11,7 @@ from config_validation import (
     FilesSchema,
     ResourceSchema,
     SoftwareSchema,
+    TimeoutsSchema,
 )
 from main.software import clean_software_config
 
@@ -126,6 +127,19 @@ class TestSoftwareSchema(SchemaTestCase):
         self.schema.load(self.valid_data)
 
 
+class TestTimeoutsSchema(SchemaTestCase):
+    valid_data = {"submit": 1, "status": 1, "delete": 1}
+    schema = TimeoutsSchema()
+
+    def test_fields_type(self):
+        """Non-integer values for fields do not pass validation"""
+        self.field_types({"submit": "", "status": "", "delete": ""})
+
+    def test_valid(self):
+        """Valid data should not trigger a validation error"""
+        self.schema.load(self.valid_data)
+
+
 class TestConfigSchema(SchemaTestCase):
     software = dict(
         name="", input_files=TestFilesSchema.valid_data, commands="", help_text=""
@@ -140,6 +154,7 @@ class TestConfigSchema(SchemaTestCase):
         enabled_repositories=[""],
         external_links=[TestExternalLinkSchema.valid_data],
         cluster="",
+        timeouts=TestTimeoutsSchema.valid_data,
     )
 
     def test_fields_required(self):
@@ -168,6 +183,7 @@ class TestConfigSchema(SchemaTestCase):
                 custom_config_line_regex=0,
                 enabled_repositories=0,
                 cluster=0,
+                timeouts=0,
             )
         )
 
