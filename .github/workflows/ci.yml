@@ -4,7 +4,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: actions/setup-python@v3
         with:
           python-version: 3.9
@@ -12,7 +12,7 @@ jobs:
   testing:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: actions/setup-python@v3
         with:
           python-version: 3.9
@@ -26,7 +26,7 @@ jobs:
   demo_cluster:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Run tests in demo cluster
         run: |
           docker-compose -f demo_cluster/docker-compose.demo.yaml run --rm ondemand bash demo_cluster/run_test.sh
