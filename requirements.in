@@ -7,3 +7,4 @@ python-dotenv
 pyyaml
 requests
 requests_oauthlib
+oauthlib>=3.2.0
