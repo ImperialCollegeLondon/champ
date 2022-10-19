@@ -2,41 +2,49 @@ version: "3.8"
 
 services:
   ldap:
-    image: ghcr.io/imperialcollegelondon/champ-demo-ldap:2020-12
+    image: ghcr.io/imperialcollegelondon/champ-demo-ldap:2022-07
     environment:
       - LDAP_RFC2307BIS_SCHEMA=true
       - LDAP_TLS_VERIFY_CLIENT=never
 
   mysql:
-    image: ghcr.io/imperialcollegelondon/champ-demo-mysql:2020-12
+    image: ghcr.io/imperialcollegelondon/champ-demo-mysql:2022-07
     environment:
       MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
     expose:
       - "3306"
 
   slurmdbd:
-    image: ghcr.io/imperialcollegelondon/champ-demo-slurm:2020-12
+    image: ghcr.io/imperialcollegelondon/champ-demo-slurm:2022-07
     command: ["slurmdbd"]
     hostname: slurmdbd
     expose:
       - "6819"
+    volumes:
+      - etc_munge:/etc/munge
+      - etc_slurm:/etc/slurm
+      - slurmdbd_state:/var/lib/slurmd
     depends_on:
       - ldap
       - mysql
 
   slurmctld:
-    image: ghcr.io/imperialcollegelondon/champ-demo-slurm:2020-12
+    image: ghcr.io/imperialcollegelondon/champ-demo-slurm:2022-07
     command: ["slurmctld"]
     hostname: slurmctld
     expose:
       - "6817"
+    volumes:
+      - etc_munge:/etc/munge
+      - etc_slurm:/etc/slurm
+      - slurmctld_state:/var/lib/slurmd
     depends_on:
       - ldap
       - slurmdbd
 
   cpn01:
     init: true
-    image: ghcr.io/imperialcollegelondon/champ-demo-slurm:2020-12
+    image: ghcr.io/imperialcollegelondon/champ-demo-slurm:2022-07
     command: ["slurmd"]
     hostname: cpn01
     volumes:
@@ -47,22 +55,37 @@ services:
       - ldap
       - slurmctld
 
+  cpn02:
+    init: true
+    image: ghcr.io/imperialcollegelondon/champ-demo-slurm:2022-07
+    command: ["slurmd"]
+    hostname: cpn02
+    volumes:
+      - home:/home
+    expose:
+      - "6818"
+    depends_on:
+      - ldap
+      - slurmctld
+
   frontend:
-    image: ghcr.io/imperialcollegelondon/champ-demo-slurm:2020-12
+    image: ghcr.io/imperialcollegelondon/champ-demo-slurm:2022-07
     command: ["frontend"]
+    ports:
+      - "127.0.0.1:6222:22"
     depends_on:
       - ldap
       - slurmctld
       - cpn01
+      - cpn02
 
   ondemand:
-    image: ghcr.io/imperialcollegelondon/champ-demo-ood:2.0
+    image: ghcr.io/imperialcollegelondon/champ-demo-ood:2.1
     command: ["serve"]
     environment:
       - PORTAL_CONFIG_PATH=./docs/hpc_portal_config.yaml
       - PORTAL_VENV=/var/portal_venv/bin/python
       - JOBS_DIR=/tmp
-      - LD_LIBRARY_PATH=/usr/local/lib64
       - DEMO_CLUSTER=true
     volumes:
       - ..:/var/www/ood/apps/sys/champ/
@@ -79,3 +102,7 @@ services:
 
 volumes:
   home:
+  slurmctld_state:
+  slurmdbd_state:
+  etc_munge:
+  etc_slurm:

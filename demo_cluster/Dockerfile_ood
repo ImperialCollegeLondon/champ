@@ -1,17 +1,8 @@
-FROM ubccr/hpcts:ondemand-latest as build
+FROM ubccr/hpcts:ondemand-2022.07
 
-ENV SQLITE_ROOT sqlite-amalgamation-3360000
-ADD https://www.sqlite.org/2021/${SQLITE_ROOT}.zip /
-RUN unzip ${SQLITE_ROOT}.zip && \
-	gcc -Os -shared -fPIC ${SQLITE_ROOT}/sqlite3.c -o /libsqlite3.so.0 && \
-	rm -rf ${SQLITE_ROOT}
-
-FROM ubccr/hpcts:ondemand-latest
-
-COPY --from=build /libsqlite3.so.0 /usr/local/lib64/libsqlite3.so.0
-
+RUN yum install -y python39 python39-pip && yum clean all
 ADD requirements.txt /
-RUN python3 -mvenv /var/portal_venv && \
+RUN python3.9 -mvenv /var/portal_venv && \
 	/var/portal_venv/bin/pip --no-cache-dir install -r /requirements.txt
 RUN echo -e "pun_custom_env:\n  PORTAL_VENV: /var/portal_venv/bin/python" >> /etc/ood/config/nginx_stage.yml
 
@@ -21,6 +12,6 @@ ADD demo_cluster/demo_portal_config.yaml portal_config.yaml
 ADD demo_cluster/demo_dotenv .env
 ADD demo_cluster/demo_settings.py portal/settings/demo_settings.py
 ADD demo_cluster/test_job.sbatch test_job.sbatch
+RUN ln -s /usr/bin/python3.9 /usr/bin/python
 
-# set LD_LIBRARY_PATH so compiled sqlite version is found
-RUN LD_LIBRARY_PATH=/usr/local/lib64 /var/portal_venv/bin/python manage.py collectstatic && rm /tmp/portal.log
+RUN /var/portal_venv/bin/python manage.py collectstatic && rm /tmp/portal.log
