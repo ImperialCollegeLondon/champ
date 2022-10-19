@@ -25,3 +25,7 @@ custom_config_line_regex: "#PBS .*"
 cluster: ""
 enabled_repositories:
   - ""
+timeouts:
+  submit: 10
+  status: 10
+  delete: 10

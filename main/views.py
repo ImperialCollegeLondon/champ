@@ -116,10 +116,13 @@ def list_jobs(request):
     config = tables.RequestConfig(request, paginate={"per_page": 15})
     config.configure(table)
 
+    portal_settings = get_portal_settings()
     for job in table.page.object_list.data:
         if job.status != Job.COMPLETED:
             try:
-                job.status = scheduler.status(job.job_id).capitalize()[0]
+                job.status = scheduler.status(
+                    job.job_id, timeout=portal_settings.TIMEOUTS["status"]
+                ).capitalize()[0]
             except scheduler.SchedulerError:
                 # if something goes wrong with getting status info for one
                 # job, assume a problem and don't try the rest

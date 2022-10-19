@@ -11,6 +11,7 @@ class SettingsGetter:
     """"""
 
     _settings = None
+    defaults = dict(timeouts=dict(submit=10, status=2, delete=2))
 
     def __init__(self, filepath):
         self.filepath = filepath
@@ -21,6 +22,10 @@ class SettingsGetter:
                 portal_config = yaml.safe_load(f)
             ConfigSchema().load(portal_config)
 
+            timeouts = {
+                **self.defaults["timeouts"],
+                **(portal_config.get("timeouts") or {}),
+            }
             attrs = dict(
                 CONFIG_LINE_REGEX=re.compile(portal_config["custom_config_line_regex"]),
                 ENABLED_REPOSITORIES=portal_config.get("enabled_repositories") or [],
@@ -30,6 +35,7 @@ class SettingsGetter:
                 RESOURCES=portal_config.get("resources"),
                 SCRIPT_TEMPLATE=portal_config.get("script_template"),
                 EXTERNAL_LINKS=portal_config.get("external_links") or [],
+                TIMEOUTS=timeouts,
             )
             self._settings = SimpleNamespace(**attrs)
         return self._settings

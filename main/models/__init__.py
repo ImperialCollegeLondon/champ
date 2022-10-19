@@ -86,8 +86,9 @@ class JobManager(models.Manager):
                 )
             )
 
+        timeout = portal_settings.TIMEOUTS["submit"]
         try:
-            job_id = scheduler.submit(script_path, job.work_dir)
+            job_id = scheduler.submit(script_path, job.work_dir, timeout=timeout)
             job.job_id = job_id
             job.save()
             return job
@@ -129,8 +130,10 @@ class Job(models.Model):
         """Delete job instance, if not yet completed delete from scheduler and remove
         working directory from disk.
         """
+        portal_settings = get_portal_settings()
+
         if self.status != self.COMPLETED and self.job_id:
-            scheduler.delete(self.job_id)
+            scheduler.delete(self.job_id, timeout=portal_settings.TIMEOUTS["delete"])
             # small wait to let the scheduler delete the job to try and
             # minimise issues with deleting the working directory
             time.sleep(2)

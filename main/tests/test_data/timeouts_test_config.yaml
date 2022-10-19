@@ -1,0 +1,8 @@
+resources:
+software:
+script_template: ""
+custom_config_line_regex: ""
+enabled_repositories:
+cluster: ""
+timeouts:
+  status: 1000

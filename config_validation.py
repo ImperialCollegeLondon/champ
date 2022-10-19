@@ -21,6 +21,12 @@ class ExternalLinkSchema(Schema):
     url = fields.Url(required=True)
 
 
+class TimeoutsSchema(Schema):
+    submit = fields.Integer()
+    status = fields.Integer()
+    delete = fields.Integer()
+
+
 class SoftwareSchema(Schema):
     name = fields.Str(required=True)
     input_files = fields.Nested(FilesSchema, required=True)
@@ -37,6 +43,7 @@ class ConfigSchema(Schema):
     external_links = fields.Nested(ExternalLinkSchema, many=True)
     cluster = fields.Str(required=True)
     config_link = fields.Str()
+    timeouts = fields.Nested(TimeoutsSchema)
 
 
 if __name__ == "__main__":
