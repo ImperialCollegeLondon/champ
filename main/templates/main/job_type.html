@@ -65,7 +65,13 @@
       {{ form.custom_config }}
       {{ form.custom_config.errors }}
     </div>
-    <input class="ui button" type="submit" value="Submit">
+    <div>
+        <input class="ui button" type="submit" value="Submit">
+        <span style="float: right; margin-top: 8px;">
+          <label for="{{ form.run_another_for_label }}" >{{ form.run_another.label }}</label>
+          {{ form.run_another }}
+        </span>
+    </div>
   </form>
 </div>
 {% endif %}
