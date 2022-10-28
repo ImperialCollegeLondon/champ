@@ -8,6 +8,7 @@ app_name = "main"
 
 urlpatterns = [
     path("", views.index, name="index"),
+    path("about/", views.about, name="about"),
     path(
         "create_job/<int:project_pk>/<int:resource_index>/<int:software_index>/",
         views.create_job,

@@ -45,6 +45,11 @@ def index(request):
     return render(request, "main/index.html", {"admin_email": admin_email})
 
 
+def about(request):
+    """The about view"""
+    return render(request, "main/about.html")
+
+
 def create_job(request, project_pk, resource_index, software_index, config_pk=None):
     """This view handles a form that when submitted triggers creation of a job.
 
