@@ -57,6 +57,14 @@ class JobTypeForm(forms.Form):
         required=False,
     )
 
+    run_another = forms.BooleanField(
+        widget=forms.CheckboxInput(
+            attrs={"class": "ui checkbox",
+                   "style": "margin-top: 3px; margin-left: 8px;"}
+        ),
+        label="Run another job after submission:",
+        required=False)
+
 
 class ProjectForm(forms.ModelForm):
     class Meta:

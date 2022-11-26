@@ -9,12 +9,12 @@ app_name = "main"
 urlpatterns = [
     path("", views.index, name="index"),
     path(
-        "create_job/<int:project_pk>/<int:resource_index>/<int:software_index>/",
+        "create_job/<int:project_pk>/<int:resource_index>/<int:software_index>/<int:run_another>/",
         views.create_job,
         name="create_job",
     ),
     path(
-        "create_job/<int:project_pk>/<int:resource_index>/<int:software_index>/<int:config_pk>/",  # noqa: E501
+        "create_job/<int:project_pk>/<int:resource_index>/<int:software_index>/<int:run_another>/<int:config_pk>/",  # noqa: E501
         views.create_job,
         name="create_job",
     ),

@@ -45,7 +45,8 @@ def index(request):
     return render(request, "main/index.html", {"admin_email": admin_email})
 
 
-def create_job(request, project_pk, resource_index, software_index, config_pk=None):
+def create_job(request, project_pk, resource_index, software_index,
+               run_another, config_pk=None):
     """This view handles a form that when submitted triggers creation of a job.
 
     args:
@@ -81,8 +82,15 @@ def create_job(request, project_pk, resource_index, software_index, config_pk=No
                     software_index,
                     custom_config,
                 )
-                url = reverse("main:list_jobs")
-                return redirect(url + f"?success={job.pk}")
+                if run_another == 1:
+                    config_val = -1 if not config_pk else config_pk
+                    url = reverse("main:job_type")
+                    return redirect(url +
+                                    f"?p={project_pk}&r={resource_index}"
+                                    f"&s={software_index}&c={config_val}")
+                else:
+                    url = reverse("main:list_jobs")
+                    return redirect(url + f"?success={job.pk}")
             except scheduler.SchedulerError as e:
                 logger.exception("Exception during job submission")
                 msg = f"Job submission failed\n\n{e.args[0]}"
@@ -196,11 +204,28 @@ def job_type(request):
             project = form.cleaned_data["project"]
             args = [form.cleaned_data["resources"], form.cleaned_data["software"]]
             custom_config = form.cleaned_data["custom_config"]
+            run_another = 1 if form.cleaned_data["run_another"] else 0
+            args.append(run_another)
             if custom_config:
                 args.append(custom_config.pk)
             return redirect("main:create_job", project.pk, *args)
     else:
-        form = JobTypeForm()
+        # If we have query string data specifying pre-selection of specific
+        # values, set these up and pass them into the form to pre-select the
+        # previous values - first check for a complete/valid set of params
+        if all([val in request.GET for val in ["p", "r", "s", "c"]]):
+            config_id = request.GET["c"]
+            form_init = {
+                "project": request.GET["p"],
+                "resources": request.GET["r"],
+                "software": request.GET["s"],
+                "run_another": "on"
+            }
+            if int(config_id) > -1:
+                form_init["config_id"] = config_id
+            form = JobTypeForm(initial=form_init)
+        else:
+            form = JobTypeForm()
     return render(
         request,
         "main/job_type.html",
